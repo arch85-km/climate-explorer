@@ -4,6 +4,10 @@
 are inline, there are no external requests, and nothing is uploaded anywhere — the
 `.epw` file a student drops is read locally by the browser.
 
+It is about **650 KB**, roughly half of which is the bundled London example climate
+that makes the page useful the moment it loads. Serve it with gzip enabled (most
+hosts do by default) and it arrives in about 360 KB.
+
 There are two ways to put it in a WordPress page. **Use the iframe method** unless
 you have a specific reason not to.
 

@@ -10,7 +10,7 @@
  * along the sun vector. For a single plane and a directional light this is exact,
  * costs one extra draw call, and needs no shadow map.
  */
-import { MeshBuilder, LineBuilder, rgb01 } from '../render/geometry.js';
+import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { shadowOntoGround } from '../render/mat4.js';
 import { hexRgb } from '../render/canvas2d.js';
 import { sunPosition, sunVector, dayArc, dayOfYear, sunTimes } from '../core/solar.js';
@@ -71,7 +71,7 @@ function build(view, theme) {
 
   const ink1 = rgb01(hexRgb(theme.ink1, [230, 230, 230]));
   const ink3 = rgb01(hexRgb(theme.ink3, [130, 130, 130]));
-  const gridC = ink3.map((v) => v * 0.55);
+  const gridC = towards(ink3, rgb01(hexRgb(theme.surface, [18, 18, 18])), 0.62);
   const accent = rgb01(hexRgb(theme.accent2, [235, 104, 52]));
   const groundC = rgb01(hexRgb(theme.surfaceRaised, [38, 38, 38]));
   const surfaceC = rgb01(hexRgb(theme.surface, [18, 18, 18]));
@@ -92,7 +92,7 @@ function build(view, theme) {
   for (let i = -Math.floor(GROUND / gridStep); i <= Math.floor(GROUND / gridStep); i += 1) {
     const p = i * gridStep;
     const strong = i % 5 === 0;
-    const c = strong ? ink3.map((v) => v * 0.8) : gridC;
+    const c = strong ? towards(ink3, gridC, 0.35) : gridC;
     lines.segment([p, 0.001, -GROUND], [p, 0.001, GROUND], c);
     lines.segment([-GROUND, 0.001, p], [GROUND, 0.001, p], c);
   }

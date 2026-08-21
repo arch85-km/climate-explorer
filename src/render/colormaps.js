@@ -94,15 +94,17 @@ function makeRamp(stops, opts = {}) {
   };
 }
 
-// Steps are drawn from the reference palette's ramps, chosen per surface.
+// Steps are drawn from the reference palette's ramps, chosen per surface. The
+// palest stops sit clear of the light-grey panel surface (#f6f7f8) so a low value
+// still registers instead of dissolving into the background.
 const LIGHT = {
   // diverging: cool -> neutral grey -> warm
-  temperature: makeRamp(['#0d366b', '#256abf', '#86b6ef', '#f0efec', '#f0a58a', '#d03b3b', '#7d1d1d'], { diverging: true }),
-  solar: makeRamp(['#fdf3e2', '#f8d9a8', '#f2ab5e', '#eb6834', '#b73f1c', '#6d2410']),
-  daylight: makeRamp(['#fdf8e0', '#f7e49b', '#eda100', '#c07100', '#7a4300']),
-  humidity: makeRamp(['#eefaf5', '#a9e6cf', '#4fc9a0', '#1baf7a', '#0d7050', '#08402f']),
-  wind: makeRamp(['#eef4fd', '#b7d3f6', '#5598e7', '#256abf', '#0d366b']),
-  cloud: makeRamp(['#fbfbfa', '#dcdcd8', '#b2b2ad', '#7d7d79', '#4a4a47']),
+  temperature: makeRamp(['#0d366b', '#256abf', '#86b6ef', '#e9eaea', '#f0a58a', '#d03b3b', '#7d1d1d'], { diverging: true }),
+  solar: makeRamp(['#fbe8cd', '#f6ce93', '#f2ab5e', '#eb6834', '#b73f1c', '#6d2410']),
+  daylight: makeRamp(['#f6e5a4', '#f0d574', '#eda100', '#c07100', '#7a4300']),
+  humidity: makeRamp(['#daf2e8', '#a9e6cf', '#4fc9a0', '#1baf7a', '#0d7050', '#08402f']),
+  wind: makeRamp(['#dbe8fa', '#b7d3f6', '#5598e7', '#256abf', '#0d366b']),
+  cloud: makeRamp(['#e6e7e8', '#c9cbcd', '#a2a5a9', '#75787c', '#464a4e']),
   sequential: makeRamp(['#cde2fb', '#86b6ef', '#3987e5', '#256abf', '#0d366b']),
   cyclic: makeRamp(['#2a78d6', '#1baf7a', '#eda100', '#e34948', '#a5539b', '#2a78d6'], { cyclic: true }),
 };
@@ -156,10 +158,21 @@ function makeScale(ramp, min, max, mid) {
   return (v) => Math.max(0, Math.min(1, (v - min) / (max - min)));
 }
 
-/** The natural diverging midpoint for a field, or NaN when it has none. */
-function midpointFor(field) {
+/**
+ * The diverging midpoint for a field, or NaN when it has none.
+ *
+ * Temperatures centre on the *balance point* (the degree-day base) rather than on
+ * freezing: blue then means "this hour needs heating" and red "this hour needs
+ * cooling", which is the question a building asks. Centring on 0 °C instead makes
+ * every temperate climate read as uniformly hot and wastes half the ramp.
+ *
+ * @param {object} field
+ * @param {number} [balancePoint=18] usually state.stats.degreeDayBase, so the scale
+ *   follows the control the student is already adjusting
+ */
+function midpointFor(field, balancePoint = 18) {
   if (!field) return NaN;
-  if (field.unit === '°C') return 0;
+  if (field.unit === '°C') return Number.isFinite(balancePoint) ? balancePoint : 18;
   if (field.key === 'enthalpy') return 30;
   return NaN;
 }

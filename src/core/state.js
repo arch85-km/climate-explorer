@@ -24,7 +24,7 @@ const DEFAULTS = {
   cursor: { month: 6, day: 21, hour: 12 },
 
   units: 'si',
-  theme: 'dark',
+  theme: 'light',
   presentation: false,
   compare: false,
   compareSource: 'period', // 'period' | 'file'
@@ -48,6 +48,7 @@ const DEFAULTS = {
     courtyard: false, showTrace: true, showAnalemma: true,
   },
 
+  loadingSample: false,
   playing: false,
   playSpeed: 1,
   status: null,

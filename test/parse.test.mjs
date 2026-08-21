@@ -184,3 +184,56 @@ test('wet bulb lies between dew point and dry bulb', () => {
       `hour ${i}: wet bulb ${wb} outside dew point ${dp}..dry bulb ${t}`);
   }
 });
+
+// ── the bundled London TMYx example ─────────────────────────────────────────────
+
+const LONDON_TMYX = fixture('london_stjames_tmyx.epw');
+const stJames = parseEpw(readFileSync(LONDON_TMYX, 'utf8'));
+
+test('the bundled London TMYx file parses to a full clean year', () => {
+  assert.equal(stJames.n, 8760);
+  assert.equal(stJames.nDays, 365);
+  assert.equal(stJames.isLeap, false);
+  assert.deepEqual(stJames.warnings, []);
+  assert.equal(stJames.location.city, 'London.Wea.Ctr-St.James.Park');
+  assert.equal(stJames.location.state, 'ENG');
+  assert.equal(stJames.location.country, 'GBR');
+  assert.equal(stJames.location.source, 'SRC-TMYx');
+  assert.equal(stJames.location.wmo, '037700');
+  assert.ok(Math.abs(stJames.location.latitude - 51.5049) < 1e-6);
+  assert.ok(Math.abs(stJames.location.longitude + 0.131) < 1e-6);
+  assert.equal(stJames.location.timezone, 0);
+  assert.equal(stJames.location.elevation, 5);
+});
+
+test('a quoted COMMENTS field containing commas does not break parsing', () => {
+  // This file's COMMENTS 1 is a quoted string full of commas and semicolons; the
+  // records after it must still parse, and the comment must survive intact.
+  assert.match(stJames.comments[0], /Period of Record=1973-2023/);
+  assert.match(stJames.comments[0], /Jan=1981/);
+  assert.match(stJames.comments[1], /Climate\.Onebuilding\.org/);
+  assert.equal(stJames.n, 8760, 'records after the quoted comment still parse');
+});
+
+test('London TMYx reproduces the expected temperate-maritime statistics', () => {
+  const d = buildDataset(parseEpw(readFileSync(LONDON_TMYX, 'utf8')));
+  let sum = 0;
+  let count = 0;
+  let min = Infinity;
+  let max = -Infinity;
+  for (const v of d.series.dryBulb) {
+    if (!Number.isFinite(v)) continue;
+    sum += v; count += 1;
+    if (v < min) min = v;
+    if (v > max) max = v;
+  }
+  assert.equal(count, 8760);
+  assert.ok(Math.abs(sum / count - 11.4) < 0.2, `annual mean ${sum / count}`);
+  assert.ok(min > -6 && min < 2, `annual minimum ${min}`);
+  assert.ok(max > 28 && max < 38, `annual maximum ${max}`);
+  // A maritime climate has a small annual swing compared with a continental one.
+  assert.ok(max - min < 45, 'annual range stays maritime');
+  assert.equal(d.groundTemperatures.length, 3);
+  assert.deepEqual(d.groundTemperatures.map((g) => g.depth), [0.5, 2, 4]);
+  assert.equal(d.availableKeys.length, 30);
+});

@@ -45,14 +45,14 @@ async function session(width, height, theme, label, fn) {
   await page.close();
 }
 
-// ── 1. every view at desktop size, dark theme ────────────────────────────────
-await session(1600, 1000, 'dark', 'desktop-dark', async (page, errors) => {
+// ── 1. every view at desktop size, in the default light-grey theme ───────────
+await session(1600, 1000, 'light', 'desktop-light', async (page, errors) => {
   for (const view of VIEWS) {
     const t0 = Date.now();
     await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
     await page.waitForTimeout(view === 'surface' || view === 'sundome' ? 700 : 380);
     timings.push([view, Date.now() - t0]);
-    await page.screenshot({ path: join(OUT, `desktop-dark-${view}.png`) });
+    await page.screenshot({ path: join(OUT, `desktop-light-${view}.png`) });
 
     // The canvas must actually contain something other than the background.
     const filled = await page.evaluate(() => {
@@ -76,7 +76,7 @@ await session(1600, 1000, 'dark', 'desktop-dark', async (page, errors) => {
       for (let i = 0; i < d.length; i += 4 * 997) distinct.add(`${d[i]},${d[i + 1]},${d[i + 2]}`);
       return { ok: distinct.size > 5, why: `2d distinct=${distinct.size}` };
     });
-    if (!filled.ok) problems.push(`[desktop-dark] view "${view}" rendered blank (${filled.why})`);
+    if (!filled.ok) problems.push(`[desktop-light] view "${view}" rendered blank (${filled.why})`);
   }
 
   // Tooltip on the heatmap.
@@ -86,12 +86,12 @@ await session(1600, 1000, 'dark', 'desktop-dark', async (page, errors) => {
   await page.mouse.move(box.x + box.width * 0.45, box.y + box.height * 0.5);
   await page.waitForTimeout(220);
   const tip = await page.locator('.epwviz-tooltip.is-visible').count();
-  if (!tip) problems.push('[desktop-dark] heatmap tooltip did not appear on hover');
-  else await page.screenshot({ path: join(OUT, 'desktop-dark-tooltip.png') });
+  if (!tip) problems.push('[desktop-light] heatmap tooltip did not appear on hover');
+  else await page.screenshot({ path: join(OUT, 'desktop-light-tooltip.png') });
 });
 
 // ── 2. themes ────────────────────────────────────────────────────────────────
-for (const theme of ['light', 'print']) {
+for (const theme of ['dark', 'print']) {
   await session(1600, 1000, theme, `desktop-${theme}`, async (page) => {
     for (const view of (ALL ? VIEWS : ['heatmap', 'psychrometric', 'sundome', 'massing'])) {
       await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
@@ -123,6 +123,104 @@ for (const [w, h, name] of [[390, 844, 'phone'], [834, 1112, 'tablet']]) {
   });
 }
 
+// ── 3b. the 3D views must actually respond to the mouse ──────────────────────
+//
+// This is the check whose absence let a one-line bug ship: the camera state was
+// updating on drag but no frame was ever scheduled, so all four 3D views were
+// frozen. Comparing rendered pixels before and after a gesture is the only thing
+// that would have caught it.
+await session(1600, 1000, 'light', 'orbit', async (page) => {
+  // A deterministic signature of what is actually on the 3D canvas. Element
+  // screenshots are not byte-stable in headless Chromium, so PNG comparison gives
+  // false passes; reading the preserved drawing buffer does not.
+  const signature = () => page.evaluate(() => {
+    const gl = document.querySelector('.epwviz-gl');
+    const tmp = document.createElement('canvas');
+    tmp.width = gl.width; tmp.height = gl.height;
+    tmp.getContext('2d').drawImage(gl, 0, 0);
+    const d = tmp.getContext('2d').getImageData(0, 0, tmp.width, tmp.height).data;
+    // Sample densely: a sparse stride collides on scenes that are mostly background,
+    // which reads as "nothing changed" when plenty did.
+    let h = 2166136261;
+    for (let i = 0; i < d.length; i += 4 * 5) {
+      h = Math.imul(h ^ d[i], 16777619);
+      h = Math.imul(h ^ d[i + 1], 16777619);
+      h = Math.imul(h ^ d[i + 2], 16777619);
+    }
+    return h | 0;
+  });
+
+  const gesture = async (name, view, fn) => {
+    const before = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+    const sigBefore = await signature();
+    await fn();
+    await page.waitForTimeout(420);
+    const after = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+    const sigAfter = await signature();
+    if (after.frames <= before.frames) {
+      problems.push(`[orbit] ${view}: ${name} changed the camera but drew no frame`);
+    }
+    if (sigAfter === sigBefore) {
+      problems.push(`[orbit] ${view}: ${name} left the rendered image unchanged`);
+    }
+  };
+
+  for (const view of ['sundome', 'surface', 'windrose3d', 'massing']) {
+    await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
+    await page.waitForTimeout(800);
+    const box = await page.locator('.epwviz-gl-overlay').boundingBox();
+    if (!box) { problems.push(`[orbit] ${view}: no 3D canvas`); continue; }
+    const cx = box.x + box.width / 2;
+    const cy = box.y + box.height / 2;
+
+    await gesture('drag to orbit', view, async () => {
+      await page.mouse.move(cx, cy);
+      await page.mouse.down();
+      for (let i = 1; i <= 12; i += 1) await page.mouse.move(cx + i * 14, cy - i * 3);
+      await page.mouse.up();
+    });
+
+    await gesture('wheel to zoom', view, async () => {
+      await page.mouse.move(cx, cy);
+      await page.mouse.wheel(0, -280);
+    });
+
+    await gesture('shift-drag to pan', view, async () => {
+      await page.keyboard.down('Shift');
+      await page.mouse.move(cx, cy);
+      await page.mouse.down();
+      for (let i = 1; i <= 8; i += 1) await page.mouse.move(cx - i * 11, cy + i * 5);
+      await page.mouse.up();
+      await page.keyboard.up('Shift');
+    });
+
+    await gesture('reset view', view, () => page.locator('.epwviz-nav-reset').click());
+
+    // Reset must land back on the angle the scene opened with.
+    const home = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+    await page.evaluate((v) => window.EPWVisualiser.setState({ view: 'heatmap' }), view);
+    await page.waitForTimeout(200);
+    await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
+    await page.waitForTimeout(700);
+    const fresh = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+    if (Math.abs(home.azimuth - fresh.azimuth) > 0.02 || Math.abs(home.elevation - fresh.elevation) > 0.02) {
+      problems.push(`[orbit] ${view}: reset did not return to the scene's opening camera`);
+    }
+
+    if (view === 'massing') {
+      await gesture('Plan camera preset', view,
+        () => page.locator('.epwviz-nav-btn', { hasText: 'Plan' }).click());
+      const plan = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+      if (plan.elevation < 1.2) problems.push(`[orbit] the Plan preset gave elevation ${plan.elevation}`);
+      await page.screenshot({ path: join(OUT, 'massing-plan-preset.png') });
+      await page.locator('.epwviz-nav-btn', { hasText: 'SE' }).click();
+      await page.waitForTimeout(420);
+      await page.screenshot({ path: join(OUT, 'massing-se-preset.png') });
+    }
+  }
+  await page.screenshot({ path: join(OUT, 'orbit-final.png') });
+});
+
 // ── 4. compare mode with two files ───────────────────────────────────────────
 await session(1600, 1000, 'dark', 'compare', async (page) => {
   await page.evaluate((text) => {
@@ -141,14 +239,79 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   await page.screenshot({ path: join(OUT, 'presentation-sundome.png') });
 });
 
+// ── 5b. the app opens on the bundled example with no interaction at all ──────
+{
+  const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  const t0 = Date.now();
+  await page.goto(FILE, { waitUntil: 'load' });
+  try {
+    await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
+  } catch (err) {
+    problems.push('[boot] the bundled example never loaded');
+  }
+  const boot = await page.evaluate(() => {
+    const s = window.EPWVisualiser.getState();
+    return {
+      theme: s.theme,
+      n: s.data?.n,
+      label: s.data?.displayLabel,
+      isSample: s.data?.isSample,
+      lat: s.data?.location?.latitude,
+      copyright: document.querySelector('.epwviz-copyright')?.textContent,
+      footerVisible: !!document.querySelector('.epwviz-footer')?.offsetHeight,
+      emptyHidden: getComputedStyle(document.querySelector('.epwviz-empty')).display === 'none',
+    };
+  });
+  console.log(`  boot -> London ready in ${Date.now() - t0} ms`);
+  if (boot.theme !== 'light') problems.push(`[boot] default theme is "${boot.theme}", expected light`);
+  if (boot.n !== 8760) problems.push(`[boot] expected 8760 records, got ${boot.n}`);
+  if (!boot.isSample) problems.push('[boot] the loaded dataset is not flagged as the bundled sample');
+  if (!/London/.test(boot.label || '')) problems.push(`[boot] unexpected label "${boot.label}"`);
+  if (Math.abs((boot.lat ?? 0) - 51.5049) > 0.001) problems.push(`[boot] wrong latitude ${boot.lat}`);
+  if (boot.copyright !== '\u00a9 Karam Al-Obaidi') problems.push(`[boot] copyright reads "${boot.copyright}"`);
+  if (!boot.footerVisible) problems.push('[boot] the footer is not visible');
+  if (!boot.emptyHidden) problems.push('[boot] the empty state is still showing after the sample loaded');
+  await page.waitForTimeout(400);
+  await page.screenshot({ path: join(OUT, 'boot-default.png') });
+  if (errors.length) problems.push(`[boot] console errors:\n   ${errors.join('\n   ')}`);
+  await page.close();
+}
+
+// ── 5c. a browser without DecompressionStream falls back, it does not break ──
+{
+  const page = await browser.newPage({ viewport: { width: 1280, height: 820 } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  await page.addInitScript(() => { delete window.DecompressionStream; });
+  await page.goto(FILE, { waitUntil: 'load' });
+  await page.waitForTimeout(900);
+  const state = await page.evaluate(() => ({
+    hasData: !!window.EPWVisualiser.getState().data,
+    emptyShown: getComputedStyle(document.querySelector('.epwviz-empty')).display !== 'none',
+    loadingHidden: getComputedStyle(document.querySelector('.epwviz-loading')).display === 'none',
+  }));
+  if (state.hasData) problems.push('[fallback] data loaded despite DecompressionStream being absent');
+  if (!state.emptyShown) problems.push('[fallback] the empty state did not appear');
+  if (!state.loadingHidden) problems.push('[fallback] the app is stuck on the loading state');
+  if (errors.length) problems.push(`[fallback] console errors:\n   ${errors.join('\n   ')}`);
+  await page.screenshot({ path: join(OUT, 'fallback-no-decompression.png') });
+  await page.close();
+}
+
 // ── 6. the empty state ───────────────────────────────────────────────────────
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 820 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  // Suppress the bundled sample so the empty state is what renders.
+  await page.addInitScript(() => { delete window.DecompressionStream; });
   await page.goto(FILE, { waitUntil: 'load' });
-  await page.waitForTimeout(350);
+  await page.waitForTimeout(500);
   await page.screenshot({ path: join(OUT, 'empty-state.png') });
   if (errors.length) problems.push(`[empty] console errors:\n   ${errors.join('\n   ')}`);
   // A malformed file must produce a message, not a crash.

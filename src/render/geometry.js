@@ -212,6 +212,21 @@ class PointBuilder {
   }
 }
 
+/**
+ * Blend a colour towards another by `t`.
+ *
+ * Used to dim guide lines towards the *surface* colour rather than towards black.
+ * Multiplying a colour by 0.7 recedes on a dark ground but advances on a light one,
+ * which turned the sky dome's wireframe into a heavy cage in the light theme.
+ */
+function towards(colour, target, t) {
+  return [
+    colour[0] + (target[0] - colour[0]) * t,
+    colour[1] + (target[1] - colour[1]) * t,
+    colour[2] + (target[2] - colour[2]) * t,
+  ];
+}
+
 function faceNormal(p0, p1, p2) {
   const ux = p1[0] - p0[0];
   const uy = p1[1] - p0[1];
@@ -245,4 +260,4 @@ function rgb01(colour) {
   ];
 }
 
-export { MeshBuilder, LineBuilder, PointBuilder, faceNormal, skyPoint, rgb01 };
+export { MeshBuilder, LineBuilder, PointBuilder, faceNormal, skyPoint, rgb01, towards };

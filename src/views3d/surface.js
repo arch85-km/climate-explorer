@@ -6,7 +6,7 @@
  * and the seasonal swell obvious, which is exactly the intuition the flat view
  * asks students to infer.
  */
-import { MeshBuilder, LineBuilder, rgb01 } from '../render/geometry.js';
+import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { hexRgb } from '../render/canvas2d.js';
 import { MONTH_ABBR } from '../epw/parse.js';
 import { dayOfYear } from '../core/solar.js';
@@ -20,7 +20,8 @@ const H = 0.85;  // maximum height
 function build(view, theme) {
   const { data, values, mask, field, state, ramp, scale, min, max } = view;
   const ink3 = rgb01(hexRgb(theme.ink3, [130, 130, 130]));
-  const gridC = ink3.map((v) => v * 0.75);
+  const surfaceC = rgb01(hexRgb(theme.surface, [18, 18, 18]));
+  const gridC = towards(ink3, surfaceC, 0.45);
   const accent = rgb01(hexRgb(theme.accent2, [235, 104, 52]));
 
   const mesh = new MeshBuilder();

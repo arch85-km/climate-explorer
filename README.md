@@ -4,15 +4,21 @@ A single-file, responsive web app for exploring **EnergyPlus Weather (`.epw`)**
 data in 2D and 3D, built for teaching climate-responsive design to architecture
 students.
 
-Drop an `.epw` file onto the page and it opens into an instrument: an annual
-heatmap, a psychrometric chart with passive-strategy polygons, wind roses, sun
-path diagrams, and a massing block casting the real sun shadow for any date and
-time.
+It opens already showing a climate — London (St James's Park, TMYx) is bundled —
+and becomes an instrument: an annual heatmap, a psychrometric chart with
+passive-strategy polygons, wind roses, sun path diagrams, and a massing block
+casting the real sun shadow for any date and time. Drop your own `.epw` on it to
+replace the example.
 
-- **One file, no dependencies.** `dist/epw-visualiser.html` is ~290 KB of
-  self-contained HTML. No CDN, no build step at the point of use, no server.
+- **One file, no dependencies.** `dist/epw-visualiser.html` is ~650 KB of
+  self-contained HTML, of which ~350 KB is the bundled example climate. No CDN, no
+  build step at the point of use, no server.
 - **Nothing is uploaded.** Weather files are read in the browser with the File API.
 - **Works offline**, straight from `file://`, and inside a WordPress page.
+
+The bundled example is stored gzipped and inflated at startup with the browser's
+own `DecompressionStream`. On a browser without it (pre-2023 Firefox, pre-16.4
+Safari) the app falls back to its empty state and still works by import.
 
 ## Views
 
@@ -27,10 +33,14 @@ Five **analysis modes** — Thermal, Solar, Wind, Daylight, Comfort — reconfig
 view shelf and preselect variables as a set, so a tutor can walk a class through a
 structured climate study in one click per step.
 
-Three **themes** — dark for projection, light for screens, high-contrast white for
-print — plus a **presentation mode** (fullscreen, larger type, collapsed toolbar)
-and a **compare mode** that puts two periods, or two climates, side by side on
-locked identical scales.
+Three **themes** — light grey (the default), dark for projection, and high-contrast
+white for print — plus a **presentation mode** (fullscreen, larger type, collapsed
+toolbar) and a **compare mode** that puts two periods, or two climates, side by side
+on locked identical scales.
+
+Every 3D view **orbits**: drag to rotate, scroll to zoom, shift-drag to pan, with
+Plan / South / SE / Perspective preset angles and a reset — the angles a shadow
+study gets checked from.
 
 ## Quick start
 
@@ -59,6 +69,8 @@ concatenates them into the single output file. The zero-dependency constraint
 applies to the *deliverable*, not to authoring.
 
 ```
+assets/           the bundled example EPW, committed unmodified
+src/data/         sample.js — the example's base64 is injected here at build time
 src/epw/          parse.js (8 header lines + hourly records), fields.js (field registry)
 src/core/         solar.js (NOAA position), psychro.js (ASHRAE), stats.js,
                   filter.js (analysis period), dataset.js, state.js
@@ -88,12 +100,16 @@ references rather than eyeballed:
   within 0.05% of Table 1, and 25 °C/50% RH reproduces the published wet bulb
   (17.87 °C) and dew point (13.85 °C).
 - **Parsing** — verified against real files. Chicago O'Hare TMY3 gives an annual
-  mean dry bulb of 9.99 °C, 1407 kWh/m² global horizontal, and HDD18 of 3524.
+  mean dry bulb of 9.99 °C, 1407 kWh/m² global horizontal, and HDD18 of 3524;
+  the bundled London TMYx gives 11.4 °C, 1073 kWh/m² and HDD18 of 2573.
 
 ### Colour
 
 Ramps are interpolated in OKLab so equal data steps read as equal colour steps.
-Temperature uses a diverging blue↔red pair about 0 °C with a neutral grey centre;
+Temperature uses a diverging blue↔red pair centred on the **balance point** (the
+degree-day base, which the toolbar controls) with a neutral grey midpoint — so blue
+means "this hour needs heating" and red "this hour needs cooling". Centring on
+freezing instead makes every temperate climate read as uniformly hot;
 magnitudes use single-hue sequential ramps; wind direction and solar azimuth use a
 constant-lightness cyclic ramp, because those quantities genuinely wrap at 360°.
 Sequential ramps are monotonic in lightness in every theme, and each theme has its
@@ -108,6 +124,8 @@ own steps chosen against its own surface rather than being flipped automatically
 | `←` `→` | Step the selected hour |
 | `Esc` | Leave presentation mode |
 
+In any 3D view: drag to orbit, scroll to zoom, shift-drag to pan.
+
 ## Host API
 
 The page exposes a small API so a host page or a test harness can drive it:
@@ -118,5 +136,12 @@ EPWVisualiser.setState({ view: 'sundome', theme: 'light', variable: 'directNorma
 EPWVisualiser.getState();
 ```
 
+`EPWVisualiser.sceneInfo()` returns the active 3D scene's frame count and camera,
+which the test suite uses to assert that input actually causes a redraw.
+
 When embedded in an iframe it posts `{ type: 'epwviz:height', height }` to the
 parent on every layout change, so the embed can size itself.
+
+---
+
+© Karam Al-Obaidi

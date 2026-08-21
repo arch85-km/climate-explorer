@@ -5,20 +5,22 @@
    ========================================================================== */
 
 .epwviz-root {
-  /* ---- light theme (default) ------------------------------------------- */
-  --surface-0: #f2f2ef;
-  --surface-1: #fcfcfb;
-  --surface-2: #f0efec;
-  --surface-3: #e6e5e1;
-  --ink-1: #14140f;
-  --ink-2: #52514e;
-  --ink-3: #82817c;
-  --line: #dedcd6;
-  --line-strong: #c6c4bd;
-  --grid: rgba(20, 20, 15, 0.09);
-  --grid-strong: rgba(20, 20, 15, 0.2);
-  --axis: rgba(20, 20, 15, 0.38);
-  --night: rgba(20, 20, 15, 0.055);
+  /* ---- light grey theme (default) --------------------------------------- */
+  /* Neutral grey rather than warm off-white: the register the desktop analysis
+     tools use, and it keeps chart surfaces distinct from the app ground. */
+  --surface-0: #e7e9ec;
+  --surface-1: #f6f7f8;
+  --surface-2: #eceef0;
+  --surface-3: #dfe2e6;
+  --ink-1: #1c1f23;
+  --ink-2: #4d545c;
+  --ink-3: #767e88;
+  --line: #d5d9de;
+  --line-strong: #bcc2c9;
+  --grid: rgba(28, 31, 35, 0.1);
+  --grid-strong: rgba(28, 31, 35, 0.22);
+  --axis: rgba(28, 31, 35, 0.4);
+  --night: rgba(28, 31, 35, 0.06);
   --accent: #2a78d6;
   --accent-2: #eb6834;
   --accent-ink: #ffffff;
@@ -461,13 +463,20 @@
   container-type: inline-size;
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(134px, 1fr));
-  gap: 1px;
-  background: var(--line);
+  /* Separators are borders on the tiles rather than a gap showing the container
+     through, so a part-filled last row reads as blank panel, not as a grey void. */
+  background: var(--surface-1);
   border: 1px solid var(--line);
   border-radius: var(--radius);
   overflow: hidden;
 }
-.epwviz-tile { background: var(--surface-1); padding: 8px 11px; min-width: 0; container-type: inline-size; }
+.epwviz-tile {
+  padding: 8px 11px;
+  min-width: 0;
+  container-type: inline-size;
+  border-right: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
 .epwviz-tile-label {
   font-size: var(--fs-label); color: var(--ink-3);
   text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
@@ -542,6 +551,101 @@
 
 .epwviz-scrim { display: none; }
 
+/* ---- footer ------------------------------------------------------------ */
+.epwviz-footer {
+  flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 6px 14px;
+  background: var(--surface-1);
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-label);
+  color: var(--ink-3);
+}
+.epwviz-copyright { font-weight: 550; letter-spacing: 0.01em; white-space: nowrap; }
+.epwviz-footer-file {
+  margin-left: auto;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ---- loading state ----------------------------------------------------- */
+.epwviz-loading {
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--surface-0) 92%, transparent);
+}
+.epwviz-loading-card {
+  display: flex; align-items: center; gap: 11px;
+  padding: 14px 20px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  box-shadow: var(--shadow);
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+}
+.epwviz-spinner {
+  width: 16px; height: 16px; flex: 0 0 auto;
+  border: 2px solid var(--line-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: epwviz-spin 0.7s linear infinite;
+}
+@keyframes epwviz-spin { to { transform: rotate(360deg); } }
+
+.epwviz-badge {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 4px;
+  background: var(--surface-3);
+  color: var(--ink-2);
+  font-size: var(--fs-label);
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* ---- 3D navigation ----------------------------------------------------- */
+.epwviz-stage-nav {
+  position: absolute; top: 8px; right: 8px; z-index: 4;
+  display: none;
+  gap: 2px;
+  padding: 3px;
+  background: color-mix(in srgb, var(--surface-1) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  backdrop-filter: blur(6px);
+}
+.epwviz-nav-btn {
+  display: grid; place-items: center;
+  min-width: 26px; height: 22px;
+  padding: 0 7px;
+  border-radius: 4px;
+  font-size: var(--fs-label);
+  font-weight: 550;
+  color: var(--ink-2);
+  white-space: nowrap;
+}
+.epwviz-nav-btn:hover { background: var(--surface-3); color: var(--ink-1); }
+.epwviz-nav-reset { padding: 0 5px; }
+
+.epwviz-nav-hint {
+  position: absolute; left: 50%; top: 10px; z-index: 4;
+  transform: translateX(-50%);
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: color-mix(in srgb, var(--surface-3) 90%, transparent);
+  border: 1px solid var(--line);
+  color: var(--ink-2);
+  font-size: var(--fs-label);
+  pointer-events: none;
+  opacity: 1;
+  transition: opacity 0.4s ease;
+}
+.epwviz-nav-hint.is-gone { opacity: 0; }
+
 /* ---- presentation mode ------------------------------------------------- */
 .epwviz-root[data-presentation="on"] {
   --fs-base: 15px;
@@ -614,7 +718,8 @@
 }
 
 @media print {
-  .epwviz-rail, .epwviz-header-actions, .epwviz-drop-hint { display: none !important; }
+  .epwviz-rail, .epwviz-header-actions, .epwviz-drop-hint,
+  .epwviz-stage-nav, .epwviz-nav-hint { display: none !important; }
   .epwviz-app { height: auto; }
   .epwviz-stage-panel { min-height: 440px; break-inside: avoid; }
 }

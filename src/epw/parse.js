@@ -233,6 +233,15 @@ function locationLabel(location) {
   return [location.city, location.state, location.country].filter(Boolean).join(', ');
 }
 
+/**
+ * The name to show for a dataset: a curated label when one was supplied (only the
+ * bundled sample has one), otherwise whatever the file's LOCATION header says.
+ */
+function datasetLabel(data) {
+  if (!data) return '';
+  return data.displayLabel || locationLabel(data.location);
+}
+
 /** "41.98°N, 87.92°W" */
 function coordLabel(location) {
   const lat = `${Math.abs(location.latitude).toFixed(2)}°${location.latitude >= 0 ? 'N' : 'S'}`;
@@ -248,5 +257,5 @@ function dayIndexFor(data, month, day) {
   return -1;
 }
 
-export { parseEpw, EpwParseError, locationLabel, coordLabel, dayIndexFor };
+export { parseEpw, EpwParseError, locationLabel, datasetLabel, coordLabel, dayIndexFor };
 export { MONTH_NAMES, MONTH_ABBR };

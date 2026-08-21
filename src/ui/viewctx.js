@@ -9,7 +9,7 @@ import { ALL_BY_KEY } from '../epw/fields.js';
 import { buildMask, describePeriod, normalisePeriod } from '../core/filter.js';
 import { rampFor, makeScale, midpointFor } from '../render/colormaps.js';
 import { summarise } from '../core/stats.js';
-import { locationLabel } from '../epw/parse.js';
+import { datasetLabel } from '../epw/parse.js';
 
 /**
  * @param {object} state app state
@@ -39,7 +39,7 @@ function buildViewContext(state, opts = {}) {
   const full = summarise(values, null);
   const min = Number.isFinite(field.min) && field.min > full.min ? field.min : full.min;
   const max = Number.isFinite(field.max) && field.max < full.max ? field.max : full.max;
-  const mid = midpointFor(field);
+  const mid = midpointFor(field, state.stats.degreeDayBase);
   const scale = makeScale(ramp, min, max, mid);
 
   return {
@@ -62,7 +62,7 @@ function buildViewContext(state, opts = {}) {
     theme: state.theme,
     root: opts.root,
     uint32: opts.uint32 !== false,
-    subtitle: `${locationLabel(data.location)} · ${describePeriod(period, data.isLeap)}`,
+    subtitle: `${datasetLabel(data)} · ${describePeriod(period, data.isLeap)}`,
     period,
   };
 }

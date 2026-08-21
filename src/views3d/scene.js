@@ -41,8 +41,14 @@ function createScene(container, root) {
   let size = { width: 1, height: 1, dpr: 1 };
   let raf = 0;
   let disposed = false;
+  // Counts frames actually drawn. Cheap, and it is the only honest way to assert
+  // "the scene redrew in response to input" — comparing screenshots cannot, because
+  // element captures are not byte-stable.
+  let frames = 0;
 
-  camera.onChange(() => { dirty = true; });
+  // Must schedule a frame, not merely flag one: nothing else drives the loop while
+  // the pointer is down, so setting `dirty` alone left orbit, zoom and pan dead.
+  camera.onChange(() => requestRender());
 
   function disposeObjects() {
     for (const o of objects) o.mesh.dispose();
@@ -155,6 +161,7 @@ function createScene(container, root) {
 
     drawLabels(theme);
     dirty = false;
+    frames += 1;
   }
 
   function requestRender() {
@@ -162,11 +169,18 @@ function createScene(container, root) {
     if (!raf && !disposed) raf = requestAnimationFrame(frame);
   }
 
+  /** The camera preset a scene opened with, for "reset view". */
+  function homeCamera() {
+    return description && description.camera ? description.camera : null;
+  }
+
   return {
     canvas,
     overlay,
     camera,
     renderer,
+    homeCamera,
+    get frames() { return frames; },
     setScene,
     resize() { resize(); requestRender(); },
     render: requestRender,

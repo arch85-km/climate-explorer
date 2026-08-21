@@ -12,8 +12,9 @@ import { createStage } from './ui/stage.js';
 import { buildViewContext } from './ui/viewctx.js';
 import { render as renderSummary } from './ui/summary.js';
 import { exportPng, exportCsv } from './ui/export.js';
-import { parseEpw, EpwParseError, locationLabel } from './epw/parse.js';
+import { parseEpw, EpwParseError, datasetLabel } from './epw/parse.js';
 import { buildDataset } from './core/dataset.js';
+import { loadSample, sampleAvailable, SAMPLE_LABEL } from './core/sample.js';
 import { presetPeriods, FULL_YEAR } from './core/filter.js';
 import { VIEW_BY_ID, MODE_BY_ID, viewsForMode } from './ui/modes.js';
 import { invalidate as invalidateHeatmap } from './views2d/heatmap.js';
@@ -85,11 +86,22 @@ function boot() {
       }, icon(ICONS.upload, 16), el('span', { text: 'Choose an EPW file' })),
       el('p.empty-note', { text: 'The file is read in your browser. Nothing is uploaded anywhere.' })));
 
+  // Shown while the bundled example inflates, so the empty card does not flash up
+  // for a few hundred milliseconds before being replaced.
+  const loading = el('div.loading', { role: 'status' },
+    el('div.loading-card', {},
+      el('div.spinner'),
+      el('span', { text: `Loading ${SAMPLE_LABEL}…` })));
+
   const dropHint = el('div.drop-hint', {}, el('div', { text: 'Release to load this EPW file' }));
   const errorBar = el('div.error-bar', { role: 'alert' });
+  const footer = el('footer.footer', {},
+    el('span.copyright', { text: '© Karam Al-Obaidi' }),
+    el('span.footer-file'));
 
   body.appendChild(empty);
-  root.append(el('div.app', {}, header, errorBar, body, dropHint, scrim));
+  body.appendChild(loading);
+  root.append(el('div.app', {}, header, errorBar, body, footer, dropHint, scrim));
 
   // ── stages ────────────────────────────────────────────────────────────────
   function rebuildStages() {
@@ -110,6 +122,8 @@ function boot() {
     }
   }
 
+  const footerFile = footer.querySelector('.epwviz-footer-file');
+
   // ── rendering ─────────────────────────────────────────────────────────────
   let renderQueued = false;
   function render() {
@@ -122,8 +136,12 @@ function boot() {
       root.dataset.presentation = s.presentation ? 'on' : 'off';
       root.dataset.hasData = s.data ? 'yes' : 'no';
 
-      empty.style.display = s.data ? 'none' : 'flex';
-      headerLocation.textContent = s.data ? locationLabel(s.data.location) : '';
+      loading.style.display = s.loadingSample ? 'flex' : 'none';
+      empty.style.display = (s.data || s.loadingSample) ? 'none' : 'flex';
+      footerFile.textContent = s.data
+        ? (s.data.isSample ? 'Example climate — import an EPW file to replace it' : s.fileName)
+        : '';
+      headerLocation.textContent = s.data ? datasetLabel(s.data) : '';
 
       toolbar.update();
 
@@ -168,6 +186,7 @@ function boot() {
           period: { ...FULL_YEAR },
           presetKey: 'year',
           cursor: { month: 6, day: 21, hour: 12 },
+          loadingSample: false,
         }, { immediate: true });
       }
       showError('');
@@ -236,6 +255,8 @@ function boot() {
     loadFile,
     togglePlay,
     setPresentation,
+    openSample: () => openSample(),
+    sampleAvailable,
     setMode(id) {
       const mode = MODE_BY_ID[id];
       const s = store.state;
@@ -296,7 +317,7 @@ function boot() {
     // A stage that keeps roughly 16:10 proportions, bounded so a wide embed does
     // not become absurdly tall and a narrow one stays usable.
     const stage = Math.round(Math.max(320, Math.min(720, width * 0.56)));
-    const chrome = header.offsetHeight + tiles.offsetHeight
+    const chrome = header.offsetHeight + tiles.offsetHeight + footer.offsetHeight
       + (errorBar.classList.contains('is-visible') ? errorBar.offsetHeight : 0);
     return Math.max(600, chrome + stage + 34);
   }
@@ -364,7 +385,34 @@ function boot() {
 
   lastCompare = store.state.compare;
   rebuildStages();
+
+  /**
+   * Open on the bundled example so a class sees a climate immediately. If no sample
+   * is embedded, or the browser cannot inflate it, this quietly leaves the empty
+   * state in place — the app is still fully usable by importing a file.
+   */
+  async function openSample() {
+    if (!sampleAvailable()) { render(); return; }
+    store.set({ loadingSample: true }, { immediate: true });
+    try {
+      const sample = await loadSample();
+      if (!sample) { store.set({ loadingSample: false }, { immediate: true }); return; }
+      const preferred = sample.data.availableKeys.includes('dryBulb')
+        ? 'dryBulb' : sample.data.availableKeys[0];
+      store.set({
+        data: sample.data,
+        fileName: sample.name,
+        variable: preferred,
+        loadingSample: false,
+      }, { immediate: true });
+    } catch (err) {
+      store.set({ loadingSample: false }, { immediate: true });
+      showError(`The bundled example climate could not be read: ${err.message}`);
+    }
+  }
+
   render();
+  openSample();
 
   // Exposed so a host page (or a test harness) can feed a file in directly.
   window.EPWVisualiser = {
@@ -375,6 +423,13 @@ function boot() {
     },
     setState: (patch) => store.set(patch, { immediate: true }),
     getState: () => store.state,
+    /** Frames drawn by the active 3D scene, and the current camera. */
+    sceneInfo: () => {
+      const scene = stages[0]?.scene;
+      if (!scene) return null;
+      const { azimuth, elevation, distance, target } = scene.camera.state;
+      return { frames: scene.frames, azimuth, elevation, distance, target: target.slice() };
+    },
   };
 }
 

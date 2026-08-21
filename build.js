@@ -9,9 +9,10 @@
  *   - exports must be `export function|const|let|class Name ...` or
  *     `export { a, b };`  — no default exports.
  */
-import { readFileSync, writeFileSync, readdirSync, mkdirSync, statSync } from 'node:fs';
+import { readFileSync, writeFileSync, readdirSync, mkdirSync, statSync, existsSync } from 'node:fs';
 import { join, dirname, relative, posix } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { gzipSync } from 'node:zlib';
 
 const ROOT = dirname(fileURLToPath(import.meta.url));
 const SRC = join(ROOT, 'src');
@@ -85,12 +86,42 @@ function transform(id, source) {
   return lines.join('\n');
 }
 
+/**
+ * Embed the bundled example EPW into src/data/sample.js.
+ *
+ * The file is gzipped and base64-encoded here rather than committed pre-encoded, so
+ * the repository holds the readable .epw and version control never carries the blob.
+ */
+function embedSample(code) {
+  const match = code.match(/const SAMPLE_SOURCE = '([^']+)'/);
+  if (!match) throw new Error('src/data/sample.js: SAMPLE_SOURCE not found');
+  const epwPath = join(ROOT, 'assets', match[1]);
+  if (!existsSync(epwPath)) {
+    console.warn(`  ! ${match[1]} not found in assets/ — building without a bundled sample`);
+    return { code, bytes: 0 };
+  }
+  const gz = gzipSync(readFileSync(epwPath), { level: 9 });
+  const b64 = gz.toString('base64');
+  const out = code.replace(
+    /const SAMPLE_GZIP_B64 = '';/,
+    `const SAMPLE_GZIP_B64 = '${b64}';`,
+  );
+  if (out === code) throw new Error('src/data/sample.js: SAMPLE_GZIP_B64 placeholder not found');
+  return { code: out, bytes: gz.length, raw: readFileSync(epwPath).length };
+}
+
 const files = walk(SRC);
 if (!files.length) throw new Error('no source modules found');
 
+let sampleInfo = { bytes: 0 };
 const modules = files.map((file) => {
   const id = relative(SRC, file).split(/[\\/]/).join('/').replace(/\.js$/, '');
-  return { id, code: transform(id, readFileSync(file, 'utf8')) };
+  let source = readFileSync(file, 'utf8');
+  if (id === 'data/sample') {
+    sampleInfo = embedSample(source);
+    source = sampleInfo.code;
+  }
+  return { id, code: transform(id, source) };
 });
 if (!modules.some((m) => m.id === 'main')) throw new Error('src/main.js is required');
 
@@ -129,4 +160,7 @@ const outPath = join(ROOT, 'dist', 'epw-visualiser.html');
 writeFileSync(outPath, html);
 
 const kb = (Buffer.byteLength(html) / 1024).toFixed(1);
-console.log(`built ${relative(ROOT, outPath)}  (${modules.length} modules, ${kb} KB)`);
+const sample = sampleInfo.bytes
+  ? `, sample ${(sampleInfo.raw / 1024).toFixed(0)} KB -> ${(sampleInfo.bytes * 4 / 3 / 1024).toFixed(0)} KB embedded`
+  : ', no sample embedded';
+console.log(`built ${relative(ROOT, outPath)}  (${modules.length} modules, ${kb} KB${sample})`);

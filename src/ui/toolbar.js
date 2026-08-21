@@ -11,7 +11,7 @@ import { MODES, viewsForMode, controlInMode, VIEW_BY_ID } from './modes.js';
 import { ALL_BY_KEY, ALL_FIELDS, FIELD_BY_KEY, convert, unitFor } from '../epw/fields.js';
 import { presetPeriods, describePeriod, FULL_YEAR } from '../core/filter.js';
 import { daysInMonth, dayOfYear, sunTimes } from '../core/solar.js';
-import { locationLabel, coordLabel, MONTH_ABBR } from '../epw/parse.js';
+import { locationLabel, datasetLabel, coordLabel, MONTH_ABBR } from '../epw/parse.js';
 
 const HOUR_FMT = (h) => `${String(Math.round(h)).padStart(2, '0')}:00`;
 
@@ -41,8 +41,12 @@ function createToolbar(store, actions) {
     compareInput.value = '';
   });
 
+  // A way back to the bundled example after a student has loaded their own file.
+  const sampleBtn = button('Load London example', () => actions.openSample(),
+    { icon: ICONS.reset, title: 'Return to the bundled example climate' });
+
   const locationBox = el('div.location');
-  sections.file = group('Weather file', importBtn.node, fileInput, compareInput, locationBox);
+  sections.file = group('Weather file', importBtn.node, sampleBtn.node, fileInput, compareInput, locationBox);
 
   // ── analysis mode ─────────────────────────────────────────────────────────
   controls.mode = segmented(
@@ -240,7 +244,10 @@ function createToolbar(store, actions) {
     const data = s.data;
     const mode = MODES.find((m) => m.id === s.mode) || MODES[0];
 
-    importBtn.setLabel(data ? 'Replace EPW' : 'Import EPW');
+    importBtn.setLabel(data ? 'Import a different EPW' : 'Import EPW');
+    // Offer the example only when it exists and is not already what is loaded.
+    sampleBtn.node.style.display = (actions.sampleAvailable && actions.sampleAvailable() && !data?.isSample)
+      ? '' : 'none';
     modeBlurb.textContent = mode.blurb;
     controls.mode.set(s.mode);
 
@@ -252,7 +259,7 @@ function createToolbar(store, actions) {
       if (data) {
         const l = data.location;
         locationBox.append(
-          el('div.location-name', { text: locationLabel(l) }),
+          el('div.location-name', { text: datasetLabel(data) }),
           el('dl.meta', {},
             el('dt', { text: 'Coordinates' }), el('dd', { text: coordLabel(l) }),
             el('dt', { text: 'Elevation' }), el('dd', { text: `${Math.round(l.elevation)} m` }),
@@ -260,7 +267,9 @@ function createToolbar(store, actions) {
             ...(l.wmo ? [el('dt', { text: 'WMO' }), el('dd', { text: l.wmo })] : []),
             ...(l.source ? [el('dt', { text: 'Source' }), el('dd', { text: l.source })] : []),
             el('dt', { text: 'Records' }), el('dd', { text: `${data.n.toLocaleString()} h` })),
-          el('div.filename', { text: s.fileName || '' }),
+          data.isSample
+            ? el('div.badge', { text: 'Bundled example' })
+            : el('div.filename', { text: s.fileName || '' }),
           ...(data.warnings.length
             ? [el('details.warnings', {}, el('summary', { text: `${data.warnings.length} note(s) about this file` }),
               el('ul', {}, ...data.warnings.map((w) => el('li', { text: w }))))]

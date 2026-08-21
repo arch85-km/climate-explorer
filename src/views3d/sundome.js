@@ -6,7 +6,7 @@
  * the diagram that connects a number in a weather file to where the sun actually
  * is over a site, so it is worth being generous with it.
  */
-import { MeshBuilder, LineBuilder, PointBuilder, skyPoint, rgb01 } from '../render/geometry.js';
+import { MeshBuilder, LineBuilder, PointBuilder, skyPoint, rgb01, towards } from '../render/geometry.js';
 import { dayArc, analemma, sunPosition, dayOfYear, sunTimes } from '../core/solar.js';
 import { MONTH_ABBR } from '../epw/parse.js';
 import { RAMPS } from '../render/colormaps.js';
@@ -20,7 +20,9 @@ function build(view, theme) {
   const loc = data.location;
   const ink1 = rgb01(hexRgb(theme.ink1, [230, 230, 230]));
   const ink3 = rgb01(hexRgb(theme.ink3, [130, 130, 130]));
-  const gridC = rgb01(hexRgb(theme.ink3, [110, 110, 110])).map((v) => v * 0.7);
+  const surfaceC = rgb01(hexRgb(theme.surface, [18, 18, 18]));
+  // Recede towards the surface, so guide lines stay quiet in every theme.
+  const gridC = towards(ink3, surfaceC, 0.55);
   const accent = rgb01(hexRgb(theme.accent2, [235, 104, 52]));
   const groundC = rgb01(hexRgb(theme.surfaceRaised, [40, 40, 40]));
 

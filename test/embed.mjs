@@ -70,6 +70,8 @@ const probe = await page.frames()[1].evaluate(() => {
   const canvas = document.querySelector('.epwviz-canvas2d');
   return {
     btnFont: cs.fontSize, btnBorder: cs.borderTopColor, btnBg: cs.backgroundColor,
+    accent: getComputedStyle(document.getElementById('epwviz')).getPropertyValue('--accent').trim(),
+    theme: document.getElementById('epwviz').dataset.theme,
     selBg: cs2.backgroundColor, boxSizing: cs.boxSizing,
     canvasCssWidth: getComputedStyle(canvas).width,
     canvasBackingWidth: canvas.width,
@@ -78,7 +80,7 @@ const probe = await page.frames()[1].evaluate(() => {
 });
 console.log('inside the iframe, with a hostile host theme applied:');
 console.log('  primary button font-size :', probe.btnFont, '(host forces 22px)');
-console.log('  primary button background:', probe.btnBg, '(host forces yellow)');
+console.log('  primary button background:', probe.btnBg, `(theme "${probe.theme}" accent ${probe.accent}; host forces yellow)`);
 console.log('  select background        :', probe.selBg);
 console.log('  border colour            :', probe.btnBorder, '(host forces hotpink)');
 console.log('  box-sizing               :', probe.boxSizing, '(host forces content-box)');
@@ -106,7 +108,15 @@ console.log('\nconsole errors:', errors.length ? errors : 'none');
 const failures = [];
 if (probe.btnFont !== '11.5px') failures.push(`host font-size leaked into buttons: ${probe.btnFont}`);
 if (probe.boxSizing !== 'border-box') failures.push(`host box-sizing leaked: ${probe.boxSizing}`);
-if (!/^rgb\(57, 135, 229\)/.test(probe.btnBg)) failures.push(`primary button lost its background: ${probe.btnBg}`);
+// Compare against the theme's own accent token rather than a hardcoded hex, so the
+// check survives a change of default theme.
+const hexToRgb = (h) => {
+  const m = h.replace('#', '');
+  return `rgb(${parseInt(m.slice(0, 2), 16)}, ${parseInt(m.slice(2, 4), 16)}, ${parseInt(m.slice(4, 6), 16)})`;
+};
+if (probe.btnBg !== hexToRgb(probe.accent)) {
+  failures.push(`primary button background is ${probe.btnBg}, expected the accent ${probe.accent} (${hexToRgb(probe.accent)})`);
+}
 if (probe.canvasBackingWidth < 400) failures.push(`host canvas width leaked: ${probe.canvasCssWidth}`);
 if (probe.tiles < 6) failures.push(`readout tiles did not render: ${probe.tiles}`);
 if (!heights.length) failures.push('no height message was posted to the parent');

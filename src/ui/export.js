@@ -2,7 +2,7 @@
  * Export: a PNG of whatever is on screen, and a CSV of the aggregated data
  * behind it. Students need both — one for the crit wall, one for a spreadsheet.
  */
-import { MONTH_ABBR, locationLabel } from '../epw/parse.js';
+import { MONTH_ABBR, locationLabel, datasetLabel } from '../epw/parse.js';
 import { monthlyStats, diurnalByMonth, dailyAggregate, windRose } from '../core/stats.js';
 import { unitFor, convert } from '../epw/fields.js';
 import { describePeriod } from '../core/filter.js';
@@ -56,7 +56,7 @@ function exportPng(stage, context, state) {
   ctx.textAlign = 'left';
   ctx.fillStyle = ink1;
   ctx.font = `600 ${base}px ${font}`;
-  const title = context ? `${context.field.label} — ${locationLabel(context.data.location)}` : 'EPW climate data';
+  const title = context ? `${context.field.label} — ${datasetLabel(context.data)}` : 'EPW climate data';
   ctx.fillText(title, 24, h + base + 14);
   ctx.fillStyle = ink3;
   ctx.font = `400 ${Math.round(base * 0.82)}px ${font}`;
@@ -66,7 +66,7 @@ function exportPng(stage, context, state) {
   ctx.fillText(sub, 24, h + base * 2 + 16);
 
   out.toBlob((blob) => {
-    if (blob) download(blob, `${safeName(context ? locationLabel(context.data.location) : 'climate')}-${stage.activeId}.png`);
+    if (blob) download(blob, `${safeName(context ? datasetLabel(context.data) : 'climate')}-${stage.activeId}.png`);
   }, 'image/png');
 }
 
@@ -85,7 +85,7 @@ function exportCsv(viewId, context, state) {
   const unit = unitFor(field, u);
   const conv = (v) => (Number.isFinite(v) ? +convert(field, v, u).toFixed(4) : '');
   const header = [
-    `# EPW climate data export — ${locationLabel(data.location)}`,
+    `# EPW climate data export — ${datasetLabel(data)}`,
     `# ${data.location.latitude}, ${data.location.longitude}, elevation ${data.location.elevation} m`,
     `# Variable: ${field.label} (${unit})`,
     `# Period: ${describePeriod(context.period, data.isLeap)}`,
@@ -147,7 +147,7 @@ function exportCsv(viewId, context, state) {
 
   const csv = `${header}\n${toCsv(rows)}\n`;
   download(new Blob([csv], { type: 'text/csv;charset=utf-8' }),
-    `${safeName(locationLabel(data.location))}-${safeName(field.key)}-${suffix}.csv`);
+    `${safeName(datasetLabel(data))}-${safeName(field.key)}-${suffix}.csv`);
 }
 
 export { exportPng, exportCsv, download, safeName };

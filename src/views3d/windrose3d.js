@@ -6,7 +6,7 @@
  * a student read "how often" and "how fast" independently, which is what matters
  * when deciding whether a facade opening is worth having.
  */
-import { MeshBuilder, LineBuilder, rgb01 } from '../render/geometry.js';
+import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { hexRgb } from '../render/canvas2d.js';
 import { windRose } from '../core/stats.js';
 import { RAMPS } from '../render/colormaps.js';
@@ -22,7 +22,8 @@ function build(view, theme) {
   const rose = windRose(data, mask, { sectors });
 
   const ink3 = rgb01(hexRgb(theme.ink3, [130, 130, 130]));
-  const gridC = ink3.map((v) => v * 0.7);
+  const surfaceC = rgb01(hexRgb(theme.surface, [18, 18, 18]));
+  const gridC = towards(ink3, surfaceC, 0.5);
   const mesh = new MeshBuilder();
   const lines = new LineBuilder();
   const labels = [];
