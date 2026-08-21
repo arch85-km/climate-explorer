@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>EPW Climate Explorer</title>
+<meta name="description" content="Explore EnergyPlus (EPW) weather data in 2D and 3D — annual heatmaps, sun path, wind roses, psychrometrics and shadow studies. Runs entirely in the browser.">
+<meta name="color-scheme" content="light dark">
+<style>
+/* Only these few rules touch anything outside the app root. They are scoped to
+   the standalone page and have no effect when the markup is pasted into a host
+   page that already sets its own html/body styles. */
+html, body { margin: 0; padding: 0; height: 100%; }
+body { background: #0d0f12; }
+#epwviz { height: 100vh; height: 100dvh; }
+/* When embedded rather than standalone, the host sizes the container. */
+#epwviz.epwviz-embedded { height: auto; min-height: 640px; }
+/*INJECT:css*/
+</style>
+</head>
+<body>
+<div id="epwviz"></div>
+<noscript>
+  <p style="font:14px system-ui;padding:24px;color:#eee">
+    This climate data explorer needs JavaScript. It runs entirely in your browser —
+    no weather data is sent anywhere.
+  </p>
+</noscript>
+<script>
+//INJECT:js
+</script>
+</body>
+</html>

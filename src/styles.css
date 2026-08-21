@@ -1,0 +1,620 @@
+/* ==========================================================================
+   EPW Climate Explorer
+   Every rule is scoped under .epwviz-root so a host page's theme cannot reach
+   in, and nothing here escapes to affect the host page.
+   ========================================================================== */
+
+.epwviz-root {
+  /* ---- light theme (default) ------------------------------------------- */
+  --surface-0: #f2f2ef;
+  --surface-1: #fcfcfb;
+  --surface-2: #f0efec;
+  --surface-3: #e6e5e1;
+  --ink-1: #14140f;
+  --ink-2: #52514e;
+  --ink-3: #82817c;
+  --line: #dedcd6;
+  --line-strong: #c6c4bd;
+  --grid: rgba(20, 20, 15, 0.09);
+  --grid-strong: rgba(20, 20, 15, 0.2);
+  --axis: rgba(20, 20, 15, 0.38);
+  --night: rgba(20, 20, 15, 0.055);
+  --accent: #2a78d6;
+  --accent-2: #eb6834;
+  --accent-ink: #ffffff;
+  --series-1: #2a78d6;
+  --series-2: #eb6834;
+  --series-3: #1baf7a;
+  --series-4: #eda100;
+  --series-5: #e87ba4;
+  --series-6: #4a3aa7;
+  --danger: #d03b3b;
+
+  --radius: 8px;
+  --radius-sm: 5px;
+  --rail-width: 288px;
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --fs-base: 13px;
+  --fs-small: 11.5px;
+  --fs-label: 10.5px;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.07), 0 6px 20px rgba(0, 0, 0, 0.06);
+
+  color-scheme: light;
+  display: block;
+  box-sizing: border-box;
+  font-family: var(--font);
+  font-size: var(--fs-base);
+  line-height: 1.45;
+  color: var(--ink-1);
+  background: var(--surface-0);
+  -webkit-font-smoothing: antialiased;
+  text-size-adjust: 100%;
+  container-type: inline-size;
+}
+
+.epwviz-root[data-theme="dark"] {
+  --surface-0: #0d0f12;
+  --surface-1: #14171c;
+  --surface-2: #1c2027;
+  --surface-3: #262b34;
+  --ink-1: #f2f4f7;
+  --ink-2: #b3bac6;
+  --ink-3: #7f8794;
+  --line: #262b34;
+  --line-strong: #39404b;
+  --grid: rgba(255, 255, 255, 0.085);
+  --grid-strong: rgba(255, 255, 255, 0.2);
+  --axis: rgba(255, 255, 255, 0.34);
+  --night: rgba(0, 0, 0, 0.32);
+  --accent: #3987e5;
+  --accent-2: #f08a5d;
+  --accent-ink: #0d0f12;
+  --series-1: #3987e5;
+  --series-2: #d95926;
+  --series-3: #199e70;
+  --series-4: #c98500;
+  --series-5: #d55181;
+  --series-6: #9085e9;
+  --danger: #e66767;
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 8px 28px rgba(0, 0, 0, 0.45);
+  color-scheme: dark;
+}
+
+/* Print theme: pure white ground, heavier lines, for handouts and PDF. */
+.epwviz-root[data-theme="print"] {
+  --surface-0: #ffffff;
+  --surface-1: #ffffff;
+  --surface-2: #f4f4f2;
+  --surface-3: #e8e8e4;
+  --ink-1: #000000;
+  --ink-2: #333333;
+  --ink-3: #5c5c5c;
+  --line: #c8c8c4;
+  --line-strong: #9a9a95;
+  --grid: rgba(0, 0, 0, 0.14);
+  --grid-strong: rgba(0, 0, 0, 0.3);
+  --axis: rgba(0, 0, 0, 0.6);
+  --night: rgba(0, 0, 0, 0.06);
+  --shadow: none;
+  color-scheme: light;
+}
+
+/* ---- local reset: defends against a host theme's global rules ----------- */
+.epwviz-root *,
+.epwviz-root *::before,
+.epwviz-root *::after { box-sizing: border-box; }
+
+.epwviz-root :where(h1, h2, h3, p, dl, dd, dt, ul, li, figure, details, summary) {
+  margin: 0;
+  padding: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: inherit;
+  list-style: none;
+  color: inherit;
+}
+
+.epwviz-root :where(button, input, select, textarea) {
+  font: inherit;
+  color: inherit;
+  margin: 0;
+}
+
+.epwviz-root :where(button) { cursor: pointer; background: none; border: none; }
+.epwviz-root code { font-family: var(--mono); font-size: 0.94em; background: var(--surface-2); padding: 1px 4px; border-radius: 3px; }
+.epwviz-root :focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+/* ---- app frame --------------------------------------------------------- */
+.epwviz-app {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 520px;
+  background: var(--surface-0);
+  overflow: hidden;
+}
+
+.epwviz-header {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 9px 14px;
+  background: var(--surface-1);
+  border-bottom: 1px solid var(--line);
+  flex: 0 0 auto;
+  z-index: 4;
+}
+
+.epwviz-brand { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.epwviz-brand-mark {
+  display: grid;
+  place-items: center;
+  width: 28px; height: 28px;
+  border-radius: 7px;
+  background: var(--accent);
+  color: var(--accent-ink);
+  flex: 0 0 auto;
+}
+.epwviz-brand-text { display: flex; flex-direction: column; line-height: 1.2; min-width: 0; }
+.epwviz-brand-text strong { font-size: 13.5px; font-weight: 650; letter-spacing: -0.005em; }
+.epwviz-brand-text span { font-size: var(--fs-label); color: var(--ink-3); white-space: nowrap; }
+
+.epwviz-header-location {
+  margin-left: auto;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+  font-weight: 550;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.epwviz-header-actions { display: flex; gap: 4px; flex: 0 0 auto; }
+
+.epwviz-icon-btn {
+  display: grid; place-items: center;
+  width: 30px; height: 30px;
+  border-radius: var(--radius-sm);
+  color: var(--ink-2);
+  border: 1px solid transparent;
+}
+.epwviz-icon-btn:hover { background: var(--surface-2); color: var(--ink-1); }
+.epwviz-menu-btn { display: none; }
+
+.epwviz-body { position: relative; display: flex; flex: 1 1 auto; min-height: 0; }
+
+.epwviz-rail {
+  flex: 0 0 var(--rail-width);
+  width: var(--rail-width);
+  background: var(--surface-1);
+  border-right: 1px solid var(--line);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  z-index: 3;
+}
+
+.epwviz-main {
+  flex: 1 1 auto;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px;
+  min-height: 0;
+}
+
+/* ---- toolbar ----------------------------------------------------------- */
+.epwviz-toolbar { padding: 4px 0 24px; }
+.epwviz-group { padding: 12px 14px; border-bottom: 1px solid var(--line); }
+.epwviz-group.is-dimmed { opacity: 0.55; }
+.epwviz-group-label {
+  font-size: var(--fs-label);
+  font-weight: 650;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--ink-3);
+  margin-bottom: 9px;
+}
+.epwviz-group-body { display: grid; gap: 9px; }
+.epwviz-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.epwviz-row-tight { grid-template-columns: 1fr auto; align-items: end; }
+
+.epwviz-field { display: grid; gap: 4px; min-width: 0; }
+.epwviz-field-label {
+  display: flex; justify-content: space-between; gap: 8px;
+  font-size: var(--fs-label);
+  font-weight: 550;
+  color: var(--ink-2);
+  letter-spacing: 0.01em;
+}
+.epwviz-slider-value { color: var(--ink-3); font-variant-numeric: tabular-nums; font-weight: 500; }
+.epwviz-hint { font-size: var(--fs-label); color: var(--ink-3); line-height: 1.4; }
+
+.epwviz-select {
+  width: 100%;
+  padding: 6px 26px 6px 9px;
+  background: var(--surface-2) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 12'%3E%3Cpath d='M3 5l3 3 3-3' fill='none' stroke='%23888' stroke-width='1.4' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 7px center;
+  background-size: 12px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-small);
+  appearance: none;
+  -webkit-appearance: none;
+  cursor: pointer;
+  text-overflow: ellipsis;
+}
+.epwviz-select:hover { border-color: var(--line-strong); }
+.epwviz-select-compact { padding-right: 22px; }
+.epwviz-daypicker { display: grid; grid-template-columns: 1fr 1.25fr; gap: 4px; }
+
+.epwviz-slider {
+  width: 100%;
+  height: 18px;
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  cursor: pointer;
+}
+.epwviz-slider::-webkit-slider-runnable-track { height: 3px; background: var(--line-strong); border-radius: 2px; }
+.epwviz-slider::-moz-range-track { height: 3px; background: var(--line-strong); border-radius: 2px; }
+.epwviz-slider::-webkit-slider-thumb {
+  appearance: none; -webkit-appearance: none;
+  width: 13px; height: 13px; margin-top: -5px;
+  border-radius: 50%; background: var(--accent);
+  border: 2px solid var(--surface-1);
+  box-shadow: 0 0 0 1px var(--line-strong);
+}
+.epwviz-slider::-moz-range-thumb {
+  width: 13px; height: 13px; border-radius: 50%;
+  background: var(--accent); border: 2px solid var(--surface-1);
+}
+
+.epwviz-segmented {
+  /* Grid rather than flex, so five mode buttons wrap to a second row in a
+     narrow rail instead of overlapping each other. */
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(52px, 1fr));
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 2px;
+  gap: 2px;
+}
+.epwviz-seg {
+  min-width: 0;
+  display: flex; align-items: center; justify-content: center; gap: 4px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  font-size: var(--fs-label);
+  font-weight: 550;
+  color: var(--ink-2);
+  white-space: nowrap;
+  min-width: 0;
+}
+.epwviz-seg:hover { color: var(--ink-1); }
+.epwviz-seg.is-active { background: var(--surface-1); color: var(--ink-1); box-shadow: var(--shadow); }
+.epwviz-root[data-theme="dark"] .epwviz-seg.is-active { background: var(--surface-3); }
+
+.epwviz-toggle {
+  display: flex; align-items: center; gap: 8px;
+  font-size: var(--fs-small);
+  color: var(--ink-2);
+  cursor: pointer;
+  user-select: none;
+}
+.epwviz-toggle input { position: absolute; opacity: 0; width: 0; height: 0; }
+.epwviz-toggle-track {
+  position: relative;
+  width: 28px; height: 16px;
+  border-radius: 8px;
+  background: var(--line-strong);
+  flex: 0 0 auto;
+  transition: background 0.14s ease;
+}
+.epwviz-toggle-thumb {
+  position: absolute; top: 2px; left: 2px;
+  width: 12px; height: 12px; border-radius: 50%;
+  background: var(--surface-1);
+  transition: transform 0.14s ease;
+}
+.epwviz-toggle input:checked + .epwviz-toggle-track { background: var(--accent); }
+.epwviz-toggle input:checked + .epwviz-toggle-track .epwviz-toggle-thumb { transform: translateX(12px); }
+.epwviz-toggle input:focus-visible + .epwviz-toggle-track { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+.epwviz-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 6px;
+  padding: 7px 11px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--ink-1);
+  font-size: var(--fs-small);
+  font-weight: 550;
+  white-space: nowrap;
+}
+.epwviz-btn:hover { border-color: var(--line-strong); background: var(--surface-3); }
+.epwviz-btn-primary { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); width: 100%; }
+.epwviz-btn-primary:hover { filter: brightness(1.08); background: var(--accent); border-color: var(--accent); }
+.epwviz-btn-icon { padding: 7px; }
+.epwviz-btn.is-active { border-color: var(--accent); color: var(--accent); }
+
+.epwviz-chips { display: flex; flex-wrap: wrap; gap: 4px; }
+.epwviz-chip {
+  padding: 3px 8px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  font-size: var(--fs-label);
+  font-weight: 550;
+  color: var(--ink-2);
+  background: var(--surface-2);
+}
+.epwviz-chip:hover { border-color: var(--accent); color: var(--accent); }
+
+.epwviz-view-shelf { display: grid; gap: 4px; }
+.epwviz-view-chip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 9px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  font-size: var(--fs-small);
+  font-weight: 550;
+  color: var(--ink-2);
+  text-align: left;
+}
+.epwviz-view-chip:hover { background: var(--surface-2); color: var(--ink-1); }
+.epwviz-view-chip.is-active { background: var(--surface-2); border-color: var(--line-strong); color: var(--ink-1); }
+.epwviz-view-chip-kind {
+  font-size: 9px; font-weight: 700; letter-spacing: 0.05em;
+  padding: 1.5px 4px; border-radius: 3px;
+  background: var(--surface-3); color: var(--ink-3);
+  flex: 0 0 auto;
+}
+.epwviz-view-chip.is-active .epwviz-view-chip-kind { background: var(--accent); color: var(--accent-ink); }
+
+.epwviz-mode-blurb { font-size: var(--fs-label); color: var(--ink-3); line-height: 1.4; }
+
+.epwviz-location { display: grid; gap: 7px; }
+.epwviz-location-name { font-size: 13px; font-weight: 650; line-height: 1.3; }
+.epwviz-meta {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 2px 10px;
+  font-size: var(--fs-label);
+}
+.epwviz-meta dt { color: var(--ink-3); }
+.epwviz-meta dd { color: var(--ink-2); font-variant-numeric: tabular-nums; text-align: right; }
+.epwviz-filename { font-size: var(--fs-label); color: var(--ink-3); font-family: var(--mono); word-break: break-all; }
+.epwviz-warnings { font-size: var(--fs-label); color: var(--ink-3); }
+.epwviz-warnings summary { cursor: pointer; color: var(--accent-2); }
+.epwviz-warnings ul { padding: 5px 0 0 14px; display: grid; gap: 3px; }
+.epwviz-warnings li { list-style: disc; }
+.epwviz-compare-body { display: grid; gap: 8px; }
+
+/* ---- stage ------------------------------------------------------------- */
+.epwviz-stages { flex: 1 1 auto; display: grid; gap: 10px; min-height: 0; }
+.epwviz-stages.is-compare { grid-template-columns: 1fr 1fr; }
+
+.epwviz-stage-panel {
+  position: relative;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+  min-height: 260px;
+  min-width: 0;
+}
+.epwviz-stage-tag {
+  position: absolute; top: 8px; left: 10px; z-index: 3;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.06em;
+  padding: 2px 6px; border-radius: 4px;
+  background: var(--surface-3); color: var(--ink-2);
+}
+.epwviz-stage-surface { position: absolute; inset: 0; }
+.epwviz-canvas2d { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.epwviz-gl-host { position: absolute; inset: 0; }
+.epwviz-gl, .epwviz-gl-overlay { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.epwviz-gl-overlay { z-index: 2; }
+
+.epwviz-stage-caption {
+  position: absolute; left: 12px; right: 12px; bottom: 8px; z-index: 3;
+  max-width: calc(100% - 24px);
+  font-size: var(--fs-label);
+  color: var(--ink-2);
+  background: color-mix(in srgb, var(--surface-1) 84%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  padding: 5px 9px;
+  text-align: center;
+  pointer-events: none;
+  backdrop-filter: blur(6px);
+}
+
+.epwviz-tooltip {
+  position: absolute; top: 0; left: 0; z-index: 5;
+  min-width: 132px;
+  padding: 7px 9px;
+  background: var(--surface-1);
+  border: 1px solid var(--line-strong);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 0.1s ease;
+  font-size: var(--fs-label);
+}
+.epwviz-tooltip.is-visible { opacity: 1; }
+.epwviz-tooltip-title { font-weight: 650; color: var(--ink-1); margin-bottom: 4px; font-size: var(--fs-small); }
+.epwviz-tooltip-grid { display: grid; grid-template-columns: auto 1fr; gap: 2px 10px; }
+.epwviz-tooltip-key { color: var(--ink-3); }
+.epwviz-tooltip-val { color: var(--ink-1); text-align: right; font-variant-numeric: tabular-nums; font-weight: 550; }
+
+.epwviz-fallback {
+  display: grid; place-content: center; gap: 6px;
+  height: 100%; padding: 24px; text-align: center;
+  font-size: var(--fs-small); color: var(--ink-2);
+}
+
+/* ---- readout tiles ----------------------------------------------------- */
+.epwviz-tiles {
+  flex: 0 0 auto;
+  container-type: inline-size;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(134px, 1fr));
+  gap: 1px;
+  background: var(--line);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+.epwviz-tile { background: var(--surface-1); padding: 8px 11px; min-width: 0; container-type: inline-size; }
+.epwviz-tile-label {
+  font-size: var(--fs-label); color: var(--ink-3);
+  text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;
+  line-height: 1.25; overflow-wrap: break-word;
+}
+.epwviz-tile-value {
+  /* Scales with the tile so a long value shrinks instead of being clipped. */
+  font-size: clamp(13px, 1.42cqi + 8px, 19px);
+  font-weight: 620; color: var(--ink-1);
+  font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+  line-height: 1.22; margin-top: 1px;
+  overflow-wrap: break-word;
+}
+.epwviz-tile-note { font-size: var(--fs-label); color: var(--ink-3); overflow-wrap: break-word; }
+.epwviz-tile-empty { background: var(--surface-1); padding: 12px; font-size: var(--fs-small); color: var(--ink-3); grid-column: 1 / -1; }
+
+/* ---- empty state ------------------------------------------------------- */
+.epwviz-empty {
+  /* Covers the working area only — the header stays crisp so the app still
+     reads as an app rather than as a broken page. */
+  position: absolute; inset: 0; z-index: 6;
+  display: flex; align-items: center; justify-content: center;
+  padding: 24px;
+  background: color-mix(in srgb, var(--surface-0) 92%, transparent);
+  backdrop-filter: blur(3px);
+}
+.epwviz-empty-card {
+  max-width: 460px;
+  display: grid; gap: 11px; justify-items: start;
+  padding: 26px 28px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+}
+.epwviz-empty-icon {
+  display: grid; place-items: center;
+  width: 52px; height: 52px; border-radius: 12px;
+  background: var(--surface-2); color: var(--accent);
+}
+.epwviz-empty-card h2 { font-size: 19px; font-weight: 650; letter-spacing: -0.015em; }
+.epwviz-empty-card p { font-size: var(--fs-small); color: var(--ink-2); line-height: 1.55; }
+.epwviz-empty-sources code { font-size: 11px; }
+.epwviz-empty-note { font-size: var(--fs-label); color: var(--ink-3); }
+.epwviz-empty-card .epwviz-btn-primary { width: auto; padding: 8px 14px; }
+
+.epwviz-drop-hint {
+  position: absolute; inset: 0; z-index: 20;
+  display: none; align-items: center; justify-content: center;
+  background: color-mix(in srgb, var(--accent) 16%, transparent);
+  border: 3px dashed var(--accent);
+  border-radius: var(--radius);
+  pointer-events: none;
+}
+.epwviz-root.is-dragging .epwviz-drop-hint { display: flex; }
+.epwviz-drop-hint div {
+  padding: 12px 20px; border-radius: var(--radius);
+  background: var(--surface-1); color: var(--ink-1);
+  font-weight: 600; box-shadow: var(--shadow);
+}
+
+.epwviz-error-bar {
+  display: none;
+  padding: 8px 14px;
+  background: color-mix(in srgb, var(--danger) 14%, var(--surface-1));
+  border-bottom: 1px solid var(--danger);
+  color: var(--ink-1);
+  font-size: var(--fs-small);
+  flex: 0 0 auto;
+}
+.epwviz-error-bar.is-visible { display: block; }
+
+.epwviz-scrim { display: none; }
+
+/* ---- presentation mode ------------------------------------------------- */
+.epwviz-root[data-presentation="on"] {
+  --fs-base: 15px;
+  --fs-small: 13px;
+  --fs-label: 12px;
+  --rail-width: 250px;
+}
+.epwviz-root[data-presentation="on"] .epwviz-tiles {
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+}
+.epwviz-root[data-presentation="on"] .epwviz-tile-value { font-size: 24px; }
+.epwviz-root[data-presentation="on"] .epwviz-brand-text span,
+.epwviz-root[data-presentation="on"] .epwviz-mode-blurb,
+.epwviz-root[data-presentation="on"] .epwviz-group:has(.epwviz-location) { display: none; }
+.epwviz-root[data-presentation="on"] .epwviz-header { padding: 6px 14px; }
+.epwviz-root[data-presentation="on"] .epwviz-stage-panel { min-height: 320px; }
+.epwviz-root[data-presentation="on"]:fullscreen { height: 100vh; }
+.epwviz-root:fullscreen .epwviz-app { height: 100vh; }
+
+/* ---- responsive -------------------------------------------------------- */
+@container (max-width: 1080px) {
+  .epwviz-root { --rail-width: 250px; }
+  .epwviz-stages.is-compare { grid-template-columns: 1fr; }
+}
+
+@container (max-width: 820px) {
+  .epwviz-menu-btn { display: grid; }
+  .epwviz-header-location { display: none; }
+  .epwviz-rail {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    width: min(320px, 86vw);
+    flex-basis: min(320px, 86vw);
+    transform: translateX(-102%);
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: var(--shadow);
+  }
+  .epwviz-root.rail-open .epwviz-rail { transform: translateX(0); }
+  .epwviz-root.rail-open .epwviz-scrim {
+    display: block;
+    position: absolute; inset: 0; z-index: 2;
+    background: rgba(0, 0, 0, 0.42);
+  }
+  .epwviz-main { padding: 8px; }
+  .epwviz-tiles { grid-template-columns: repeat(auto-fit, minmax(112px, 1fr)); }
+}
+
+@container (max-width: 520px) {
+  .epwviz-root { --fs-base: 12.5px; }
+  .epwviz-tile-value { font-size: 16px; }
+  .epwviz-stage-panel { min-height: 240px; }
+  .epwviz-row { grid-template-columns: 1fr; }
+  .epwviz-brand-text span { display: none; }
+}
+
+/* Touch devices get larger hit targets on the controls that get dragged. */
+@media (pointer: coarse) {
+  .epwviz-slider { height: 26px; }
+  .epwviz-slider::-webkit-slider-thumb { width: 18px; height: 18px; margin-top: -7.5px; }
+  .epwviz-slider::-moz-range-thumb { width: 18px; height: 18px; }
+  .epwviz-seg { padding: 7px 6px; }
+  .epwviz-view-chip { padding: 9px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .epwviz-root *, .epwviz-root *::before, .epwviz-root *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+  }
+}
+
+@media print {
+  .epwviz-rail, .epwviz-header-actions, .epwviz-drop-hint { display: none !important; }
+  .epwviz-app { height: auto; }
+  .epwviz-stage-panel { min-height: 440px; break-inside: avoid; }
+}

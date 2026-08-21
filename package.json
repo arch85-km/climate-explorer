@@ -1,0 +1,14 @@
+{
+  "name": "epw-climate-visualiser",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "Single-file responsive EPW climate data visualiser for architecture teaching",
+  "scripts": {
+    "build": "node build.js",
+    "test": "node --test test/*.test.mjs",
+    "samples": "./tools/fetch-samples.sh",
+    "test:visual": "node test/visual.mjs",
+    "test:embed": "node test/embed.mjs"
+  }
+}
