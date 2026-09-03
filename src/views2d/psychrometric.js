@@ -18,8 +18,10 @@ import { RAMPS } from '../render/colormaps.js';
 import { convert, unitFor } from '../epw/fields.js';
 import { FIELD_BY_KEY } from '../epw/fields.js';
 
-const MARGINS = { top: 30, right: 76, bottom: 58, left: 62 };
-const LEGEND_GAP = 40;   // space between the plot's bottom edge and the first legend row
+const MARGINS = { top: 30, right: 76, bottom: 76, left: 62 };
+// Clears the tick row (+7), the axis title (+27) and its descenders before the
+// first legend row starts.
+const LEGEND_GAP = 54;
 const T_MIN = -10;
 const T_MAX = 50;
 const W_MAX = 0.030; // kg/kg

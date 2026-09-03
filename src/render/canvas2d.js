@@ -153,6 +153,7 @@ function drawValueAxis(s, y, opts = {}) {
   s.font(11);
   ctx.textAlign = 'right';
   ctx.textBaseline = 'middle';
+  let widestTick = 0;
   for (const t of ticks) {
     const py = Math.round(y(t)) + 0.5;
     if (py < plot.y - 1 || py > plot.bottom + 1) continue;
@@ -163,11 +164,16 @@ function drawValueAxis(s, y, opts = {}) {
     ctx.lineTo(plot.right, py);
     ctx.stroke();
     ctx.fillStyle = theme.ink3;
-    ctx.fillText(opts.format ? opts.format(t) : tickLabel(t, ticks), plot.x - 8, py);
+    const text = opts.format ? opts.format(t) : tickLabel(t, ticks);
+    widestTick = Math.max(widestTick, ctx.measureText(text).width);
+    ctx.fillText(text, plot.x - 8, py);
   }
   if (opts.label) {
+    // Sit the title just clear of the widest tick label rather than at a fixed
+    // offset: narrow ticks (0-30) otherwise leave the title stranded at the edge.
+    const titleX = Math.max(11, plot.x - 8 - widestTick - 11);
     ctx.save();
-    ctx.translate(12, plot.y + plot.h / 2);
+    ctx.translate(titleX, plot.y + plot.h / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.textAlign = 'center';
     ctx.textBaseline = 'middle';
@@ -201,9 +207,10 @@ function drawBottomAxis(s, entries, opts = {}) {
     if (e.label) ctx.fillText(e.label, e.x, plot.bottom + 7);
   }
   if (opts.label) {
+    // Clear of the tick row, which is drawn top-aligned at plot.bottom + 7.
     s.font(11, 500);
     ctx.fillStyle = theme.ink2;
-    ctx.fillText(opts.label, plot.x + plot.w / 2, plot.bottom + 24);
+    ctx.fillText(opts.label, plot.x + plot.w / 2, plot.bottom + 27);
   }
   ctx.restore();
 }
