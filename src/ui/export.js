@@ -23,9 +23,13 @@ function safeName(text) {
   return String(text).replace(/[^a-z0-9]+/gi, '-').replace(/^-|-$/g, '').toLowerCase() || 'export';
 }
 
+/** Attribution stamped onto every exported image. */
+const COPYRIGHT = '\u00a9 Karam Al-Obaidi';
+
 /**
- * Compose the visible view into a PNG at 2x, with a caption bar so the image
- * still says which climate and which period it came from once it leaves the app.
+ * Compose the visible view into a PNG, with a caption bar so the image still says
+ * which climate and which period it came from — and who made it — once it leaves
+ * the app.
  */
 function exportPng(stage, context, state) {
   const source = stage.is3d ? stage.scene?.canvas : stage.canvas;
@@ -64,6 +68,13 @@ function exportPng(stage, context, state) {
     ? `${describePeriod(context.period, context.data.isLeap)} · ${state.fileName || 'EPW file'}`
     : '';
   ctx.fillText(sub, 24, h + base * 2 + 16);
+
+  // Attribution, set against the right edge of the caption bar so it never collides
+  // with the title or the period line however long those run.
+  ctx.textAlign = 'right';
+  ctx.font = `500 ${Math.round(base * 0.82)}px ${font}`;
+  ctx.fillStyle = ink3;
+  ctx.fillText(COPYRIGHT, w - 24, h + base * 2 + 16);
 
   out.toBlob((blob) => {
     if (blob) download(blob, `${safeName(context ? datasetLabel(context.data) : 'climate')}-${stage.activeId}.png`);

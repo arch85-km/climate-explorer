@@ -8,26 +8,48 @@
  */
 import {
   beginFrame, scaleLinear, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle,
-  drawEmpty, drawLegend, niceTicks, clipPlot,
+  drawEmpty, drawLegend, measureLegend, niceTicks, clipPlot,
 } from '../render/canvas2d.js';
 import {
   humidityRatio, satHumidityRatio, comfortPolygons, pointInPolygon, rhCurve,
-  STANDARD_PRESSURE,
+  wForWetBulb, STANDARD_PRESSURE,
 } from '../core/psychro.js';
 import { RAMPS } from '../render/colormaps.js';
 import { convert, unitFor } from '../epw/fields.js';
 import { FIELD_BY_KEY } from '../epw/fields.js';
 
 const MARGINS = { top: 30, right: 76, bottom: 58, left: 62 };
+const LEGEND_GAP = 40;   // space between the plot's bottom edge and the first legend row
 const T_MIN = -10;
 const T_MAX = 50;
 const W_MAX = 0.030; // kg/kg
 
+/**
+ * The legend's labels, for measurement only — the percentages are filled in for
+ * real once the hours have been counted, and a placeholder of the same width is
+ * enough to work out how many rows the legend will wrap to.
+ */
+function legendLabels(view) {
+  const polys = comfortPolygons(view.data.pressureFallback || STANDARD_PRESSURE, {
+    humidityLimit: view.state.stats.humidityLimit,
+    strategies: view.state.stats.showStrategies,
+  });
+  return polys.map((poly) => ({ label: `${poly.label} — 00.0%` }));
+}
+
 function draw(canvas, view) {
-  const s = beginFrame(canvas, view.root, MARGINS);
-  const { ctx, plot, theme } = s;
   const { data, mask, state } = view;
+  // First pass exists only to obtain a context for measuring; the legend here runs
+  // to five entries and wraps to a second row on most panel widths, which the fixed
+  // bottom margin used to cut off.
+  let s = beginFrame(canvas, view.root, MARGINS);
   if (!data) { drawEmpty(s, 'Load an EPW file to begin'); return s; }
+  const legendRows = measureLegend(s, legendLabels(view), s.plot.w);
+  s = beginFrame(canvas, view.root, {
+    ...MARGINS,
+    bottom: MARGINS.bottom + Math.max(0, legendRows.height - 16),
+  });
+  const { ctx, plot, theme } = s;
 
   const p = data.pressureFallback || STANDARD_PRESSURE;
   const u = state.units;
@@ -80,7 +102,8 @@ function draw(canvas, view) {
     let anchor = null;
     for (const q of pts) {
       const { px, py } = toXY(q.t, q.w);
-      if (py >= plot.y + 6 && px <= plot.right - 4) anchor = { px, py };
+      // Far enough inside that the 10px label, drawn above the curve, still fits.
+      if (py >= plot.y + 16 && px <= plot.right - 4) anchor = { px, py };
       else if (anchor) break;
     }
     if (anchor && rh % 20 === 0) {
@@ -94,6 +117,50 @@ function draw(canvas, view) {
       ctx.fillText(label, anchor.px + (flip ? -3 : 3), anchor.py - 2);
     }
   }
+  ctx.restore();
+
+  // ── constant wet-bulb diagonals ───────────────────────────────────────────
+  // Every psychrometric chart carries these: they are the lines an evaporative
+  // cooling process moves along, so the strategy polygon cannot be read without them.
+  ctx.save();
+  ctx.strokeStyle = theme.grid;
+  ctx.lineWidth = 1;
+  ctx.setLineDash([2, 3]);
+  for (let tw = -5; tw <= 35; tw += 5) {
+    const pts = [];
+    for (let t = tw; t <= T_MAX; t += 1) {
+      const w = wForWetBulb(t, tw, p);
+      if (!Number.isFinite(w) || w < 0) break;
+      pts.push({ t, w });
+    }
+    if (pts.length < 2) continue;
+    ctx.beginPath();
+    pts.forEach((q, i) => {
+      const { px, py } = toXY(q.t, q.w);
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    });
+    ctx.stroke();
+
+    // Label on the saturation curve, where the line begins.
+    if (tw % 10 === 0 && tw >= 0) {
+      const head = toXY(pts[0].t, pts[0].w);
+      if (head.py > plot.y + 12 && head.py < plot.bottom - 4) {
+        ctx.setLineDash([]);
+        s.font(9, 500);
+        ctx.fillStyle = theme.ink3;
+        ctx.textAlign = 'right';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`${tw}°`, head.px - 4, head.py - 4);
+        ctx.setLineDash([2, 3]);
+      }
+    }
+  }
+  ctx.setLineDash([]);
+  s.font(9, 500);
+  ctx.fillStyle = theme.ink3;
+  ctx.textAlign = 'left';
+  ctx.textBaseline = 'middle';
+  ctx.fillText('wet bulb °C', plot.x + 6, plot.y + 12);
   ctx.restore();
 
   // ── density of hours ──────────────────────────────────────────────────────
@@ -229,7 +296,7 @@ function draw(canvas, view) {
 
   ctx.restore(); // clipPlot
   drawPlotFrame(s);
-  drawLegend(s, legend, { y: plot.bottom + 40, maxWidth: plot.w });
+  drawLegend(s, legend, { y: plot.bottom + LEGEND_GAP, maxWidth: plot.w });
   drawTitle(s, 'Psychrometric chart', `${plotted.toLocaleString()} hours · ${view.subtitle}`);
   return s;
 }

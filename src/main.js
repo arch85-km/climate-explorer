@@ -50,7 +50,7 @@ function boot() {
   const title = el('div.brand', {},
     el('span.brand-mark', {}, icon(ICONS.sun, 18)),
     el('span.brand-text', {}, el('strong', { text: 'Climate Explorer' }),
-      el('span', { text: 'EPW weather data for design' })));
+      el('span', { text: 'Weather Data Visualisation' })));
   const headerLocation = el('div.header-location');
   const menuBtn = el('button.icon-btn.menu-btn', {
     type: 'button', 'aria-label': 'Show controls', 'aria-expanded': 'false',

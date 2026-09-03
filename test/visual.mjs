@@ -5,7 +5,7 @@
  * Usage: node test/visual.mjs [--all]
  */
 import { chromium } from 'playwright';
-import { readFileSync, mkdirSync } from 'node:fs';
+import { readFileSync, mkdirSync, statSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
@@ -301,6 +301,77 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   await page.screenshot({ path: join(OUT, 'fallback-no-decompression.png') });
   await page.close();
 }
+
+// ── 5d. branding, and attribution on exported images ─────────────────────────
+{
+  const context = await browser.newContext({ viewport: { width: 1500, height: 960 }, acceptDownloads: true });
+  const page = await context.newPage();
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
+  await page.goto(FILE, { waitUntil: 'load' });
+  await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
+
+  const strapline = await page.locator('.epwviz-brand-text span').textContent();
+  if (strapline.trim() !== 'Weather Data Visualisation') {
+    problems.push(`[brand] strapline reads "${strapline}"`);
+  }
+  const title = await page.title();
+  if (!/Weather Data Visualisation/.test(title)) problems.push(`[brand] page title reads "${title}"`);
+
+  // Exported images must carry the attribution. The caption bar is drawn below the
+  // chart, so a correct export is taller than the canvas it came from.
+  await page.evaluate(() => window.EPWVisualiser.setState({ mode: 'comfort', view: 'psychrometric' }));
+  await page.waitForTimeout(700);
+  const canvasHeight = await page.evaluate(() => document.querySelector('.epwviz-canvas2d').height);
+  const pending = page.waitForEvent('download');
+  await page.locator('.epwviz-btn', { hasText: 'PNG' }).click();
+  const download = await pending;
+  const out = join(OUT, 'exported.png');
+  await download.saveAs(out);
+  const bytes = statSync(out).size;
+  if (bytes < 20000) problems.push(`[export] the PNG is only ${bytes} bytes`);
+  if (!/^[a-z0-9-]+\.png$/.test(download.suggestedFilename())) {
+    problems.push(`[export] odd filename "${download.suggestedFilename()}"`);
+  }
+  const png = readFileSync(out);
+  const exportedHeight = png.readUInt32BE(20);
+  if (exportedHeight <= canvasHeight) {
+    problems.push(`[export] no caption bar: export is ${exportedHeight}px for a ${canvasHeight}px canvas`);
+  }
+  // The attribution the caption bar draws must actually be in the shipped bundle.
+  if (!readFileSync(FILE.replace('file://', '')).includes('Karam Al-Obaidi')) {
+    problems.push('[export] the copyright string is missing from the build');
+  }
+  if (errors.length) problems.push(`[export] console errors:\n   ${errors.join('\n   ')}`);
+  await context.close();
+}
+
+// ── 5e. the psychrometric legend must never be clipped ───────────────────────
+await session(1180, 900, 'light', 'psychro', async (page) => {
+  // Two panels side by side is the tightest case: five legend entries wrap to a
+  // second row, which a fixed bottom margin used to cut off.
+  for (const compare of [false, true]) {
+    await page.evaluate((c) => window.EPWVisualiser.setState({
+      mode: 'comfort', view: 'psychrometric', compare: c, compareSource: 'period',
+    }), compare);
+    await page.waitForTimeout(800);
+    const fits = await page.evaluate(() => {
+      const canvas = document.querySelector('.epwviz-canvas2d');
+      const ctx = canvas.getContext('2d');
+      const dpr = canvas.width / canvas.getBoundingClientRect().width;
+      // Scan the bottom 4 CSS pixels: anything drawn there is being cut off.
+      const strip = ctx.getImageData(0, canvas.height - Math.ceil(4 * dpr), canvas.width, Math.ceil(4 * dpr)).data;
+      let inked = 0;
+      for (let i = 3; i < strip.length; i += 4) if (strip[i] > 12) inked += 1;
+      return { inked, width: canvas.width };
+    });
+    if (fits.inked > fits.width * 0.02) {
+      problems.push(`[psychro] legend runs off the bottom edge (compare=${compare}, ${fits.inked} inked px)`);
+    }
+    await page.screenshot({ path: join(OUT, `psychro-${compare ? 'compare' : 'single'}.png`) });
+  }
+});
 
 // ── 6. the empty state ───────────────────────────────────────────────────────
 {

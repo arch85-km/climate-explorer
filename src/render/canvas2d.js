@@ -293,6 +293,26 @@ function drawColorbar(s, ramp, scale, min, max, opts = {}) {
   return { x, y, w, h };
 }
 
+/**
+ * How tall a legend will be once it wraps, without drawing it. Lets a chart size
+ * its bottom margin to the legend it is actually going to draw, instead of
+ * guessing and clipping the second row.
+ */
+function measureLegend(s, items, maxWidth) {
+  const { ctx } = s;
+  ctx.save();
+  s.font(11);
+  let x = 0;
+  let rows = 1;
+  for (const item of items) {
+    const itemW = 14 + ctx.measureText(item.label).width + 16;
+    if (x + itemW > maxWidth && x > 0) { x = 0; rows += 1; }
+    x += itemW;
+  }
+  ctx.restore();
+  return { rows, height: rows * 16 };
+}
+
 /** A swatch-and-label legend laid out in a row, wrapping if needed. */
 function drawLegend(s, items, opts = {}) {
   const { ctx, theme } = s;
@@ -388,4 +408,4 @@ function clipPlot(s) {
 
 export { FONT_STACK, readTheme, fitCanvas, beginFrame, scaleLinear, niceTicks, niceDomain };
 export { tickLabel, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle, drawColorbar };
-export { drawLegend, roundRect, drawEmpty, fitText, clipPlot, hexRgb };
+export { drawLegend, measureLegend, roundRect, drawEmpty, fitText, clipPlot, hexRgb };
