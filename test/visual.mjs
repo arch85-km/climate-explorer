@@ -373,6 +373,47 @@ await session(1180, 900, 'light', 'psychro', async (page) => {
   }
 });
 
+// ── 5f. the chart must keep its share of a short, scaled-down viewport ───────
+//
+// A 1920x1080 laptop at 150% Windows scaling presents a 1280x720 CSS viewport.
+// The readout strip used to wrap to two rows there and the rail stayed at its
+// full width, leaving the chart 58% of the app — which reads as "the graph is
+// small and the values are large".
+for (const [w, h, minShare, maxTileRows, label] of [
+  [1600, 1000, 0.74, 1, 'desktop'],
+  [1280, 720, 0.70, 1, 'laptop at 150% scaling'],
+  [1100, 620, 0.55, 2, 'laptop at 175% scaling'],
+]) {
+  const page = await browser.newPage({ viewport: { width: w, height: h } });
+  const errors = [];
+  page.on('pageerror', (e) => errors.push(e.message));
+  await page.goto(FILE, { waitUntil: 'load' });
+  await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
+  await page.waitForTimeout(500);
+  const m = await page.evaluate(() => {
+    const q = (sel) => document.querySelector(sel);
+    const height = (el) => (el ? el.getBoundingClientRect().height : 0);
+    const tiles = q('.epwviz-tiles');
+    const cols = getComputedStyle(tiles).gridTemplateColumns.split(' ').length;
+    return {
+      share: height(q('.epwviz-stage-panel')) / height(q('.epwviz-app')),
+      rows: Math.ceil(document.querySelectorAll('.epwviz-tile').length / cols),
+      rail: q('.epwviz-rail').getBoundingClientRect().width,
+    };
+  });
+  if (m.share < minShare) {
+    problems.push(`[layout] ${label}: chart is only ${(m.share * 100).toFixed(0)}% of the app (want >= ${minShare * 100}%)`);
+  }
+  if (m.rows > maxTileRows) {
+    problems.push(`[layout] ${label}: readout wraps to ${m.rows} rows (want <= ${maxTileRows})`);
+  }
+  if (w <= 1400 && m.rail >= 288) {
+    problems.push(`[layout] ${label}: rail did not narrow (${m.rail}px) — a @container rule cannot restyle its own container`);
+  }
+  if (errors.length) problems.push(`[layout] ${label} console errors: ${errors.join('; ')}`);
+  await page.close();
+}
+
 // ── 6. the empty state ───────────────────────────────────────────────────────
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 820 } });

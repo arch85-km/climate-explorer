@@ -226,9 +226,14 @@ function boot() {
   function setPresentation(on) {
     store.set({ presentation: on }, { immediate: true });
     presentBtn.replaceChildren(icon(on ? ICONS.collapse : ICONS.expand, 18));
-    if (on && root.requestFullscreen) root.requestFullscreen().catch(() => {});
-    else if (!on && document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
-    requestAnimationFrame(() => stages.forEach((s) => s.resize()));
+    // Embedded, the host page owns fullscreen — going fullscreen from in here as
+    // well gives the viewer two competing controls. In that case this button is
+    // purely the presentation layout: larger type, toolbar collapsed.
+    if (!embedded) {
+      if (on && root.requestFullscreen) root.requestFullscreen().catch(() => {});
+      else if (!on && document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+    }
+    requestAnimationFrame(() => { postHeight(); stages.forEach((s) => s.resize()); });
   }
 
   function togglePlay() {
@@ -324,14 +329,21 @@ function boot() {
 
   function postHeight() {
     if (!embedded) return;
-    const h = contentHeight();
-    if (Math.abs(h - lastHeight) < 6) return;
-    lastHeight = h;
-    root.style.height = `${h}px`;
+    const wanted = contentHeight();
+    // Fill the frame whenever it is taller than we asked for. A host page that
+    // fullscreens the iframe — or simply gives it more height than requested —
+    // would otherwise leave the frame's own background showing below the app.
+    // Only `wanted` is posted upward, so this can never feed back on itself.
+    const applied = Math.max(wanted, window.innerHeight || 0);
+    if (root.style.height !== `${applied}px`) {
+      root.style.height = `${applied}px`;
+      requestAnimationFrame(() => stages.forEach((s) => s.resize()));
+    }
+    if (Math.abs(wanted - lastHeight) < 6) return;
+    lastHeight = wanted;
     try {
-      window.parent.postMessage({ type: 'epwviz:height', height: h }, '*');
+      window.parent.postMessage({ type: 'epwviz:height', height: wanted }, '*');
     } catch (err) { /* cross-origin parent: the embed falls back to a fixed height */ }
-    requestAnimationFrame(() => stages.forEach((s) => s.resize()));
   }
 
   // ── wiring ────────────────────────────────────────────────────────────────
@@ -351,7 +363,7 @@ function boot() {
     postHeight();
   });
   resizeObserver.observe(main);
-  window.addEventListener('resize', () => stages.forEach((st) => st.resize()));
+  window.addEventListener('resize', () => { postHeight(); stages.forEach((st) => st.resize()); });
 
   // Keyboard shortcuts, aimed at someone presenting rather than editing.
   window.addEventListener('keydown', (e) => {

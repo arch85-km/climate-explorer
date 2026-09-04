@@ -485,7 +485,7 @@ body { background: #0d0f12; }
   flex: 0 0 auto;
   container-type: inline-size;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(134px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   /* Separators are borders on the tiles rather than a gap showing the container
      through, so a part-filled last row reads as blank panel, not as a grey void. */
   background: var(--surface-1);
@@ -494,7 +494,7 @@ body { background: #0d0f12; }
   overflow: hidden;
 }
 .epwviz-tile {
-  padding: 8px 11px;
+  padding: 7px 10px;
   min-width: 0;
   container-type: inline-size;
   border-right: 1px solid var(--line);
@@ -507,7 +507,7 @@ body { background: #0d0f12; }
 }
 .epwviz-tile-value {
   /* Scales with the tile so a long value shrinks instead of being clipped. */
-  font-size: clamp(13px, 1.42cqi + 8px, 19px);
+  font-size: clamp(12.5px, 1.3cqi + 8px, 18px);
   font-weight: 620; color: var(--ink-1);
   font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
   line-height: 1.22; margin-top: 1px;
@@ -689,13 +689,27 @@ body { background: #0d0f12; }
 .epwviz-root:fullscreen .epwviz-app { height: 100vh; }
 
 /* ---- responsive -------------------------------------------------------- */
+@media (max-width: 1400px) { .epwviz-root { --rail-width: 262px; } }
+@media (max-width: 1120px) { .epwviz-root { --rail-width: 242px; } }
+@media (max-width: 560px) { .epwviz-root { --fs-base: 12.5px; } }
+
 @container (max-width: 1080px) {
-  .epwviz-root { --rail-width: 250px; }
   .epwviz-stages.is-compare { grid-template-columns: 1fr; }
+}
+
+/* A short viewport — a laptop at 150% OS scaling has about 720 CSS pixels of
+   height — must spend them on the chart, not on chrome. */
+@media (max-height: 820px) {
+  .epwviz-header { padding: 6px 14px; }
+  .epwviz-main { gap: 8px; padding: 8px; }
+  .epwviz-tile { padding: 5px 9px; }
+  .epwviz-tile-note { display: none; }
+  .epwviz-footer { padding: 4px 14px; }
 }
 
 @container (max-width: 820px) {
   .epwviz-menu-btn { display: grid; }
+  /* The rail is a drawer from here down, so its token width no longer applies. */
   .epwviz-header-location { display: none; }
   .epwviz-rail {
     position: absolute;
@@ -717,7 +731,6 @@ body { background: #0d0f12; }
 }
 
 @container (max-width: 520px) {
-  .epwviz-root { --fs-base: 12.5px; }
   .epwviz-tile-value { font-size: 16px; }
   .epwviz-stage-panel { min-height: 240px; }
   .epwviz-row { grid-template-columns: 1fr; }
@@ -2757,9 +2770,14 @@ function boot() {
   function setPresentation(on) {
     store.set({ presentation: on }, { immediate: true });
     presentBtn.replaceChildren(icon(on ? ICONS.collapse : ICONS.expand, 18));
-    if (on && root.requestFullscreen) root.requestFullscreen().catch(() => {});
-    else if (!on && document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
-    requestAnimationFrame(() => stages.forEach((s) => s.resize()));
+    // Embedded, the host page owns fullscreen — going fullscreen from in here as
+    // well gives the viewer two competing controls. In that case this button is
+    // purely the presentation layout: larger type, toolbar collapsed.
+    if (!embedded) {
+      if (on && root.requestFullscreen) root.requestFullscreen().catch(() => {});
+      else if (!on && document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
+    }
+    requestAnimationFrame(() => { postHeight(); stages.forEach((s) => s.resize()); });
   }
 
   function togglePlay() {
@@ -2855,14 +2873,21 @@ function boot() {
 
   function postHeight() {
     if (!embedded) return;
-    const h = contentHeight();
-    if (Math.abs(h - lastHeight) < 6) return;
-    lastHeight = h;
-    root.style.height = `${h}px`;
+    const wanted = contentHeight();
+    // Fill the frame whenever it is taller than we asked for. A host page that
+    // fullscreens the iframe — or simply gives it more height than requested —
+    // would otherwise leave the frame's own background showing below the app.
+    // Only `wanted` is posted upward, so this can never feed back on itself.
+    const applied = Math.max(wanted, window.innerHeight || 0);
+    if (root.style.height !== `${applied}px`) {
+      root.style.height = `${applied}px`;
+      requestAnimationFrame(() => stages.forEach((s) => s.resize()));
+    }
+    if (Math.abs(wanted - lastHeight) < 6) return;
+    lastHeight = wanted;
     try {
-      window.parent.postMessage({ type: 'epwviz:height', height: h }, '*');
+      window.parent.postMessage({ type: 'epwviz:height', height: wanted }, '*');
     } catch (err) { /* cross-origin parent: the embed falls back to a fixed height */ }
-    requestAnimationFrame(() => stages.forEach((s) => s.resize()));
   }
 
   // ── wiring ────────────────────────────────────────────────────────────────
@@ -2882,7 +2907,7 @@ function boot() {
     postHeight();
   });
   resizeObserver.observe(main);
-  window.addEventListener('resize', () => stages.forEach((st) => st.resize()));
+  window.addEventListener('resize', () => { postHeight(); stages.forEach((st) => st.resize()); });
 
   // Keyboard shortcuts, aimed at someone presenting rather than editing.
   window.addEventListener('keydown', (e) => {

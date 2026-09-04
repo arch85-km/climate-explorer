@@ -468,7 +468,7 @@
   flex: 0 0 auto;
   container-type: inline-size;
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(134px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
   /* Separators are borders on the tiles rather than a gap showing the container
      through, so a part-filled last row reads as blank panel, not as a grey void. */
   background: var(--surface-1);
@@ -477,7 +477,7 @@
   overflow: hidden;
 }
 .epwviz-tile {
-  padding: 8px 11px;
+  padding: 7px 10px;
   min-width: 0;
   container-type: inline-size;
   border-right: 1px solid var(--line);
@@ -490,7 +490,7 @@
 }
 .epwviz-tile-value {
   /* Scales with the tile so a long value shrinks instead of being clipped. */
-  font-size: clamp(13px, 1.42cqi + 8px, 19px);
+  font-size: clamp(12.5px, 1.3cqi + 8px, 18px);
   font-weight: 620; color: var(--ink-1);
   font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
   line-height: 1.22; margin-top: 1px;
@@ -672,13 +672,27 @@
 .epwviz-root:fullscreen .epwviz-app { height: 100vh; }
 
 /* ---- responsive -------------------------------------------------------- */
+@media (max-width: 1400px) { .epwviz-root { --rail-width: 262px; } }
+@media (max-width: 1120px) { .epwviz-root { --rail-width: 242px; } }
+@media (max-width: 560px) { .epwviz-root { --fs-base: 12.5px; } }
+
 @container (max-width: 1080px) {
-  .epwviz-root { --rail-width: 250px; }
   .epwviz-stages.is-compare { grid-template-columns: 1fr; }
+}
+
+/* A short viewport — a laptop at 150% OS scaling has about 720 CSS pixels of
+   height — must spend them on the chart, not on chrome. */
+@media (max-height: 820px) {
+  .epwviz-header { padding: 6px 14px; }
+  .epwviz-main { gap: 8px; padding: 8px; }
+  .epwviz-tile { padding: 5px 9px; }
+  .epwviz-tile-note { display: none; }
+  .epwviz-footer { padding: 4px 14px; }
 }
 
 @container (max-width: 820px) {
   .epwviz-menu-btn { display: grid; }
+  /* The rail is a drawer from here down, so its token width no longer applies. */
   .epwviz-header-location { display: none; }
   .epwviz-rail {
     position: absolute;
@@ -700,7 +714,6 @@
 }
 
 @container (max-width: 520px) {
-  .epwviz-root { --fs-base: 12.5px; }
   .epwviz-tile-value { font-size: 16px; }
   .epwviz-stage-panel { min-height: 240px; }
   .epwviz-row { grid-template-columns: 1fr; }

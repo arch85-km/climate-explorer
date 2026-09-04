@@ -49,6 +49,7 @@ writeFileSync('/tmp/host.html', `<!doctype html><html><head><meta charset="utf-8
 
 const b = await chromium.launch({ executablePath:'/opt/pw-browsers/chromium-1194/chrome-linux/chrome',
   args:['--use-gl=swiftshader','--enable-unsafe-swiftshader','--no-sandbox'] });
+const failures = [];
 const page = await b.newPage({ viewport: { width: 1400, height: 1000 } });
 const errors = [];
 page.on('pageerror', e => errors.push(e.message));
@@ -103,9 +104,29 @@ const railHidden = await page.frames()[1].evaluate(() =>
   document.querySelector('.epwviz-rail').getBoundingClientRect().right <= 2);
 console.log('narrow embed collapses the rail:', railHidden);
 
+// ── the host page fullscreening the iframe must not leave a band ────────────────
+//
+// Embedded, the app pins its own height to its computed content height. When the
+// host fullscreens the iframe the viewport grows but that pinned height does not,
+// so the frame's own background showed below the app.
+await page.setViewportSize({ width: 1920, height: 1080 });
+await page.waitForTimeout(600);
+await page.evaluate(() => document.getElementById('epw-visualiser').requestFullscreen());
+await page.waitForTimeout(1400);
+const fs = await page.frames()[1].evaluate(() => {
+  const root = document.getElementById('epwviz');
+  return { app: Math.round(root.getBoundingClientRect().height), win: window.innerHeight };
+});
+console.log('fullscreen band          :', fs.win - fs.app, 'px');
+if (fs.win - fs.app > 4) {
+  failures.push(`fullscreening the iframe leaves a ${fs.win - fs.app}px band below the app`);
+}
+await page.screenshot({ path: 'test/screenshots/embed-fullscreen.png' });
+await page.evaluate(() => document.exitFullscreen()).catch(() => {});
+await page.waitForTimeout(800);
+
 console.log('\nconsole errors:', errors.length ? errors : 'none');
 
-const failures = [];
 if (probe.btnFont !== '11.5px') failures.push(`host font-size leaked into buttons: ${probe.btnFont}`);
 if (probe.boxSizing !== 'border-box') failures.push(`host box-sizing leaked: ${probe.boxSizing}`);
 // Compare against the theme's own accent token rather than a hardcoded hex, so the
