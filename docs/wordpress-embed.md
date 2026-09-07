@@ -4,6 +4,12 @@
 are inline, there are no external requests, and nothing is uploaded anywhere — the
 `.epw` file a student drops is read locally by the browser.
 
+It ships with **no weather data**. The page opens on an empty state explaining what
+an EPW file is and where to download one free, and the student supplies their own.
+That keeps the page free of any third-party data you would otherwise be
+redistributing to every visitor. (See "Bundling your own example" in the README if
+you want a file you hold the rights to loaded automatically instead.)
+
 It is about **650 KB**, roughly half of which is the bundled London example climate
 that makes the page useful the moment it loads. Serve it with gzip enabled (most
 hosts do by default) and it arrives in about 360 KB.
@@ -122,7 +128,9 @@ Almost every problem here is the theme reaching into the app:
 ## Security and privacy notes for a teaching site
 
 - The page makes **no network requests at all**. Weather files are read with the
-  browser's File API and never leave the student's machine.
+  browser's File API and never leave the student's machine. The only outbound links
+  are the two download sources named on the empty state, which open in a new tab.
+- No third-party code and no third-party data are redistributed by the page.
 - There is no server component, no cookie, no local storage, and no analytics.
 - A `Content-Security-Policy` of `default-src 'none'; script-src 'unsafe-inline';
   style-src 'unsafe-inline'; img-src data:` is sufficient. The inline allowances

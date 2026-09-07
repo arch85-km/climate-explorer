@@ -506,13 +506,14 @@
   position: absolute; inset: 0; z-index: 6;
   display: flex; align-items: center; justify-content: center;
   padding: 24px;
+  overflow-y: auto;
   background: color-mix(in srgb, var(--surface-0) 92%, transparent);
   backdrop-filter: blur(3px);
 }
 .epwviz-empty-card {
-  max-width: 460px;
-  display: grid; gap: 11px; justify-items: start;
-  padding: 26px 28px;
+  max-width: 470px;
+  display: grid; gap: 13px; justify-items: start;
+  padding: 26px 28px 24px;
   background: var(--surface-1);
   border: 1px solid var(--line);
   border-radius: 12px;
@@ -520,14 +521,46 @@
 }
 .epwviz-empty-icon {
   display: grid; place-items: center;
-  width: 52px; height: 52px; border-radius: 12px;
-  background: var(--surface-2); color: var(--accent);
+  width: 46px; height: 46px; border-radius: 11px;
+  background: color-mix(in srgb, var(--accent) 12%, var(--surface-2));
+  color: var(--accent);
 }
-.epwviz-empty-card h2 { font-size: 19px; font-weight: 650; letter-spacing: -0.015em; }
+.epwviz-empty-card h2 {
+  font-size: 19px; font-weight: 650; letter-spacing: -0.015em; line-height: 1.25;
+}
 .epwviz-empty-card p { font-size: var(--fs-small); color: var(--ink-2); line-height: 1.55; }
-.epwviz-empty-sources code { font-size: 11px; }
-.epwviz-empty-note { font-size: var(--fs-label); color: var(--ink-3); }
-.epwviz-empty-card .epwviz-btn-primary { width: auto; padding: 8px 14px; }
+
+.epwviz-empty-actions {
+  display: flex; align-items: center; flex-wrap: wrap; gap: 10px 12px;
+  width: 100%;
+  margin-top: 2px;
+}
+.epwviz-empty-card .epwviz-btn-primary { width: auto; padding: 9px 15px; font-size: var(--fs-small); }
+.epwviz-empty-or { font-size: var(--fs-label); color: var(--ink-3); }
+
+.epwviz-empty-sources {
+  display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px;
+  width: 100%;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+  font-size: var(--fs-label);
+}
+.epwviz-empty-sources-label { color: var(--ink-3); width: 100%; }
+.epwviz-empty-sources a {
+  color: var(--accent);
+  font-family: var(--mono);
+  font-size: 11px;
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+.epwviz-empty-sources a:hover { border-bottom-color: var(--accent); }
+
+.epwviz-empty-note {
+  display: flex; align-items: center; gap: 6px;
+  font-size: var(--fs-label) !important;
+  color: var(--ink-3) !important;
+}
+.epwviz-empty-note svg { flex: 0 0 auto; opacity: 0.8; }
 
 .epwviz-drop-hint {
   position: absolute; inset: 0; z-index: 20;

@@ -16,12 +16,14 @@ fetch chicago_ohare_tmy3.epw \
 fetch london_gatwick_iwec.epw \
   "https://energyplus-weather.s3.amazonaws.com/europe_wmo_region_6/GBR/GBR_London.Gatwick.037760_IWEC/GBR_London.Gatwick.037760_IWEC.epw"
 
-# The London TMYx file is bundled into the app itself, so it is copied out of
-# assets/ rather than downloaded.
-LONDON="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)/assets/GBR_ENG_London.Wea.CtrSt.James.Park.037700_TMYx.epw"
-if [ ! -s "$DIR/london_stjames_tmyx.epw" ] && [ -s "$LONDON" ]; then
-  echo "copy  london_stjames_tmyx.epw"
-  cp "$LONDON" "$DIR/london_stjames_tmyx.epw"
+# london_stjames_tmyx.epw is an OPTIONAL fixture. It is a TMYx file whose quoted
+# COMMENTS field exercises a parser edge case, but it is not redistributable from
+# here, so it is not downloaded. Drop a copy in test/fixtures/ by hand if you want
+# those tests to run; they skip cleanly when it is absent.
+if [ -s "$DIR/london_stjames_tmyx.epw" ]; then
+  echo "have  london_stjames_tmyx.epw (optional fixture)"
+else
+  echo "skip  london_stjames_tmyx.epw (optional fixture, not present)"
 fi
 
 ls -la "$DIR"

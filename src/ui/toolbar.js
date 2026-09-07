@@ -42,7 +42,7 @@ function createToolbar(store, actions) {
   });
 
   // A way back to the bundled example after a student has loaded their own file.
-  const sampleBtn = button('Load London example', () => actions.openSample(),
+  const sampleBtn = button('Load example climate', () => actions.openSample(),
     { icon: ICONS.reset, title: 'Return to the bundled example climate' });
 
   const locationBox = el('div.location');

@@ -1,22 +1,24 @@
 /**
- * The bundled example climate.
+ * Optional bundled example climate.
  *
- * `SAMPLE_GZIP_B64` is deliberately empty here. `build.js` reads the EPW named by
- * `SAMPLE_SOURCE` out of `assets/`, gzips it, and substitutes the base64 into this
- * module at build time — so the ~350 KB blob never enters version control, while
- * the module still resolves when tests import `src/` directly.
+ * The app ships with NO weather data: publishing it means redistributing whatever
+ * is embedded here to every visitor, and third-party weather files carry their own
+ * attribution terms. Students load their own EPW instead.
  *
- * With the constant empty (i.e. running from source rather than from a build), the
- * app simply falls back to its empty state and waits for a file.
+ * The mechanism is kept so that bundling can be switched back on for a file you
+ * hold the rights to: drop it in `assets/`, set `SAMPLE_SOURCE` and `SAMPLE_LABEL`
+ * to match, and rebuild. `build.js` gzips it and substitutes the base64 below; with
+ * the constant empty, `sampleAvailable()` is false and the app opens on its empty
+ * state, which is the shipped behaviour.
  */
 
-const SAMPLE_SOURCE = 'GBR_ENG_London.Wea.CtrSt.James.Park.037700_TMYx.epw';
-const SAMPLE_NAME = 'GBR_ENG_London.Wea.CtrSt.James.Park.037700_TMYx.epw';
+// Name of the file to look for in assets/. Nothing is shipped unless it is there.
+const SAMPLE_SOURCE = 'example.epw';
+const SAMPLE_NAME = 'example.epw';
 
-// The LOCATION header reads "London.Wea.Ctr-St.James.Park", which is how TMYx names
-// stations but is not how anyone says it. The bundled sample gets a readable label;
-// files a student imports always keep whatever their own header says.
-const SAMPLE_LABEL = 'London — St James’s Park';
+// A readable name for a bundled file, whose LOCATION header is often a terse
+// station code. Files a student imports always keep whatever their own header says.
+const SAMPLE_LABEL = 'Example climate';
 
 const SAMPLE_GZIP_B64 = '';
 

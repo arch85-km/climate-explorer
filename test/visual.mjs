@@ -239,48 +239,71 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   await page.screenshot({ path: join(OUT, 'presentation-sundome.png') });
 });
 
-// ── 5b. the app opens on the bundled example with no interaction at all ──────
+// ── 5b. the app ships with no weather data and opens on its empty state ─────
+//
+// Nothing is bundled: publishing the app would otherwise redistribute whatever
+// weather file was embedded. A student supplies their own.
 {
   const page = await browser.newPage({ viewport: { width: 1600, height: 1000 } });
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
-  const t0 = Date.now();
   await page.goto(FILE, { waitUntil: 'load' });
-  try {
-    await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
-  } catch (err) {
-    problems.push('[boot] the bundled example never loaded');
-  }
-  const boot = await page.evaluate(() => {
-    const s = window.EPWVisualiser.getState();
+  await page.waitForTimeout(1200);
+
+  const boot = await page.evaluate(() => ({
+    hasData: !!window.EPWVisualiser.getState().data,
+    theme: window.EPWVisualiser.getState().theme,
+    emptyShown: getComputedStyle(document.querySelector('.epwviz-empty')).display !== 'none',
+    loadingHidden: getComputedStyle(document.querySelector('.epwviz-loading')).display === 'none',
+    copyright: document.querySelector('.epwviz-copyright')?.textContent,
+    // offsetParent is null for a hidden element: the button exists in the DOM
+    // because the bundling mechanism is kept, but must not be offered.
+    sampleButton: [...document.querySelectorAll('.epwviz-btn')]
+      .some((b) => /example/i.test(b.textContent) && b.offsetParent !== null),
+    sources: [...document.querySelectorAll('.epwviz-empty-sources a')].map((a2) => a2.getAttribute('href')),
+  }));
+  if (boot.hasData) problems.push('[boot] weather data loaded on its own — nothing should be bundled');
+  if (!boot.emptyShown) problems.push('[boot] the empty state is not showing');
+  if (!boot.loadingHidden) problems.push('[boot] the app is stuck on the loading state');
+  if (boot.theme !== 'light') problems.push(`[boot] default theme is "${boot.theme}", expected light`);
+  if (boot.copyright !== '\u00a9 Karam Al-Obaidi') problems.push(`[boot] copyright reads "${boot.copyright}"`);
+  if (boot.sampleButton) problems.push('[boot] the example-climate button is visible but nothing is bundled');
+  if (boot.sources.length !== 2) problems.push(`[boot] expected 2 source links, found ${boot.sources.length}`);
+  await page.screenshot({ path: join(OUT, 'boot-empty.png') });
+
+  // The path a student actually takes: the real file input, not the JS API.
+  const chooser = page.waitForEvent('filechooser');
+  await page.locator('.epwviz-empty .epwviz-btn-primary').click();
+  await (await chooser).setFiles(join(ROOT, 'test', 'fixtures', 'chicago_ohare_tmy3.epw'));
+  await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
+  await page.waitForTimeout(700);
+
+  const loaded = await page.evaluate(() => {
+    const s2 = window.EPWVisualiser.getState();
+    const canvas = document.querySelector('.epwviz-canvas2d');
+    const d = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
+    const seen = new Set();
+    for (let i = 0; i < d.length; i += 4 * 997) seen.add(`${d[i]},${d[i + 1]},${d[i + 2]}`);
     return {
-      theme: s.theme,
-      n: s.data?.n,
-      label: s.data?.displayLabel,
-      isSample: s.data?.isSample,
-      lat: s.data?.location?.latitude,
-      copyright: document.querySelector('.epwviz-copyright')?.textContent,
-      footerVisible: !!document.querySelector('.epwviz-footer')?.offsetHeight,
+      n: s2.data.n,
+      city: s2.data.location.city,
+      file: s2.fileName,
       emptyHidden: getComputedStyle(document.querySelector('.epwviz-empty')).display === 'none',
+      distinct: seen.size,
     };
   });
-  console.log(`  boot -> London ready in ${Date.now() - t0} ms`);
-  if (boot.theme !== 'light') problems.push(`[boot] default theme is "${boot.theme}", expected light`);
-  if (boot.n !== 8760) problems.push(`[boot] expected 8760 records, got ${boot.n}`);
-  if (!boot.isSample) problems.push('[boot] the loaded dataset is not flagged as the bundled sample');
-  if (!/London/.test(boot.label || '')) problems.push(`[boot] unexpected label "${boot.label}"`);
-  if (Math.abs((boot.lat ?? 0) - 51.5049) > 0.001) problems.push(`[boot] wrong latitude ${boot.lat}`);
-  if (boot.copyright !== '\u00a9 Karam Al-Obaidi') problems.push(`[boot] copyright reads "${boot.copyright}"`);
-  if (!boot.footerVisible) problems.push('[boot] the footer is not visible');
-  if (!boot.emptyHidden) problems.push('[boot] the empty state is still showing after the sample loaded');
-  await page.waitForTimeout(400);
-  await page.screenshot({ path: join(OUT, 'boot-default.png') });
+  if (loaded.n !== 8760) problems.push(`[picker] expected 8760 records, got ${loaded.n}`);
+  if (!/Chicago/i.test(loaded.city)) problems.push(`[picker] wrong location "${loaded.city}"`);
+  if (loaded.file !== 'chicago_ohare_tmy3.epw') problems.push(`[picker] wrong filename "${loaded.file}"`);
+  if (!loaded.emptyHidden) problems.push('[picker] the empty state is still showing after a file loaded');
+  if (loaded.distinct < 6) problems.push(`[picker] the chart did not render (${loaded.distinct} distinct colours)`);
+  await page.screenshot({ path: join(OUT, 'boot-after-picker.png') });
   if (errors.length) problems.push(`[boot] console errors:\n   ${errors.join('\n   ')}`);
   await page.close();
 }
 
-// ── 5c. a browser without DecompressionStream falls back, it does not break ──
+// ── 5c. no crash on a browser without DecompressionStream ───────────────────
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 820 } });
   const errors = [];
@@ -310,6 +333,7 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto(FILE, { waitUntil: 'load' });
+  await page.evaluate((t) => window.EPWVisualiser.load(t, 'chicago_ohare_tmy3.epw'), EPW);
   await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
 
   const strapline = await page.locator('.epwviz-brand-text span').textContent();
@@ -388,6 +412,7 @@ for (const [w, h, minShare, maxTileRows, label] of [
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(FILE, { waitUntil: 'load' });
+  await page.evaluate((t) => window.EPWVisualiser.load(t, 'chicago_ohare_tmy3.epw'), EPW);
   await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
   await page.waitForTimeout(500);
   const m = await page.evaluate(() => {
@@ -440,8 +465,6 @@ await session(1500, 900, 'light', 'colorbar', async (page) => {
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
-  // Suppress the bundled sample so the empty state is what renders.
-  await page.addInitScript(() => { delete window.DecompressionStream; });
   await page.goto(FILE, { waitUntil: 'load' });
   await page.waitForTimeout(500);
   await page.screenshot({ path: join(OUT, 'empty-state.png') });

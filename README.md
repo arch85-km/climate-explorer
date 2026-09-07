@@ -55,6 +55,20 @@ Then open `dist/epw-visualiser.html` in a browser. Nothing else is required.
 
 For WordPress, see **[docs/wordpress-embed.md](docs/wordpress-embed.md)**.
 
+## Bundling your own example
+
+The app ships with no weather data, but the mechanism to embed one is kept. To have
+a file load automatically on open:
+
+1. Put the `.epw` in `assets/`.
+2. Set `SAMPLE_SOURCE` and `SAMPLE_LABEL` in `src/data/sample.js` to match it.
+3. `npm run build`.
+
+`build.js` gzips the file and inlines it as base64 (about 1.5 MB of EPW becomes
+~350 KB embedded), and the app inflates it at startup with the browser's own
+`DecompressionStream`. Only do this for a file you hold the rights to redistribute
+— publishing the built HTML distributes that file to every visitor.
+
 ## Where to get EPW files
 
 - [climate.onebuilding.org](https://climate.onebuilding.org) — the most complete

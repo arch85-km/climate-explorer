@@ -70,21 +70,31 @@ function boot() {
   const body = el('div.body', {}, rail, main);
   const scrim = el('div.scrim', { onclick: () => toggleRail(false) });
 
+  // The app ships with no weather data, so this is the front door for every
+  // visitor: it has to say what an EPW file is, where to get one, and what to do.
   const empty = el('div.empty', {},
     el('div.empty-card', {},
-      el('div.empty-icon', {}, icon(ICONS.upload, 34)),
-      el('h2', { text: 'Drop an EPW file to begin' }),
-      el('p', {}, 'An ', el('strong', { text: 'EPW' }), ' file is one year of hourly weather — '
-        + 'temperature, humidity, solar radiation, wind and sky conditions — for one location. '
-        + 'It is the file building simulation runs on.'),
-      el('p.empty-sources', {}, 'Free files for thousands of locations: ',
-        el('code', { text: 'climate.onebuilding.org' }), ' and ',
-        el('code', { text: 'energyplus.net/weather' }), '.'),
-      el('button.btn.btn-primary', {
-        type: 'button',
-        onclick: () => toolbar?.controls && rail.querySelector('input[type=file]')?.click(),
-      }, icon(ICONS.upload, 16), el('span', { text: 'Choose an EPW file' })),
-      el('p.empty-note', { text: 'The file is read in your browser. Nothing is uploaded anywhere.' })));
+      el('div.empty-icon', {}, icon(ICONS.upload, 30)),
+      el('h2', { text: 'Open a weather file to begin' }),
+      el('p', {}, 'An ', el('strong', { text: 'EPW' }), ' file holds one year of hourly '
+        + 'weather for a single location — temperature, humidity, solar radiation, wind '
+        + 'and sky conditions. It is the file building simulation runs on.'),
+      el('div.empty-actions', {},
+        el('button.btn.btn-primary', {
+          type: 'button',
+          onclick: () => rail.querySelector('input[type=file]')?.click(),
+        }, icon(ICONS.upload, 16), el('span', { text: 'Choose an EPW file' })),
+        el('span.empty-or', { text: 'or drag one anywhere onto this page' })),
+      el('div.empty-sources', {},
+        el('span.empty-sources-label', { text: 'Free files for thousands of locations' }),
+        el('a', {
+          href: 'https://climate.onebuilding.org', target: '_blank', rel: 'noopener noreferrer',
+        }, 'climate.onebuilding.org'),
+        el('a', {
+          href: 'https://energyplus.net/weather', target: '_blank', rel: 'noopener noreferrer',
+        }, 'energyplus.net/weather')),
+      el('p.empty-note', {}, icon(ICONS.info, 13),
+        el('span', { text: 'The file is read in your browser. Nothing is uploaded anywhere.' }))));
 
   // Shown while the bundled example inflates, so the empty card does not flash up
   // for a few hundred milliseconds before being replaced.
