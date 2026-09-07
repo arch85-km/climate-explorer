@@ -286,17 +286,21 @@ function drawColorbar(s, ramp, scale, min, max, opts = {}) {
     ctx.fillText(opts.format ? opts.format(t) : tickLabel(t, ticks), x + w + 6, py);
   }
   if (opts.label) {
-    // Horizontal, above the strip. Rotated into the gap between the plot and the
-    // strip it had only the 4px of a ~14px column to itself and touched both.
-    // Right-aligned to the canvas edge so a long caption ("Global horiz. (Wh/m2)")
-    // runs left across the free top margin instead of needing truncation; it sits
-    // on a lower baseline than the title, which cannot reach past plot.right.
+    // Horizontal, directly above the strip it labels — rotated into the gap
+    // between plot and strip it had only 4px of a ~14px column and touched both.
+    // Aligned to the strip's own left edge so it reads as belonging to it; a long
+    // caption ("Global horiz. (Wh/m2)") that would overrun the canvas is pulled
+    // left just far enough to keep a margin from the edge.
     ctx.save();
     s.font(10, 500);
     ctx.fillStyle = theme.ink2;
-    ctx.textAlign = 'right';
+    ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
-    ctx.fillText(opts.label, s.width - 4, y - 5);
+    const edgePad = 10;
+    const labelW = ctx.measureText(opts.label).width;
+    let labelX = x;
+    if (labelX + labelW > s.width - edgePad) labelX = s.width - edgePad - labelW;
+    ctx.fillText(opts.label, Math.max(4, labelX), y - 6);
     ctx.restore();
   }
   ctx.restore();

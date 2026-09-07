@@ -87,10 +87,11 @@ test('the colour-scale caption sits above the strip, not rotated beside it', () 
   assert.equal(caption.rotation, 0, 'the caption must not be rotated');
   // Above the strip, which starts at plot.y.
   assert.ok(caption.y < frame.plot.y, `caption y ${caption.y} should sit above the strip top ${frame.plot.y}`);
-  // And clear of the chart: nothing of it may reach back into the gap column.
-  assert.equal(caption.align, 'right');
-  assert.ok(caption.x <= frame.width, 'the caption stays inside the canvas');
-  assert.ok(caption.x > barX, 'the caption is anchored beyond the strip, not before it');
+  // Belongs to the strip: aligned with its left edge, not stranded at the canvas
+  // edge and not reaching back into the gap beside the chart.
+  assert.equal(caption.align, 'left');
+  assert.equal(caption.x, barX, 'a short caption sits directly above the strip');
+  assert.ok(caption.x > frame.plot.right, 'the caption never intrudes on the chart');
 });
 
 test('a long caption is right-aligned so it runs into the free top margin', () => {
@@ -99,11 +100,15 @@ test('a long caption is right-aligned so it runs into the free top margin', () =
   drawColorbar(frame, RAMP, (v) => v / 900, 0, 900, { x: frame.plot.right + 10, label });
   const caption = ops.find((o) => o.text === label);
   assert.ok(caption);
-  assert.equal(caption.align, 'right');
+  assert.equal(caption.align, 'left');
   assert.equal(caption.rotation, 0);
-  // Right-aligned at the canvas edge, so its left end runs back over empty margin
-  // rather than being clipped.
-  assert.ok(frame.width - caption.x <= 8, `caption anchored ${frame.width - caption.x}px from the edge`);
+  // Too wide to start at the strip, so it is pulled left — but only as far as
+  // needed, and it keeps a margin from the canvas edge rather than hugging it.
+  const captionW = label.length * 6; // the stub's measureText
+  assert.ok(caption.x < frame.plot.right + 10, 'a long caption is pulled left of the strip');
+  const rightEdgeGap = frame.width - (caption.x + captionW);
+  assert.ok(rightEdgeGap >= 8 && rightEdgeGap <= 14,
+    `long caption should end 8-14px from the edge, ended ${rightEdgeGap}px`);
 });
 
 test('the value-axis title tracks its tick labels instead of a fixed offset', () => {
