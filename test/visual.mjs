@@ -414,6 +414,26 @@ for (const [w, h, minShare, maxTileRows, label] of [
   await page.close();
 }
 
+// ── 5g. the colour-scale caption must not be clipped at the canvas edge ──────
+// (that the caption sits above the strip rather than crammed beside it is
+//  asserted precisely in test/render.test.mjs)
+await session(1500, 900, 'light', 'colorbar', async (page) => {
+  await page.evaluate(() => window.EPWVisualiser.setState({
+    mode: 'solar', view: 'sunpath', sunpathTint: 'globalHorizontal',
+  }));
+  await page.waitForTimeout(700);
+  const clipped = await page.evaluate(() => {
+    const canvas = document.querySelector('.epwviz-canvas2d');
+    const ctx = canvas.getContext('2d');
+    const band = ctx.getImageData(canvas.width - 3, 0, 3, Math.round(canvas.height * 0.12)).data;
+    let inked = 0;
+    for (let i = 3; i < band.length; i += 4) if (band[i] > 12) inked += 1;
+    return inked;
+  });
+  if (clipped > 6) problems.push(`[colorbar] the sun path caption runs off the right edge (${clipped}px)`);
+  await page.screenshot({ path: join(OUT, 'colorbar-sunpath.png') });
+});
+
 // ── 6. the empty state ───────────────────────────────────────────────────────
 {
   const page = await browser.newPage({ viewport: { width: 1280, height: 820 } });
