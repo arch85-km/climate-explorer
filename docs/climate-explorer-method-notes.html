@@ -1,0 +1,1192 @@
+<!-- ==========================================================================
+     Climate Explorer — Method Notes
+     Paste into an Elementor "HTML" widget (Elements > HTML).
+
+     Everything is scoped to .ce-doc, so nothing here can touch the rest of
+     your theme. Body text inherits your site's font and headings are set to
+     Poppins to match the site's own headings (--ce-fd, one line to change);
+     only the data — formulas, tables, the BibTeX block — is monospace.
+     To follow the visitor's dark-mode setting, change the opening tag to
+     <div class="ce-doc ce-auto-dark">. Default is light only, which is the
+     safe choice on a light site.
+
+     Same structure and the same token values as the Construction Studio
+     notes, including --ce-ink3 at #5F696E: that value reads 5.1:1 on the page
+     background and 4.7:1 on the table header fill, clearing WCAG AA on the
+     smallest text — table headings, captions, the byline.
+
+     Documents Climate Explorer 1.0.0 (15 September 2026). Every figure below
+     was read from the source at that version.
+     © Karam Al-Obaidi
+     ========================================================================== -->
+
+<style>
+
+.ce-doc{
+  --ce-paper:#F1F2EE; --ce-surface:#FBFBF9; --ce-surface2:#E8EAE4;
+  --ce-ink:#16191B; --ce-ink2:#4C555A; --ce-ink3:#5F696E;
+  --ce-rule:#D6D9D1; --ce-rule2:#E5E7E1;
+  --ce-accent:#1D5A73; --ce-accent-soft:rgba(29,90,115,.10);
+  --ce-ok:#3F6B47;  --ce-ok-soft:rgba(63,107,71,.12);
+  --ce-warn:#8A6410;--ce-warn-soft:rgba(138,100,16,.13);
+  --ce-no:#8E3A32;  --ce-no-soft:rgba(142,58,50,.11);
+  /* Headings and body follow the site's own typeface. `inherit` resolves where
+     it is used — inside .ce-doc, whose parent is the Elementor container — so
+     this keeps working if the theme font ever changes.
+     The monospace stack must NOT inherit: the table number columns use
+     font-variant-numeric:tabular-nums and align on fixed-width digits, and the
+     formulas and BibTeX block depend on their spacing. */
+  /* The site pairs a sans for headings with a serif for body, so the page
+     does the same. Body inherits — CSS has no way to inherit "the theme's
+     HEADING font", so that one is named. If the site's heading face ever
+     changes, this is the single line to update.
+     Weights sit at 600 throughout: the site ships Poppins 400/500/600 and
+     Source Serif 4 400/600, so 700 and 800 do not exist and the browser
+     would either drop to 600 or synthesise a smeared bold. Size carries the
+     hierarchy instead. */
+  --ce-fd:"Poppins",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --ce-fb:inherit;
+  --ce-fm:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --ce-measure:90ch; --ce-rail:4.75rem;
+
+  background:var(--ce-paper); color:var(--ce-ink);
+  font-family:var(--ce-fb); font-size:17px; line-height:1.65; font-weight:400;
+  max-width:1040px; margin:0 auto; padding:0 20px 4rem;
+  -webkit-font-smoothing:antialiased; text-align:left;
+}
+@media (prefers-color-scheme:dark){
+  .ce-doc.ce-auto-dark{
+    --ce-paper:#121517; --ce-surface:#191D20; --ce-surface2:#21262A;
+    --ce-ink:#E9EBE6; --ce-ink2:#A6AFB4; --ce-ink3:#79838A;
+    --ce-rule:#2C3235; --ce-rule2:#232829;
+    --ce-accent:#74B6D0; --ce-accent-soft:rgba(116,182,208,.14);
+    --ce-ok:#7FB88C;  --ce-ok-soft:rgba(127,184,140,.14);
+    --ce-warn:#D6A748;--ce-warn-soft:rgba(214,167,72,.15);
+    --ce-no:#DD8479;  --ce-no-soft:rgba(221,132,121,.14);
+  }
+}
+
+/* local reset — only inside .ce-doc */
+.ce-doc *,.ce-doc *::before,.ce-doc *::after{box-sizing:border-box;}
+.ce-doc h1,.ce-doc h2,.ce-doc h3,.ce-doc h4,.ce-doc p,.ce-doc ul,.ce-doc ol,
+.ce-doc dl,.ce-doc dt,.ce-doc dd,.ce-doc table,.ce-doc figure{margin:0;padding:0;}
+.ce-doc ul,.ce-doc ol{list-style-position:outside;}
+.ce-doc li{margin:0;}
+.ce-doc img{max-width:100%;height:auto;}
+.ce-doc a{color:var(--ce-accent);text-decoration:underline;text-underline-offset:2px;}
+.ce-doc a:focus-visible{outline:2px solid var(--ce-accent);outline-offset:3px;}
+.ce-doc .ce-sechead{scroll-margin-top:5rem;}
+.ce-doc .ce-sechead:target h2{background:var(--ce-hl,rgba(127,127,127,.14));}
+.ce-doc code,.ce-doc .ce-mono{font-family:var(--ce-fm);font-size:.855em;}
+/* Inline bold defaults to 700. A site that ships only 400/500/600 has no such
+   face, so the browser either drops to 600 or fakes one by smearing the 400.
+   Pin it to a weight that exists. */
+.ce-doc b,.ce-doc strong{font-weight:600;}
+.ce-doc code{background:var(--ce-accent-soft);color:var(--ce-accent);
+  padding:.1em .34em;border-radius:2px;border:0;}
+
+/* masthead */
+.ce-doc .ce-masthead{padding:3.5rem 0 2.25rem;border-bottom:2px solid var(--ce-ink);}
+.ce-doc h1{font-family:var(--ce-fd);font-weight:600;
+  font-size:clamp(2.1rem,6.2vw,3.35rem);line-height:1.02;letter-spacing:-.028em;
+  text-wrap:balance;margin:0 0 1.1rem;color:var(--ce-ink);}
+.ce-doc .ce-standfirst{max-width:var(--ce-measure);font-size:1.14rem;line-height:1.6;
+  color:var(--ce-ink2);margin:0;}
+.ce-doc .ce-standfirst strong{color:var(--ce-ink);font-weight:600;}
+.ce-doc .ce-byline{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;margin-top:1.9rem;
+  font-family:var(--ce-fm);font-size:.74rem;letter-spacing:.04em;color:var(--ce-ink3);}
+.ce-doc .ce-byline b{color:var(--ce-ink2);font-weight:500;}
+
+/* trap notice */
+.ce-doc .ce-traps{margin:2.5rem 0;border:1px solid var(--ce-rule);
+  border-left:4px solid var(--ce-no);background:var(--ce-surface);padding:1.5rem 1.6rem;}
+.ce-doc .ce-traps h2{font-family:var(--ce-fd);font-size:.82rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ce-no);margin:0 0 .9rem;}
+.ce-doc .ce-traps ol{margin:0;padding-left:1.15rem;display:grid;gap:.6rem;}
+.ce-doc .ce-traps li{max-width:var(--ce-measure);}
+
+/* sections */
+.ce-doc .ce-sec{padding:3.25rem 0 0;}
+.ce-doc .ce-sechead{display:grid;grid-template-columns:var(--ce-rail) 1fr;
+  align-items:baseline;gap:0 1rem;border-top:1px solid var(--ce-rule);
+  padding-top:1.4rem;margin-bottom:1.6rem;}
+.ce-doc .ce-secnum{font-family:var(--ce-fm);font-size:.95rem;font-weight:600;
+  color:var(--ce-accent);letter-spacing:.02em;font-variant-numeric:tabular-nums;}
+.ce-doc .ce-sechead h2{font-family:var(--ce-fd);font-weight:600;
+  font-size:clamp(1.45rem,3.3vw,1.95rem);line-height:1.12;letter-spacing:-.02em;
+  text-wrap:balance;margin:0;color:var(--ce-ink);}
+.ce-doc .ce-secbody{display:grid;grid-template-columns:var(--ce-rail) minmax(0,1fr);gap:0 1rem;}
+.ce-doc .ce-secbody>*{grid-column:2;}
+.ce-doc .ce-secbody>p,.ce-doc .ce-secbody>ul,.ce-doc .ce-secbody>ol{max-width:var(--ce-measure);}
+.ce-doc .ce-secbody>p{margin:0 0 1.05rem;}
+.ce-doc .ce-secbody>ul,.ce-doc .ce-secbody>ol{margin:0 0 1.15rem;padding-left:1.15rem;
+  display:grid;gap:.5rem;}
+.ce-doc h3{font-family:var(--ce-fd);font-weight:600;font-size:1.06rem;
+  letter-spacing:-.005em;margin:1.9rem 0 .7rem;color:var(--ce-ink);}
+.ce-doc .ce-secbody>h3:first-child{margin-top:0;}
+.ce-doc h4{font-family:var(--ce-fm);font-weight:600;font-size:.74rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ce-ink3);margin:1.6rem 0 .6rem;}
+
+.ce-doc .ce-formula{font-family:var(--ce-fm);font-size:.84rem;line-height:1.75;
+  background:var(--ce-surface);border:1px solid var(--ce-rule);
+  border-left:3px solid var(--ce-accent);padding:.95rem 1.1rem;margin:0 0 1.2rem;
+  overflow-x:auto;white-space:pre;color:var(--ce-ink);}
+.ce-doc .ce-formula em{color:var(--ce-ink3);font-style:normal;}
+.ce-doc .ce-note{font-size:.9rem;color:var(--ce-ink2);border-left:2px solid var(--ce-rule);
+  padding-left:.95rem;margin:0 0 1.2rem;max-width:var(--ce-measure);}
+
+/* tables */
+.ce-doc .ce-tbl{overflow-x:auto;margin:0 0 1.4rem;border:1px solid var(--ce-rule);
+  background:var(--ce-surface);}
+.ce-doc .ce-tbl table{border-collapse:collapse;width:100%;font-size:.845rem;
+  line-height:1.45;background:transparent;}
+.ce-doc .ce-tbl th,.ce-doc .ce-tbl td{padding:.5rem .7rem;text-align:left;
+  vertical-align:top;border:0;border-bottom:1px solid var(--ce-rule2);color:var(--ce-ink);}
+.ce-doc .ce-tbl thead th{font-family:var(--ce-fm);font-size:.68rem;font-weight:600;
+  letter-spacing:.07em;text-transform:uppercase;color:var(--ce-ink3);
+  background:var(--ce-surface2);border-bottom:1px solid var(--ce-rule);white-space:nowrap;}
+.ce-doc .ce-tbl tbody tr:last-child td{border-bottom:0;}
+/* Greek and subscripted symbols must not be uppercased: text-transform turns
+   γ into Γ and δ into Δ, which are different letters, and a reader of a
+   psychrometric table would be misled by both. */
+.ce-doc .ce-tbl thead th.ce-sym{text-transform:none;letter-spacing:.02em;font-size:.74rem;}
+.ce-doc .ce-tbl tbody tr{background:transparent;}
+.ce-doc .ce-tbl .ce-n{text-align:right;font-family:var(--ce-fm);
+  font-variant-numeric:tabular-nums;white-space:nowrap;}
+.ce-doc .ce-tbl .ce-p{font-family:var(--ce-fm);font-size:.8rem;white-space:nowrap;}
+.ce-doc .ce-tbl .ce-d{font-family:var(--ce-fm);font-variant-numeric:tabular-nums;
+  white-space:nowrap;color:var(--ce-accent);font-weight:500;text-align:right;}
+.ce-doc .ce-tbl caption{caption-side:bottom;text-align:left;padding:.6rem .7rem;
+  font-size:.78rem;color:var(--ce-ink3);border-top:1px solid var(--ce-rule2);}
+
+/* chips + ledger */
+.ce-doc .ce-chip{display:inline-block;font-family:var(--ce-fm);font-size:.64rem;
+  font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.15em .5em;
+  border-radius:2px;white-space:nowrap;}
+.ce-doc .ce-chip.is-in{background:var(--ce-ok-soft);color:var(--ce-ok);}
+.ce-doc .ce-chip.is-part{background:var(--ce-warn-soft);color:var(--ce-warn);}
+.ce-doc .ce-chip.is-out{background:var(--ce-no-soft);color:var(--ce-no);}
+.ce-doc .ce-ledger{display:grid;gap:0;border:1px solid var(--ce-rule);
+  background:var(--ce-surface);margin-bottom:1.4rem;}
+.ce-doc .ce-ledger>div{display:grid;grid-template-columns:7.5rem minmax(0,1fr);
+  gap:.2rem .9rem;padding:.8rem 1rem;border-bottom:1px solid var(--ce-rule2);}
+.ce-doc .ce-ledger>div:last-child{border-bottom:0;}
+.ce-doc .ce-ledger dt{font-family:var(--ce-fd);font-weight:600;font-size:.95rem;
+  grid-column:2;margin:0;color:var(--ce-ink);}
+.ce-doc .ce-ledger .ce-chip{grid-row:1;grid-column:1;align-self:start;margin-top:.18rem;}
+.ce-doc .ce-ledger dd{grid-column:2;margin:0;font-size:.93rem;color:var(--ce-ink2);
+  line-height:1.55;}
+
+/* exercises */
+.ce-doc .ce-ex{border:1px solid var(--ce-rule);background:var(--ce-surface);
+  padding:1.5rem 1.6rem;margin-bottom:1.5rem;}
+.ce-doc .ce-ex-n{font-family:var(--ce-fm);font-size:.7rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ce-accent);
+  display:block;margin-bottom:.35rem;}
+.ce-doc .ce-ex h3{margin:0 0 .9rem;font-size:1.18rem;}
+.ce-doc .ce-steps{margin:0;padding-left:1.2rem;display:grid;gap:.5rem;font-size:.95rem;}
+.ce-doc .ce-steps code{font-size:.8rem;}
+.ce-doc .ce-principle{font-size:.93rem;color:var(--ce-ink2);
+  border-top:1px solid var(--ce-rule2);padding-top:.85rem;margin:.95rem 0 0;}
+.ce-doc .ce-principle b{color:var(--ce-ink);font-weight:600;}
+
+/* footer */
+.ce-doc .ce-footer{margin-top:4rem;padding-top:1.6rem;border-top:2px solid var(--ce-ink);
+  font-size:.86rem;color:var(--ce-ink2);}
+.ce-doc .ce-footer p{max-width:var(--ce-measure);margin:0 0 .8rem;}
+.ce-doc .ce-cite{font-family:var(--ce-fm);font-size:.78rem;color:var(--ce-ink3);line-height:1.7;}
+.ce-doc .ce-refs{max-width:var(--ce-measure);margin:0 0 1.2rem;padding-left:1.15rem;
+  display:grid;gap:.55rem;font-size:.9rem;color:var(--ce-ink2);}
+.ce-doc .ce-refs b{color:var(--ce-ink);font-weight:600;}
+.ce-doc .ce-ref{border-left:2px solid var(--ce-rule);padding-left:.95rem;margin:0 0 1rem;
+  max-width:var(--ce-measure);font-size:.92rem;color:var(--ce-ink2);}
+.ce-doc pre{margin:0 0 1rem;padding:.9rem 1rem;background:var(--ce-surface);
+  border:1px solid var(--ce-rule);overflow-x:auto;font-family:var(--ce-fm);
+  font-size:.78rem;line-height:1.6;color:var(--ce-ink);white-space:pre;}
+
+@media (max-width:720px){
+  .ce-doc{--ce-rail:0px;font-size:16px;}
+  .ce-doc .ce-sechead{grid-template-columns:1fr;gap:.35rem;}
+  .ce-doc .ce-secbody{grid-template-columns:minmax(0,1fr);}
+  .ce-doc .ce-secbody>*{grid-column:1;}
+  .ce-doc .ce-traps,.ce-doc .ce-ex{padding:1.15rem;}
+}
+@media (max-width:560px){
+  .ce-doc .ce-ledger>div{grid-template-columns:1fr;}
+  .ce-doc .ce-ledger .ce-chip{grid-row:auto;grid-column:1;justify-self:start;margin-bottom:.3rem;}
+  .ce-doc .ce-ledger dt,.ce-doc .ce-ledger dd{grid-column:1;}
+}
+@media (prefers-reduced-motion:reduce){
+  .ce-doc *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
+}
+</style>
+
+<div class="ce-doc">
+
+  <div class="ce-masthead">
+    <h1>Climate Explorer &mdash; Method Notes</h1>
+    <p class="ce-standfirst">
+      What this tool computes, which published method each quantity implements, and — the part
+      that matters most when you cite it — <strong>what each number actually describes</strong>.
+      The arithmetic here is not a rule of thumb: it is an implementation of somebody's published
+      method, which raises the standard for provenance and for the scope of any claim made from
+      it. Everything below is read from the source code. Where the code makes something unclear,
+      or names no source at all, this page says so rather than inferring.
+    </p>
+    <div class="ce-byline">
+      <span><b>Audience</b> Architecture students and staff</span>
+      <span><b>Method</b> ASHRAE psychrometrics &middot; NOAA solar position &middot; Givoni&ndash;Milne</span>
+      <span><b>Runs</b> Entirely in the browser</span>
+      <span><b>Documents</b> Version 1.0.0 &middot; 15 September 2026</span>
+    </div>
+  </div>
+
+  <div class="ce-traps">
+    <h2>Three things to know before you cite a number</h2>
+    <ol>
+      <li><b>The comfort figures describe outdoor air, and there are two of them.</b>
+        The psychrometric chart plots the weather file's own hours against the ASHRAE 55 still-air
+        zones. The <span class="ce-mono">Comfortable hours</span> tile is therefore the share of
+        <em>outdoor</em> hours a person standing outside in still air would find comfortable — no
+        building, fabric, gain, system or control enters it. It counts an hour that falls inside
+        <em>either</em> zone: winter 19.5&ndash;24.5&nbsp;°C or summer 22.5&ndash;27.5&nbsp;°C,
+        both bounded by humidity ratio 0.004&ndash;0.012&nbsp;kg/kg. The zones overlap over
+        22.5&ndash;24.5&nbsp;°C and an hour there is counted once. A second tile,
+        <span class="ce-mono">Outside comfort band</span>, is a <em>different quantity</em>
+        computed a different way: dry bulb alone against the two sliders you set, default 20 and
+        26&nbsp;°C, with humidity ignored. Say which one you are quoting.</li>
+      <li><b>There is no adaptive comfort in this tool, although the code contains it.</b>
+        The ASHRAE 55 adaptive band is implemented — neutral temperature
+        <span class="ce-mono">0.31&nbsp;&times;&nbsp;prevailing&nbsp;+&nbsp;17.8</span>, with the
+        ±3.5&nbsp;K and ±2.5&nbsp;K acceptability limits — and it is never called. Nothing in the
+        interface reaches it, the Comfort mode advertises an
+        <span class="ce-mono">adaptive</span> control that is never built, and the state flag
+        behind it is never read. Every comfort figure this tool reports is the static, still-air
+        zone. For a naturally ventilated building in a warm climate that understates comfort, and
+        the tool cannot be cited for adaptive comfort at all.</li>
+      <li><b>A wind frequency means nothing without its binning.</b>
+        This tool offers 8, 12, 16 or 36 direction sectors — 16 by default, centred on north — and
+        bins speed into fixed bands at <span class="ce-mono">0.5, 2, 4, 6, 8, 10&nbsp;m/s</span>.
+        Hours below 0.5&nbsp;m/s are counted as calm and held out of the direction bins entirely.
+        Change the sector count and every percentage on the rose changes, because the same hours
+        are divided among a different number of bins. Two roses drawn from the identical weather
+        file will disagree if they were binned differently, so a quoted frequency must name the
+        tool, the sector count and the speed bands — and before setting this rose beside one from
+        another application, check that application's own binning first.</li>
+    </ol>
+  </div>
+
+  <!-- 01 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-01"><span class="ce-secnum">01</span><h2>What it calculates</h2></div>
+    <div class="ce-secbody">
+      <p>Seven families of quantity. Two of them — solar position and the psychrometric state —
+        are computed for every hour of the file the moment it loads, and the rest are reductions
+        over whatever hours the analysis period selects.</p>
+
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Quantity</th><th>From</th><th>Basis</th></tr></thead>
+        <tbody>
+          <tr><td><b>Sun position, hourly</b></td><td class="ce-p">date, hour + 0.5, lat, long, time zone</td><td>NOAA General Solar Position Calculations</td></tr>
+          <tr><td><b>Humidity ratio, enthalpy, wet bulb</b></td><td class="ce-p">dry bulb, RH, station pressure</td><td>ASHRAE Handbook of Fundamentals, Ch. 1</td></tr>
+          <tr><td><b>Comfortable hours</b></td><td class="ce-p">dry bulb &amp; humidity ratio in a polygon</td><td>ASHRAE 55 still-air zones</td></tr>
+          <tr><td><b>Passive-strategy hours</b></td><td class="ce-p">the same state, three more polygons</td><td>Givoni&ndash;Milne, as Ladybug and Climate Consultant draw it</td></tr>
+          <tr><td><b>Degree days</b></td><td class="ce-p">hourly departures from a base ÷ 24</td><td><b>No source named in the code</b></td></tr>
+          <tr><td><b>Descriptive statistics</b></td><td class="ce-p">the selected hours</td><td>Mean, spread, percentiles by linear interpolation</td></tr>
+          <tr><td><b>Wind rose</b></td><td class="ce-p">direction and speed per hour</td><td>Frequency per sector and band, calm held out</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>What is read, and what is derived</h3>
+      <p>Twenty-five meteorological quantities are read straight from the file, along with the
+        year, month, day and hour of each record. Five more are computed on load and behave in
+        every other respect like file data:</p>
+      <div class="ce-formula"><em>derived on load</em>
+  solarAltitude   solarAzimuth
+  humidityRatio   enthalpy      wetBulb</div>
+      <p class="ce-note">Note which quantity is <em>not</em> in that list. <b>Dew point is read
+        from the file</b>, column 7, not recomputed from humidity — so the dew point you see is
+        the file author's value, and it need not be perfectly consistent with the humidity ratio
+        the app derives from dry bulb and relative humidity. A psychrometric dew-point inversion
+        exists in the code and is not used for the loaded series.</p>
+      <p>Both derivations are eager rather than lazy, and the source gives the reason plainly:
+        <i>"Computed once on load so view switching stays instant."</i> The cost is a few hundred
+        milliseconds at import; the benefit is that changing view, variable or period never waits
+        on a recomputation of 8,760 solar positions.</p>
+      <p>Station pressure is recorded hourly in an EPW, but not always. Where it is missing the
+        app substitutes a pressure derived from the site elevation, which comes from the LOCATION
+        header. If the header omits elevation, it is taken as <b>0&nbsp;m</b>, which is sea level
+        and not a flag — a file with no elevation silently gets sea-level pressure.</p>
+
+      <h3>Psychrometrics</h3>
+      <p>Temperatures in °C, pressures in <b>Pa</b>, humidity ratio in kg water per kg dry air,
+        enthalpy in kJ per kg dry air. Three of the four relations carry an ASHRAE equation
+        number in the source; the fourth group does not.</p>
+      <div class="ce-formula"><em>standard pressure at altitude z          ASHRAE eq. 3</em>
+  p = 101325 &times; (1 &minus; 2.25577e&minus;5 &middot; z) ^ 5.2559
+
+<em>saturation vapour pressure, T in kelvin  ASHRAE eq. 5 and 6</em>
+  over ice   (t &lt; 0 °C)
+    ln p_ws = &minus;5674.5359/T + 6.3925247 &minus; 0.009677843&middot;T
+              + 6.2215701e&minus;7&middot;T&sup2; + 2.0747825e&minus;9&middot;T&sup3;
+              &minus; 9.484024e&minus;13&middot;T&#8308; + 4.1635019&middot;ln T
+  over water (t &ge; 0 °C)
+    ln p_ws = &minus;5800.2206/T + 1.3914993 &minus; 0.048640239&middot;T
+              + 4.1764768e&minus;5&middot;T&sup2; &minus; 1.4452093e&minus;8&middot;T&sup3;
+              + 6.5459673&middot;ln T
+
+<em>no equation number cited for these three</em>
+  W = 0.621945 &middot; p_w / (p &minus; p_w)
+  h = 1.006&middot;t + W&middot;(2501 + 1.86&middot;t)
+  RH from W by inverting the first of those</div>
+      <p>Wet bulb has no closed form, and the code does not pretend otherwise. It solves the
+        adiabatic-saturation relation numerically:</p>
+      <div class="ce-formula"><em>wet bulb, by bisection                   ASHRAE eq. 33 / 35</em>
+  t_wb &ge; 0   W* = ((2501 &minus; 2.326&middot;t_wb)&middot;W_s &minus; 1.006&middot;(t &minus; t_wb))
+                   / (2501 + 1.86&middot;t &minus; 4.186&middot;t_wb)
+  t_wb &lt; 0   W* = ((2830 &minus; 0.24&middot;t_wb)&middot;W_s &minus; 1.006&middot;(t &minus; t_wb))
+                   / (2830 + 1.86&middot;t &minus; 2.1&middot;t_wb)
+
+  bracket    lo = min(dew point, dry bulb),  hi = dry bulb
+  stopping   60 halvings, fixed</div>
+      <p class="ce-note">Both bisections in the module — wet bulb, and the dew-point inversion
+        bracketed at &minus;100 to +100&nbsp;°C — run a <b>fixed 60 halvings with no tolerance
+        test and no convergence check</b>. There is no early exit and no failure return. Sixty
+        halvings of a 100&nbsp;K bracket is far below any precision the data justifies, so this
+        is not a limitation in practice; it is worth stating exactly because "converged to a
+        tolerance" would be the wrong description of what happens.</p>
+
+      <h3>Comfort</h3>
+      <p>Two zones, drawn as rectangles on the psychrometric plane. Their sides are the comfort
+        temperature limits and their top and bottom edges follow constant humidity ratio:</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Zone</th><th class="ce-n">Dry bulb</th><th class="ce-n">Humidity ratio</th></tr></thead>
+        <tbody>
+          <tr><td>Comfort &mdash; winter (1.0 clo)</td><td class="ce-d">19.5 &ndash; 24.5 °C</td><td class="ce-n">0.004 &ndash; 0.012 kg/kg</td></tr>
+          <tr><td>Comfort &mdash; summer (0.5 clo)</td><td class="ce-d">22.5 &ndash; 27.5 °C</td><td class="ce-n">0.004 &ndash; 0.012 kg/kg</td></tr>
+        </tbody>
+        <caption>The 0.012 kg/kg upper limit is the conventional one and is a settable value in the state, though no control exposes it. The clo values appear in the zone labels and nowhere else — no clothing value enters any calculation.</caption>
+      </table></div>
+      <p><b>These zone limits are fixed in the source.</b> The comfort sliders in the toolbar do
+        not move them. Those sliders drive the band drawn on the time series and the
+        <span class="ce-mono">Outside comfort band</span> tile, and nothing else.</p>
+      <p>The adaptive band is implemented and unreachable, as the opening notice says. For the
+        record, since the code contains it and a reader may find it:</p>
+      <div class="ce-formula"><em>ASHRAE 55 adaptive band  —  implemented, never called</em>
+  neutral = 0.31 &middot; prevailing + 17.8
+  80% acceptability   neutral &plusmn; 3.5 K
+  90% acceptability   neutral &plusmn; 2.5 K
+  prevailing is clamped to 10 &ndash; 33.5 °C before use, and a validity
+  flag is returned alongside — which nothing reads
+
+<em>prevailing mean outdoor temperature</em>
+  exponentially weighted running mean of daily means, &alpha; = 0.8</div>
+      <p class="ce-note">The clamp is the behaviour to understand if this is ever wired up: a
+        climate outside the standard's 10&ndash;33.5&nbsp;°C validity range does not get a refusal,
+        it gets a band computed from the clamped value. The function does return a flag saying so.
+        No caller reads it. One further detail worth knowing before trusting the running mean: it
+        is seeded from the <b>last seven daily means in the array</b> — the end of December — not
+        from the week preceding the period being evaluated.</p>
+
+      <h3>The passive-strategy polygons</h3>
+      <p>The source names its lineage directly: the polygons <i>"follow the Givoni&ndash;Milne
+        bioclimatic construction used by Ladybug and Climate Consultant: they show which hours a
+        strategy could bring into comfort."</i> There are <b>three</b>, not the full Givoni set:</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Strategy</th><th class="ce-n">Extent</th><th>What the polygon asserts</th></tr></thead>
+        <tbody>
+          <tr><td><b>Natural ventilation</b></td><td class="ce-d">22.5 &rarr; 32 °C</td><td>Comfort extends to a higher temperature when air moves, within the same humidity band.</td></tr>
+          <tr><td><b>Evaporative cooling</b></td><td class="ce-d">27.5 &rarr; 45 °C</td><td>Any state at or below the 21&nbsp;°C wet-bulb line can be driven into comfort by adding moisture. Built by sweeping that constant-wet-bulb line in 1&nbsp;K steps.</td></tr>
+          <tr><td><b>Internal heat gain</b></td><td class="ce-d">12.5 &rarr; 19.5 °C</td><td>Cool but dry hours that a building's own occupants, lights and equipment could lift into comfort.</td></tr>
+        </tbody>
+        <caption>No passive-solar polygon, no dehumidification, no humidification, no conventional heating or cooling region. A student who has met the full Givoni chart elsewhere will find four of its regions missing here.</caption>
+      </table></div>
+      <p class="ce-note">Two counting details that change what the legend percentages mean. First,
+        each polygon is counted <b>independently</b>, so the strategy percentages overlap and will
+        sum to more than 100 — they are not a partition of the year. Second, the polygons are
+        clipped to the saturation curve <b>when drawn but not when counted</b>, so a polygon whose
+        corner sits above the saturation line contributes an area to the count that the chart does
+        not show and that no real air state could occupy.</p>
+
+      <h3>Solar position</h3>
+      <p>Following the NOAA General Solar Position Calculations. Angles are degrees at the module
+        boundary and radians inside; azimuth is measured clockwise from true north; times are
+        local standard time with no daylight-saving shift, matching the EnergyPlus convention.</p>
+      <div class="ce-formula">&gamma;       = 2&pi;/365 &middot; (doy &minus; 1 + (hour &minus; 12)/24)      <em>fractional year</em>
+
+E_t     = 229.18 &middot; (0.000075 + 0.001868 cos &gamma; &minus; 0.032077 sin &gamma;
+                   &minus; 0.014615 cos 2&gamma; &minus; 0.040849 sin 2&gamma;)     <em>minutes</em>
+
+&delta;       = 0.006918 &minus; 0.399912 cos &gamma; + 0.070257 sin &gamma;
+          &minus; 0.006758 cos 2&gamma; + 0.000907 sin 2&gamma;
+          &minus; 0.002697 cos 3&gamma; + 0.00148 sin 3&gamma;          <em>declination</em>
+
+offset  = E_t + 4&middot;longitude &minus; 60&middot;timezone            <em>minutes</em>
+H       = true solar time / 4 &minus; 180                <em>hour angle, 0 at solar noon</em>
+
+cos Z   = sin &phi; sin &delta; + cos &phi; cos &delta; cos H
+azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div>
+      <p>The <span class="ce-mono">atan2</span> form is used because it is unambiguous in all four
+        quadrants; the result comes out measured from south and is shifted by 180° to read
+        clockwise from north. The fractional year uses a fixed 365-day denominator even in a leap
+        year.</p>
+      <p>Refraction is then added to the geometric altitude, in arc-seconds, divided by 3600:</p>
+      <div class="ce-formula"><em>elevation &gt; 85°</em>              0
+<em>5° &lt; elevation &le; 85°</em>        58.1/tan e &minus; 0.07/tan&sup3; e + 0.000086/tan&#8309; e
+<em>&minus;0.575° &lt; elevation &le; 5°</em>    1735 + e(&minus;518.2 + e(103.4 + e(&minus;12.79 + 0.711 e)))
+<em>elevation &le; &minus;0.575°</em>          &minus;20.772 / tan e</div>
+      <p>Sunrise and sunset use the standard <b>90.833°</b> zenith, which allows for refraction
+        and for the finite diameter of the solar disc — which is why a computed equinox day is
+        about 12.1 hours long, not 12.0. That calculation deliberately takes its declination from
+        an unrefracted call, so refraction is not counted twice. Polar day and polar night return
+        nulls and a flag rather than a nonsensical time.</p>
+      <p class="ce-note">One timing convention matters for any figure read off a sun path. An EPW
+        record describes the interval <b>ending</b> at the stated hour, so hour index <i>h</i>
+        spans <i>h</i>:00 to <i>h</i>+1:00 and the app evaluates the sun at its midpoint,
+        <i>h</i>&nbsp;+&nbsp;0.5. The hourly sun positions, the cursor marker, the shadow and the
+        shadow trace all carry that half-hour offset. The <b>drawn day arcs and analemmas do
+        not</b> — they are computed on the whole hour. So the plotted data points sit half an hour
+        after the hour lines they are read against. At mid-latitudes that is a few degrees of
+        azimuth, and it is a real offset, not a rendering artefact.</p>
+
+      <h3>Statistics</h3>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Statistic</th><th>How it is computed</th></tr></thead>
+        <tbody>
+          <tr><td class="ce-p">mean · min · max · sum</td><td>Straight reductions over the selected hours, skipping NaN.</td></tr>
+          <tr><td class="ce-p">range</td><td><span class="ce-mono">max &minus; min</span>.</td></tr>
+          <tr><td class="ce-p">standard deviation</td><td>Denominator <b>n &minus; 1</b>, the sample form. Returns 0, not NaN, when only one hour is selected.</td></tr>
+          <tr><td class="ce-p">percentile</td><td>Linear interpolation on the sorted array: rank <span class="ce-mono">= (p/100)(n&minus;1)</span>, then interpolate between the neighbouring values. The same convention as a spreadsheet's <span class="ce-mono">PERCENTILE</span> and NumPy's default.</td></tr>
+          <tr><td class="ce-p">degree days</td><td>Hourly departures from the base summed, then <b>÷ 24</b>. An hour exactly at the base contributes to neither heating nor cooling.</td></tr>
+        </tbody>
+      </table></div>
+      <p class="ce-note">The degree-day convention is worth naming precisely because several
+        exist and they do not agree. This is <b>not</b> the mean-daily-temperature method used by
+        most published degree-day series. It accumulates a degree-hour for every hour and divides
+        the total by 24, which the source justifies as handling partial days and gaps correctly —
+        and which it does. It will not reproduce a published degree-day figure for the same
+        station computed the daily-mean way, and the difference is largest in climates that cross
+        the base temperature within a day. <b>The code names no source for this convention.</b></p>
+
+      <h3>Wind-rose binning</h3>
+      <p>Frequency of each direction-sector and speed-band pair. Sector 0 is centred on north,
+        so the raw bearing is shifted by half a sector before binning. Calm hours are separated
+        rather than assigned a direction, and the source says why:</p>
+      <p class="ce-note"><i>"Calm hours (speed below <span class="ce-mono">calmThreshold</span>)
+        are counted separately rather than assigned to a direction, because EPW records calm hours
+        with direction 0, which would otherwise pile a spurious spike onto due north."</i> This is
+        a real and common defect in wind roses drawn without that precaution, and it is worth
+        checking for in any rose you are shown: a suspiciously strong due-north petal in a climate
+        with no northerly wind is usually this.</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Parameter</th><th class="ce-n">Value</th><th>Settable</th></tr></thead>
+        <tbody>
+          <tr><td>Direction sectors</td><td class="ce-d">8 · 12 · <b>16</b> · 36</td><td>Yes, in the toolbar. Cardinal labels appear only at 16; other counts are labelled in degrees.</td></tr>
+          <tr><td>Speed bands</td><td class="ce-d">0.5 · 2 · 4 · 6 · 8 · 10 m/s</td><td><b>No.</b> Six bands, the last open-topped. Wind mode advertises a control for this that does not exist.</td></tr>
+          <tr><td>Calm threshold</td><td class="ce-d">0.5 m/s</td><td><b>No.</b> Fixed in the source.</td></tr>
+        </tbody>
+        <caption>An hour with a finite speed but a missing direction is counted in the total and then dropped, so the petals and the calm disc together can account for slightly less than the whole selection.</caption>
+      </table></div>
+    </div>
+  </div>
+
+  <!-- 02 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-02"><span class="ce-secnum">02</span><h2>The data</h2></div>
+    <div class="ce-secbody">
+      <h3>a. What the parser reads</h3>
+      <p>An EPW file is eight header lines followed by one comma-separated record per hour. The
+        parser reads six of the eight headers and ignores two entirely:</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th class="ce-n">Line</th><th>Header</th><th>Read?</th><th>What is taken from it</th></tr></thead>
+        <tbody>
+          <tr><td class="ce-n">1</td><td class="ce-p">LOCATION</td><td><span class="ce-chip is-in">yes</span></td><td>Mandatory. Parsing fails without a usable latitude and longitude.</td></tr>
+          <tr><td class="ce-n">2</td><td class="ce-p">DESIGN CONDITIONS</td><td><span class="ce-chip is-out">no</span></td><td>Never read. The heating and cooling design values an engineer would want are in the file and are not available in the app.</td></tr>
+          <tr><td class="ce-n">3</td><td class="ce-p">TYPICAL/EXTREME PERIODS</td><td><span class="ce-chip is-in">yes</span></td><td>Each becomes a selectable preset in the analysis-period menu.</td></tr>
+          <tr><td class="ce-n">4</td><td class="ce-p">GROUND TEMPERATURES</td><td><span class="ce-chip is-in">yes</span></td><td>Depth and twelve monthly values per depth. Soil conductivity, density and specific heat are read past and discarded.</td></tr>
+          <tr><td class="ce-n">5</td><td class="ce-p">HOLIDAYS/DAYLIGHT SAVINGS</td><td><span class="ce-chip is-out">no</span></td><td>Never read. All times are local standard time; no daylight-saving shift is ever applied.</td></tr>
+          <tr><td class="ce-n">6</td><td class="ce-p">COMMENTS 1</td><td><span class="ce-chip is-in">yes</span></td><td>Kept whole and shown. This is usually where the file's own provenance lives.</td></tr>
+          <tr><td class="ce-n">7</td><td class="ce-p">COMMENTS 2</td><td><span class="ce-chip is-in">yes</span></td><td>As above.</td></tr>
+          <tr><td class="ce-n">8</td><td class="ce-p">DATA PERIODS</td><td><span class="ce-chip is-part">partly</span></td><td>Parsed and displayed, but not used to size anything. The record count comes from counting data lines.</td></tr>
+        </tbody>
+        <caption>Field order and the missing-value sentinels follow the EnergyPlus Auxiliary Programs "EnergyPlus Weather File (EPW) Data Dictionary", which the source names and which is the only specification it cites.</caption>
+      </table></div>
+
+      <h4>The LOCATION line</h4>
+      <p>Ten comma-separated tokens, of which two are load-bearing and two have quiet fallbacks:</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th class="ce-n">Token</th><th>Meaning</th><th>Handling</th></tr></thead>
+        <tbody>
+          <tr><td class="ce-n">1&ndash;5</td><td>City, state, country, data source, WMO number</td><td>Trimmed. A lone <span class="ce-mono">-</span> or <span class="ce-mono">_</span> becomes empty. The WMO number is kept as text.</td></tr>
+          <tr><td class="ce-n">6, 7</td><td>Latitude, longitude</td><td><b>Mandatory.</b> A file without both is rejected with an error.</td></tr>
+          <tr><td class="ce-n">8</td><td>Time zone, hours from UTC</td><td>If missing, <b>estimated</b> as longitude ÷ 15, rounded. Every sun position in the file then rests on that estimate.</td></tr>
+          <tr><td class="ce-n">9</td><td>Elevation, metres</td><td>If missing, taken as <b>0</b>. Used for the station-pressure fallback.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h4>The field registry</h4>
+      <p>Twenty-five quantities, at fixed 0-based positions in the hourly record:</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th class="ce-n">Idx</th><th>Quantity</th><th>Unit</th><th class="ce-n">Sentinel</th><th class="ce-n">Idx</th><th>Quantity</th><th>Unit</th><th class="ce-n">Sentinel</th></tr></thead>
+        <tbody>
+          <tr><td class="ce-n">6</td><td>Dry bulb temperature</td><td class="ce-p">°C</td><td class="ce-d">99.9</td>
+              <td class="ce-n">19</td><td>Zenith luminance</td><td class="ce-p">cd/m²</td><td class="ce-d">9999</td></tr>
+          <tr><td class="ce-n">7</td><td>Dew point temperature</td><td class="ce-p">°C</td><td class="ce-d">99.9</td>
+              <td class="ce-n">20</td><td>Wind direction</td><td class="ce-p">°</td><td class="ce-d">999</td></tr>
+          <tr><td class="ce-n">8</td><td>Relative humidity</td><td class="ce-p">%</td><td class="ce-d">999</td>
+              <td class="ce-n">21</td><td>Wind speed</td><td class="ce-p">m/s</td><td class="ce-d">999</td></tr>
+          <tr><td class="ce-n">9</td><td>Station pressure</td><td class="ce-p">Pa</td><td class="ce-d">999999</td>
+              <td class="ce-n">22</td><td>Total sky cover</td><td class="ce-p">tenths</td><td class="ce-d">99</td></tr>
+          <tr><td class="ce-n">10</td><td>Extraterrestrial horizontal</td><td class="ce-p">Wh/m²</td><td class="ce-d">9999</td>
+              <td class="ce-n">23</td><td>Opaque sky cover</td><td class="ce-p">tenths</td><td class="ce-d">99</td></tr>
+          <tr><td class="ce-n">11</td><td>Extraterrestrial direct normal</td><td class="ce-p">Wh/m²</td><td class="ce-d">9999</td>
+              <td class="ce-n">24</td><td>Visibility</td><td class="ce-p">km</td><td class="ce-d">9999</td></tr>
+          <tr><td class="ce-n">12</td><td>Horizontal infrared from sky</td><td class="ce-p">Wh/m²</td><td class="ce-d">9999</td>
+              <td class="ce-n">25</td><td>Ceiling height</td><td class="ce-p">m</td><td class="ce-d">99999</td></tr>
+          <tr><td class="ce-n">13</td><td>Global horizontal radiation</td><td class="ce-p">Wh/m²</td><td class="ce-d">9999</td>
+              <td class="ce-n">28</td><td>Precipitable water</td><td class="ce-p">mm</td><td class="ce-d">999</td></tr>
+          <tr><td class="ce-n">14</td><td>Direct normal radiation</td><td class="ce-p">Wh/m²</td><td class="ce-d">9999</td>
+              <td class="ce-n">29</td><td>Aerosol optical depth</td><td class="ce-p">&mdash;</td><td class="ce-d">0.999</td></tr>
+          <tr><td class="ce-n">15</td><td>Diffuse horizontal radiation</td><td class="ce-p">Wh/m²</td><td class="ce-d">9999</td>
+              <td class="ce-n">30</td><td>Snow depth</td><td class="ce-p">cm</td><td class="ce-d">999</td></tr>
+          <tr><td class="ce-n">16</td><td>Global horizontal illuminance</td><td class="ce-p">lux</td><td class="ce-d">999900</td>
+              <td class="ce-n">32</td><td>Albedo</td><td class="ce-p">&mdash;</td><td class="ce-d">999</td></tr>
+          <tr><td class="ce-n">17</td><td>Direct normal illuminance</td><td class="ce-p">lux</td><td class="ce-d">999900</td>
+              <td class="ce-n">33</td><td>Liquid precipitation depth</td><td class="ce-p">mm</td><td class="ce-d">999</td></tr>
+          <tr><td class="ce-n">18</td><td>Diffuse horizontal illuminance</td><td class="ce-p">lux</td><td class="ce-d">999900</td>
+              <td></td><td></td><td></td><td></td></tr>
+        </tbody>
+        <caption>Columns 4 (minute), 5 (source and uncertainty flags), 26 and 27 (present weather), 31 (days since snowfall) and 34 (liquid precipitation quantity) are not read at all. Eleven of the twenty-five are marked secondary and appear below the common variables in the menu.</caption>
+      </table></div>
+
+      <h4>Missing values, and the "&ge;" rule</h4>
+      <p>EPW writes a sentinel where a value is absent, and writers are not consistent about
+        which sentinel they use. The parser therefore treats the documented value as a threshold
+        rather than as an exact match. The source states it directly:</p>
+      <p class="ce-note"><i>"Values at or above the sentinel are normalised to NaN by the parser
+        (EPW writers are inconsistent, e.g. illuminance uses both 999999 and 999900), so the
+        threshold is treated as '&ge;'."</i></p>
+      <p>Two details of that test matter. It compares the <b>magnitude</b> of the value, so
+        &minus;99.9 is discarded as missing exactly as +99.9 is. And the threshold sits an
+        epsilon below the sentinel, so the sentinel itself reliably trips the test rather than
+        surviving a floating-point comparison. A value becomes <span class="ce-mono">NaN</span> in
+        four cases: the column is absent from a short record, the column is empty, the text does
+        not parse as a finite number, or its magnitude reaches the threshold.</p>
+      <p class="ce-note">The honest consequence: a genuine reading at or beyond the sentinel
+        magnitude is thrown away. For most fields that is unreachable — no ceiling is 99,999&nbsp;m
+        — but <b>aerosol optical depth is discarded at 0.999</b>, which is a physically attainable
+        value, and total sky cover is discarded at 99 tenths. This is the intended trade and it is
+        the right one, but it is a trade.</p>
+      <p>Values that parse cleanly but fall outside the documented valid range are handled the
+        other way round: they are <b>kept, counted, and reported as a warning</b> rather than
+        silently nulled, on the principle that a real data problem should be visible. A file
+        carrying 110% relative humidity will say so and will plot it.</p>
+      <p class="ce-note">Two structural limits, for completeness. Sub-hourly files are effectively
+        unsupported: the records-per-hour value is parsed, but the internal calendar has 24 slots
+        per day, so with more than one record per hour the later record overwrites the earlier.
+        And EPW numbers its hours 1&ndash;24, where 24 is the interval ending at midnight of the
+        same day; the parser maps that to a 0&ndash;23 index on that same day.</p>
+
+      <h3>b. What the app ships with</h3>
+      <p><b>No weather data at all.</b> The app opens empty, on a card offering two public
+        archives to download from, and every figure a student produces comes from a file they
+        supplied.</p>
+      <p>This is a decision, not an omission, and the mechanism to reverse it is still in place.
+        The build can gzip an EPW, base64-encode it, and substitute it into a constant that the
+        app inflates at startup with the browser's own decompression — no library and no network
+        request. That constant is deliberately empty. The source records why:</p>
+      <p class="ce-note"><i>"The app ships with NO weather data: publishing it means
+        redistributing whatever is embedded here to every visitor, and third-party weather files
+        carry their own attribution terms. Students load their own EPW instead."</i></p>
+      <p>With the constant empty, the availability check is permanently false, the loader returns
+        nothing, and the app goes straight to its empty state — which is the shipped behaviour,
+        confirmed in the built file. The build prints a warning on every run to say no sample was
+        embedded, so the state is deliberate and visible rather than forgotten.</p>
+    </div>
+  </div>
+
+  <!-- 03 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-03"><span class="ce-secnum">03</span><h2>The views and the modes</h2></div>
+    <div class="ce-secbody">
+      <p>Twelve views — eight drawn on a 2D canvas, four in WebGL — and five modes that arrange
+        them. The distinction to hold on to is that <b>a mode is a teaching workflow, not a
+        different calculation</b>.</p>
+
+      <div class="ce-tbl"><table>
+        <thead><tr><th>View</th><th class="ce-n">Kind</th><th>What it shows</th></tr></thead>
+        <tbody>
+          <tr><td><b>Annual heatmap</b></td><td class="ce-d">2D</td><td>Every hour of the year as one picture: day across, hour of day up. Hours outside the analysis period are faded rather than removed.</td></tr>
+          <tr><td><b>Time series</b></td><td class="ce-d">2D</td><td>The daily minimum&ndash;maximum band through the year, with the daily mean drawn over it.</td></tr>
+          <tr><td><b>Daily profiles</b></td><td class="ce-d">2D</td><td>The average 24-hour curve for each month, twelve lines on one axis.</td></tr>
+          <tr><td><b>Monthly statistics</b></td><td class="ce-d">2D</td><td>Monthly mean, a 25th&ndash;75th percentile box and 5th&ndash;95th whiskers.</td></tr>
+          <tr><td><b>Distribution</b></td><td class="ce-d">2D</td><td>A frequency histogram with the cumulative curve stacked below it, sharing one axis.</td></tr>
+          <tr><td><b>Psychrometric chart</b></td><td class="ce-d">2D</td><td>Hours binned as a density field, &minus;10 to 50&nbsp;°C against 0 to 0.030&nbsp;kg/kg, with the comfort zones and strategy polygons over it.</td></tr>
+          <tr><td><b>Wind rose</b></td><td class="ce-d">2D</td><td>Frequency by direction sector and speed band, with calm hours as a centre disc.</td></tr>
+          <tr><td><b>Sun path (2D)</b></td><td class="ce-d">2D</td><td>Stereographic or orthographic. Day arcs for the solstices, the equinox and the first of each month, plus an analemma for each clock hour.</td></tr>
+          <tr><td><b>Sun path dome</b></td><td class="ce-d">3D</td><td>The sky hemisphere, orbitable, one arc per month and a marker at the cursor instant.</td></tr>
+          <tr><td><b>Annual surface</b></td><td class="ce-d">3D</td><td>The heatmap extruded into relief: 24 hours across, 365 days deep, value as both height and colour.</td></tr>
+          <tr><td><b>Wind rose (3D)</b></td><td class="ce-d">3D</td><td>Direction around, speed band outward, frequency as height.</td></tr>
+          <tr><td><b>Massing &amp; shadows</b></td><td class="ce-d">3D</td><td>A ground plane and an adjustable block casting the true projected sun shadow at the cursor instant, with an optional hourly trace.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>What a mode actually does</h3>
+      <p>Five modes — Thermal, Solar, Wind, Daylight and Comfort. Each carries a blurb, a list of
+        views, a list of variables and a list of relevant controls. Switching mode has exactly
+        four effects:</p>
+      <ol>
+        <li><b>It filters the view shelf</b> to that mode's views, in that mode's order. A view
+          you reached from elsewhere is appended rather than hidden, so nothing becomes
+          unreachable.</li>
+        <li><b>It chooses the opening view and variable.</b> The current view is kept if it
+          happens to belong to the new mode, otherwise the mode's first view is selected. The
+          variable becomes the first of the mode's variables that the loaded file actually
+          contains.</li>
+        <li><b>It re-orders the variable menu</b> into two groups — the mode's variables first,
+          then everything else in the file.</li>
+        <li><b>It gates two chart overlays:</b> the degree-day overlay appears in Thermal mode,
+          and the comfort band in Thermal and Comfort.</li>
+      </ol>
+      <p>That is the whole of it. <b>No statistical, psychrometric or solar function ever receives
+        the mode or anything derived from it.</b> Switching mode can change which variable is
+        selected, which changes which numbers are on screen — but it changes the input, never the
+        arithmetic. The same file, period and variable give the same numbers in any mode.</p>
+      <p class="ce-note">Two loose ends in the mode definitions, worth knowing if you read the
+        source. The list of "relevant controls" each mode carries is almost entirely decorative:
+        it is consulted <b>once</b>, to dim the date-and-time group, and it hides nothing. And two
+        of the names in those lists — <span class="ce-mono">speedBands</span> in Wind mode and
+        <span class="ce-mono">adaptive</span> in Comfort mode — refer to controls that are never
+        built.</p>
+
+      <h3>Compare</h3>
+      <p>Compare splits the stage into two panels, A and B, from one of two sources: <b>another
+        period</b> of the same file, or <b>another file</b> entirely. Every one of the twelve
+        views renders into both panels; none opts out.</p>
+      <p>What is shared and what is not is the thing to get right before quoting a comparison.
+        Only two things differ between the panels: the analysis period, in period mode, and the
+        dataset, in file mode. Variable, units, theme, every statistical option, the massing
+        parameters and the cursor instant are global and apply to both.</p>
+      <p class="ce-note"><b>Colour scales are computed per panel, from that panel's own data.</b>
+        In period compare both panels draw on the same file, so the scales are genuinely
+        identical and the colours are comparable. In <b>two-file compare they are not</b>: each
+        panel takes its own minimum and maximum, so the same colour means a different value on
+        the left and on the right. Read the numbers, not the colours, whenever the two panels hold
+        two different climates.</p>
+      <p>Three further asymmetries: the readout tiles above the stage always describe <b>panel
+        A</b>, never B; PNG and CSV export likewise always take panel A; and selecting the
+        two-file source before loading a second file silently shows the first file in both panels
+        with no warning.</p>
+    </div>
+  </div>
+
+  <!-- 04 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-04"><span class="ce-secnum">04</span><h2>What is and isn't modelled</h2></div>
+    <div class="ce-secbody">
+      <h3>Included</h3>
+      <dl class="ce-ledger">
+        <div><span class="ce-chip is-in">In</span><dt>Hourly solar geometry</dt><dd>Altitude and azimuth for every hour of the file, by the NOAA algorithm, with refraction, and with sunrise, sunset, solar noon and day length at the 90.833° zenith. Polar day and night are reported rather than fudged.</dd></div>
+        <div><span class="ce-chip is-in">In</span><dt>The psychrometric state of outdoor air</dt><dd>Humidity ratio, enthalpy and wet bulb for every hour, by the ASHRAE Handbook formulations, at the file's own station pressure where it has one.</dd></div>
+        <div><span class="ce-chip is-in">In</span><dt>ASHRAE 55 still-air comfort zones</dt><dd>Two zones with the conventional 0.012 kg/kg humidity limit, and the share of outdoor hours falling inside either.</dd></div>
+        <div><span class="ce-chip is-in">In</span><dt>Three Givoni&ndash;Milne strategies</dt><dd>Natural ventilation, evaporative cooling and internal heat gain, as regions of the psychrometric plane, counted against the file's hours.</dd></div>
+        <div><span class="ce-chip is-in">In</span><dt>A real projected shadow</dt><dd>A block of your dimensions and orientation, casting the actual sun shadow for the chosen instant, with an hourly trace through the day. The rotation is applied to every vertex, so the drawn block and the projected shadow cannot disagree.</dd></div>
+        <div><span class="ce-chip is-in">In</span><dt>Descriptive statistics and degree days</dt><dd>Over any period, including periods that wrap the year end or midnight.</dd></div>
+        <div><span class="ce-chip is-part">Partly</span><dt>Comfort</dt><dd>Still-air zones only. The adaptive band is implemented in the code and unreachable from the interface, so no adaptive result can be produced.</dd></div>
+        <div><span class="ce-chip is-part">Partly</span><dt>Daylight</dt><dd>The file's three illuminance columns and sky cover are read, plotted and reduced like any other variable. Nothing is computed from them — this is daylight <em>availability</em>, not daylight modelling.</dd></div>
+      </dl>
+
+      <h3>Not modelled</h3>
+      <p>These are the assumptions a student is most likely to make wrongly, because an
+        environmental analysis tool would generally handle them.</p>
+      <dl class="ce-ledger">
+        <div><span class="ce-chip is-out">Out</span><dt>Any building</dt><dd>No fabric, no U-value, no thermal mass, no glazing, no orientation of a surface, no zone, no occupancy, no internal gain, no system and no control. The massing block casts a shadow and has no other property; it is a solid with dimensions, not a building.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>The other four comfort variables</dt><dd>Radiant temperature, air speed, clothing and metabolic rate enter nothing. The comfort evaluation is a rectangle on the psychrometric plane, fixed at still air; the clo values survive only as text in the two zone labels. No PMV, no PPD, no SET.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Adaptive comfort</dt><dd>Implemented, tested, exported and never called. No control reaches it. Stated here as a limit of the shipped tool rather than of the code.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Any energy calculation</dt><dd>No load, no demand, no consumption, no plant, no efficiency, no carbon. Degree days are a climate statistic here, not an energy estimate, and multiplying them by anything to get a load is your assumption, not the tool's.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Solar radiation on anything but the horizontal</dt><dd>The file's global, direct and diffuse values are read and plotted as recorded. Nothing is transposed onto a tilted or vertical surface, so there is no irradiation on a façade, no incident-angle calculation and no shading factor.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Climate change, trend or projection</dt><dd>A typical meteorological year is a synthesised representative year assembled from months of different real years. <b>No date in it is a date that happened.</b> There is no trend to extract, no future weather file generation, no morphing, and the year label on a record means nothing on its own.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Design conditions</dt><dd>The DESIGN CONDITIONS header, which carries the percentile design temperatures an engineer sizes plant against, is in every EPW file and is never read. You cannot get a design condition out of this tool.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Daylight saving and local clock time</dt><dd>Everything is local standard time. The HOLIDAYS/DAYLIGHT SAVINGS header is not read. An occupied-hours analysis over a summer period is therefore an hour out from the clock the occupants actually keep.</dd></div>
+        <div><span class="ce-chip is-part">Note</span><dt>Ground temperatures</dt><dd>Parsed from the header and available, but no ground-coupling calculation of any kind uses them.</dd></div>
+      </dl>
+
+      <h3>What it is safe to cite this tool for</h3>
+      <p class="ce-note">Cite it as an instrument for <b>reading a weather file</b>: the climate's
+        structure through the year, its psychrometric shape, its solar geometry, its wind regime,
+        and which passive strategies its outdoor conditions sit near. Do not cite it for a
+        building's performance, for a comfort result about occupants, for an energy or carbon
+        figure, or for anything that must satisfy a regulation. It computes properties of a
+        climate, and a climate is not a building.</p>
+    </div>
+  </div>
+
+  <!-- 05 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-05"><span class="ce-secnum">05</span><h2>How exact the numbers are</h2></div>
+    <div class="ce-secbody">
+      <p>Because these quantities are defined by published standards, "accuracy" splits into three
+        separate questions that are easy to run together and should not be. How faithfully does
+        the code implement the method it names? How much precision survives the arithmetic? And
+        how representative is the file it was given? The three have different answers, and the
+        third dominates.</p>
+
+      <h3>Fidelity to the standard</h3>
+      <p>Where the source cites an equation number, it implements that equation with its published
+        coefficients, and the implementation is checked against published values — saturation
+        pressure against ASHRAE Fundamentals Table 1 across &minus;10 to 40&nbsp;°C to within
+        0.05%, and the 25&nbsp;°C / 50% RH state against published psychrometric values. The
+        departures are these, all of them deliberate or structural rather than errors:</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Where it simplifies</th><th>Consequence</th></tr></thead>
+        <tbody>
+          <tr><td>The fractional year uses a fixed 365-day denominator, including in leap years.</td><td>A fraction of a degree of declination late in a leap year. Invisible at the scale of any sun path drawn here.</td></tr>
+          <tr><td>Both bisections run 60 fixed halvings with no tolerance test.</td><td>None in practice — 60 halvings resolve far below the data's own precision — but it is not "converged to a tolerance" and should not be described that way.</td></tr>
+          <tr><td>Three Givoni polygons, not the full set.</td><td>Four regions of the published chart are absent. A climate whose hours fall in them is simply uncoloured, not reported as unserved.</td></tr>
+          <tr><td>Strategy hours are counted on the <em>unclipped</em> polygon.</td><td>A polygon corner above the saturation curve contributes area to the percentage that the chart does not draw and that no real air state occupies.</td></tr>
+          <tr><td>Strategy percentages are counted independently.</td><td>They overlap and sum to more than 100. They are not shares of a partition.</td></tr>
+          <tr><td>Degree-day totals are never unit-converted.</td><td>They stay in °C·day whatever the SI / IP toggle says.</td></tr>
+          <tr><td>Day arcs and analemmas omit the half-hour offset that the data carries.</td><td>Plotted points sit half an hour after the hour lines drawn behind them.</td></tr>
+        </tbody>
+      </table></div>
+
+      <h3>Numerical precision</h3>
+      <p>Every hourly series — read or derived — is stored in a <b>32-bit float</b>. There is no
+        64-bit array anywhere in the application. The arithmetic itself runs at full double
+        precision and the narrowing happens only at the store, so roughly <b>seven significant
+        decimal digits</b> survive per value.</p>
+      <p>For weather data this is the right trade and costs nothing that matters: a dry bulb of
+        17.3&nbsp;°C, an illuminance of 42,500&nbsp;lux and a pressure of 101,325&nbsp;Pa are all
+        exactly or near-exactly representable, and the measurements themselves carry two or three
+        significant figures. Worth knowing rather than worrying about. One reassurance: the
+        missing-value test is applied <em>before</em> the narrowing, so no sentinel can slip
+        through because of it.</p>
+
+      <h3>The input, which is where the real uncertainty lives</h3>
+      <p class="ce-note">A typical meteorological year is <b>one synthesised year for one
+        station</b>. Its months are drawn from different real years, chosen to be individually
+        representative, and stitched together. It therefore has no interannual variability in it,
+        it contains no real extreme event in its real sequence, and it describes the station, not
+        your site. A rooftop three kilometres away and forty metres higher, inside an urban heat
+        island, is a different climate. Every figure this tool produces is exact <em>about that
+        file</em> and inherits all of the file's distance from the place you are designing for.
+        That distance is larger than every numerical consideration above, combined.</p>
+
+      <h3>What is actually asserted</h3>
+      <p>The parts of the arithmetic that <em>can</em> be checked, are, in an automated suite of
+        <b>53 tests making 229 assertions</b> across four files, run against three real weather
+        files — Chicago O'Hare TMY3, London Gatwick IWEC and London St James's Park TMYx.</p>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Covered</th><th>How</th></tr></thead>
+        <tbody>
+          <tr><td>Psychrometrics</td><td>Saturation pressure against ASHRAE Fundamentals Table 1; the 25&nbsp;°C / 50% RH state against published values; dry bulb, wet bulb and dew point converging at saturation; pressure against elevation.</td></tr>
+          <tr><td>Solar geometry</td><td>Noon altitude against latitude and declination; azimuth due south or north by hemisphere; equinox sunrise due east at every latitude; symmetry about solar noon; solstice day lengths; polar day and night reported rather than returned as NaN; refraction confined to the horizon.</td></tr>
+          <tr><td>Statistics</td><td>Against hand-computed values; percentile interpolation against the spreadsheet convention; Chicago TMY3 against published annual statistics; circular mean across the 0/360 wrap; histogram counts and a CDF ending at 1.</td></tr>
+          <tr><td>Period selection</td><td>Both wrapping behaviours, including a December&ndash;February period and a 22:00&ndash;06:00 window <em>at the same time</em>.</td></tr>
+          <tr><td>Parsing</td><td>The LOCATION line field by field; 8760 and 8784-hour files; sentinels becoming NaN; dew point never exceeding dry bulb; quoted comments containing commas.</td></tr>
+          <tr><td>ASHRAE 55 adaptive band</td><td>The formula and its clamping — the one part of the tool tested but not reachable.</td></tr>
+        </tbody>
+        <caption>That tells you the tool computes what it says it computes. It says nothing about whether the weather file is a good description of your site.</caption>
+      </table></div>
+      <p class="ce-note">What is <b>not</b> covered, stated plainly: no view module has a unit
+        test — not one of the eight 2D charts, not one of the four 3D scenes. Neither has the
+        whole interface layer, the unit conversion functions, the comfort-polygon geometry, the
+        point-in-polygon test or the shadow projection. Around a hundred screenshots are committed
+        to the repository, but there is <b>no image comparison</b> against them, so they are
+        evidence for a human to look at, not a regression test. There is no continuous
+        integration and no linter. The physics is well asserted; the drawing of it is asserted by
+        eye.</p>
+    </div>
+  </div>
+
+  <!-- 06 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-06"><span class="ce-secnum">06</span><h2>Inputs you control</h2></div>
+    <div class="ce-secbody">
+      <h4>The analysis period</h4>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Parameter</th><th class="ce-n">Default</th><th class="ce-n">Range</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Preset</td><td class="ce-d">Whole year</td><td class="ce-n">7 + file's own</td><td>Year, the four seasons, occupied 08&ndash;18, night 22&ndash;06, plus every typical and extreme week the file's header declares</td></tr>
+          <tr><td>From / to date</td><td class="ce-d">1 Jan &ndash; 31 Dec</td><td class="ce-n">any day</td><td>Both ends inclusive. Days are clamped to the month's length, leap-aware</td></tr>
+          <tr><td>From / to hour</td><td class="ce-d">0 &ndash; 23</td><td class="ce-n">0 &ndash; 23</td><td>Both ends inclusive</td></tr>
+        </tbody>
+      </table></div>
+      <p><b>Both ranges wrap, and the wrap is implicit in the order of the two ends.</b> Set the
+        end earlier than the start and the selection runs through the boundary rather than coming
+        out empty:</p>
+      <div class="ce-formula"><em>date wraps when from &gt; to</em>
+  1 Dec &rarr; 28 Feb   selects December, January and February
+
+<em>hour wraps when fromHour &gt; toHour</em>
+  22 &rarr; 6           selects 22, 23, 0, 1 … 6  =  nine hours per day
+
+<em>and the two compose independently</em>
+  1 Dec &rarr; 28 Feb, 22 &rarr; 6   selects winter nights only</div>
+
+      <h4>The cursor instant</h4>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Parameter</th><th class="ce-n">Default</th><th class="ce-n">Range</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Date</td><td class="ce-d">21 June</td><td class="ce-n">any day</td><td>Chips for the two solstices and the March equinox</td></tr>
+          <tr><td>Hour</td><td class="ce-d">12</td><td class="ce-n">0 &ndash; 23</td><td>Arrow keys step an hour and roll the date both ways</td></tr>
+          <tr><td>Play</td><td class="ce-d">off</td><td class="ce-n">&mdash;</td><td>Advances one hour every 260 ms, wrapping December to January</td></tr>
+        </tbody>
+        <caption>Clicking a cell in a 2D view sets the cursor date, and the hour too where the view has one. The cursor drives the sun path marker, the massing shadow and the readout, and it never affects a statistic.</caption>
+      </table></div>
+
+      <h4>Statistics and comfort</h4>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Parameter</th><th class="ce-n">Default</th><th class="ce-n">Range</th><th>Notes</th></tr></thead>
+        <tbody>
+          <tr><td>Aggregation</td><td class="ce-d">Mean</td><td class="ce-n">4 options</td><td>Mean, min, max, total</td></tr>
+          <tr><td>Percentile</td><td class="ce-d">50</td><td class="ce-n">1 &ndash; 99</td><td></td></tr>
+          <tr><td>Degree-day base</td><td class="ce-d">18 °C</td><td class="ce-n">5 &ndash; 30, step 0.5</td><td>Also sets the midpoint of the diverging colour ramp for any °C variable &mdash; see below</td></tr>
+          <tr><td>Histogram bins</td><td class="ce-d">30</td><td class="ce-n">6 &ndash; 80</td><td></td></tr>
+          <tr><td>Comfort band, lower</td><td class="ce-d">20 °C</td><td class="ce-n">10 &ndash; 28, step 0.5</td><td>Drives the time-series band and one readout tile. <b>Does not move the psychrometric zones</b></td></tr>
+          <tr><td>Comfort band, upper</td><td class="ce-d">26 °C</td><td class="ce-n">18 &ndash; 36, step 0.5</td><td>As above. <b>Nothing stops you setting it below the lower limit</b></td></tr>
+          <tr><td>Humidity limit</td><td class="ce-d">0.012 kg/kg</td><td class="ce-n">&mdash;</td><td>Live state, used by the zones and the comfort share. <b>No control exposes it</b></td></tr>
+          <tr><td>Passive strategies</td><td class="ce-d">on</td><td class="ce-n">on / off</td><td>One switch for all three polygons, not one per strategy</td></tr>
+          <tr><td>Adaptive</td><td class="ce-d">off</td><td class="ce-n">&mdash;</td><td><b>Declared in the state and read by nothing.</b> No control is built for it</td></tr>
+          <tr><td>Wind sectors</td><td class="ce-d">16</td><td class="ce-n">8 · 12 · 16 · 36</td><td></td></tr>
+          <tr><td>Wind speed bands</td><td class="ce-d">0.5 &ndash; 10 m/s</td><td class="ce-n">&mdash;</td><td><b>Fixed.</b> No control, despite Wind mode naming one</td></tr>
+        </tbody>
+      </table></div>
+      <p class="ce-note">The degree-day base has a second effect that is easy to miss and useful
+        once you know it. It also sets the <b>midpoint of the diverging colour ramp</b> for any
+        temperature variable, so blue reads as "below the balance point, needs heating" and red as
+        "above it, needs cooling". Change the base and the heatmap re-colours. That is deliberate,
+        and it means the colours in a heatmap carry an assumption you chose.</p>
+
+      <h4>Massing</h4>
+      <div class="ce-tbl"><table>
+        <thead><tr><th>Parameter</th><th class="ce-n">Default</th><th class="ce-n">Range</th></tr></thead>
+        <tbody>
+          <tr><td>Width</td><td class="ce-d">18 m</td><td class="ce-n">4 &ndash; 80</td></tr>
+          <tr><td>Depth</td><td class="ce-d">12 m</td><td class="ce-n">4 &ndash; 80</td></tr>
+          <tr><td>Height</td><td class="ce-d">14 m</td><td class="ce-n">3 &ndash; 120</td></tr>
+          <tr><td>Rotation</td><td class="ce-d">0°</td><td class="ce-n">&minus;90 &ndash; +90</td></tr>
+          <tr><td>Perimeter block</td><td class="ce-d">off</td><td class="ce-n">on / off</td></tr>
+          <tr><td>Hourly shadow trace</td><td class="ce-d">on</td><td class="ce-n">on / off</td></tr>
+        </tbody>
+        <caption>Shadows are cast only above 1° solar altitude, and the hourly trace skips hours at or below 5°, where a very low sun throws the shadow off the site entirely.</caption>
+      </table></div>
+
+      <h4>Units, and the difference between a temperature and a temperature difference</h4>
+      <p>The SI / IP toggle converts every field by its own factor. Temperature is the one case
+        where the conversion depends on what the number <em>means</em>: 20&nbsp;°C is 68&nbsp;°F,
+        but a spread of 20&nbsp;°C is a spread of 36&nbsp;°F, not 68. The code keeps two separate
+        converters for exactly this, and applies the difference form to the spread figure under
+        the range tile.</p>
+      <p class="ce-note">Two gaps to know about. The difference converter is used in <b>exactly
+        one place</b>, so any other interval-valued figure on screen — including the label under a
+        comfort slider — goes through the absolute form. And degree-day totals are not converted
+        at all, staying in °C·day whatever the toggle says.</p>
+
+      <h4>Controls that change nothing numerical</h4>
+      <p>Theme, presentation mode, PNG resolution, the analysis mode itself, the sun-path
+        projection and its tint, the sunrise&ndash;sunset overlay, the shadow trace and analemma
+        switches, and all camera movement in the 3D views. None of these touches a calculation.
+        PNG resolution is worth one note: the chart is genuinely <b>re-rendered</b> at the higher
+        density rather than a finished image being stretched, so the layout is identical and only
+        the pixel count rises.</p>
+      <p class="ce-note"><b>Massing rotation is not in that list.</b> It is a model parameter, not
+        a camera. Rotating the block rotates every vertex and every footprint corner before the
+        shadow is projected, so the shape, extent and orientation of the computed shadow all
+        change with it. Orbiting the camera changes nothing; rotating the block changes the
+        result.</p>
+    </div>
+  </div>
+
+  <!-- 07 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-07"><span class="ce-secnum">07</span><h2>Compared with Climate Consultant and Ladybug</h2></div>
+    <div class="ce-secbody">
+      <h3>Where it should agree</h3>
+      <ul>
+        <li><b>The psychrometric quantities.</b> Humidity ratio, enthalpy and wet bulb follow the
+          ASHRAE Handbook formulations that all three tools use, at the same station pressure. A
+          state computed here and in Climate Consultant should agree to the precision either
+          displays.</li>
+        <li><b>The strategy polygons, in principle.</b> The source names the Givoni&ndash;Milne
+          construction "used by Ladybug and Climate Consultant" as the thing it follows, so
+          agreement on the three strategies it draws is the expectation rather than a
+          coincidence.</li>
+        <li><b>Solar position.</b> The NOAA algorithm is the one most of this family of tools
+          uses. Altitude and azimuth should agree to a fraction of a degree.</li>
+        <li><b>Descriptive statistics.</b> A mean or a percentile over the same hours of the same
+          file is the same arithmetic everywhere, subject to the percentile convention, which is
+          the common linear-interpolation one here.</li>
+      </ul>
+
+      <h3>Where it will diverge</h3>
+      <ul>
+        <li><b>Strategy coverage.</b> Three polygons here against the fuller set elsewhere. A
+          climate whose hours fall in passive solar heating or dehumidification will show those
+          hours as served by nothing, when another tool would name a strategy.</li>
+        <li><b>The comfort zone itself.</b> The limits here are fixed at 19.5&ndash;24.5 and
+          22.5&ndash;27.5&nbsp;°C. Tools that let you set clo, metabolic rate and air speed will
+          compute a different zone for the same climate, because they are solving a comfort model
+          and this is drawing a rectangle.</li>
+        <li><b>Adaptive comfort.</b> Ladybug will give you an adaptive result. This will not.</li>
+        <li><b>The evaporative polygon.</b> Built here from a 21&nbsp;°C constant-wet-bulb line
+          swept to 45&nbsp;°C. A tool using a different wet-bulb limit will report a different
+          percentage for an identical climate.</li>
+        <li><b>Counting on unclipped polygons.</b> Where another implementation clips the polygon
+          to saturation before counting, its percentage will be the smaller of the two.</li>
+        <li><b>Wind-rose percentages.</b> Different sector counts and different speed bands make
+          two roses of the same file numerically incomparable, as the opening notice says.</li>
+        <li><b>Degree days.</b> The hourly-then-÷24 convention here will not reproduce a
+          daily-mean degree-day series, and the gap widens in climates that cross the base within
+          a single day.</li>
+      </ul>
+
+      <p class="ce-note">The boundary that matters most: <b>this tool does no energy modelling and
+        is not a route to a compliance result.</b> Ladybug is a front end to EnergyPlus and
+        Radiance and can carry a climate into a simulation; Climate Consultant stops at climate
+        analysis, as this does. Nothing here produces a load, a demand, an illuminance on a work
+        plane or a figure that any regulation recognises. Use it to understand a climate and to
+        decide what to simulate — then simulate it somewhere else.</p>
+    </div>
+  </div>
+
+  <!-- 08 -->
+  <div class="ce-sec">
+    <div class="ce-sechead" id="ce-08"><span class="ce-secnum">08</span><h2>Three exercises</h2></div>
+    <div class="ce-secbody">
+      <p>Each isolates one idea and holds everything else fixed. The app ships with no weather
+        data, so begin by downloading one: <a href="https://climate.onebuilding.org" target="_blank" rel="noopener">climate.onebuilding.org</a>
+        and <a href="https://energyplus.net/weather" target="_blank" rel="noopener">energyplus.net/weather</a>
+        both publish free EPW files by station. Record the station name and the source for every
+        file you use — you will need both to write up anything you find.</p>
+
+      <div class="ce-ex">
+        <span class="ce-ex-n">Exercise 01</span>
+        <h3>A heating season is a shape, and a monthly mean hides it</h3>
+        <ol class="ce-steps">
+          <li>Load a temperate-climate file. <b>Thermal</b> mode, <b>Annual heatmap</b>, variable
+            <code>Dry bulb temperature</code>, period <code>1 Jan – 31 Dec</code>.</li>
+          <li>Read the picture before any number. Where does the cold block sit, and at which
+            hours of the day does it reach furthest into the year? Write down the two dates where
+            the cold reaches the middle of the day.</li>
+          <li>Switch to <b>Monthly statistics</b>. Write down the mean for the coldest month, and
+            then the 5th and 95th percentile whiskers for that same month.</li>
+          <li>Back to the heatmap. Set the degree-day base to <code>18</code>, then
+            <code>15.5</code>, then <code>12</code>, and watch the colour boundary move each
+            time.</li>
+          <li>Read the heating degree-day tile at each of those three bases and write all three
+            down, with their bases.</li>
+        </ol>
+        <p class="ce-principle"><b>Principle.</b> A monthly mean is one number standing for about
+          720 hours, and it averages away exactly what a designer needs: how cold, for how long,
+          and <em>at what time of day</em>. The whiskers begin to restore that; the heatmap
+          restores it completely, because the eye reads a two-dimensional field faster than any
+          table. Degree days are the third way of asking, and they re-weight by how far below the
+          base an hour sat, not merely how often. The base is your assumption about the building,
+          not a property of the climate — which the tool makes visible by re-colouring the heatmap
+          when you change it. A degree-day figure quoted without its base is unusable.</p>
+      </div>
+
+      <div class="ce-ex">
+        <span class="ce-ex-n">Exercise 02</span>
+        <h3>A climate rewards one passive strategy and refuses another</h3>
+        <ol class="ce-steps">
+          <li><b>Comfort</b> mode, <b>Psychrometric chart</b>, passive strategies <b>on</b>,
+            period <code>1 Jan – 31 Dec</code>.</li>
+          <li>Look at where the cloud of hours sits relative to the two comfort rectangles —
+            left of them, inside, above, or to the right. Do this before reading any percentage.</li>
+          <li>Write down the percentage against each of the three strategies in the legend. Note
+            that they overlap, and that they do not sum to 100.</li>
+          <li>Change the period to <code>1 Jun – 31 Aug</code> and re-read all three. Then to the
+            <b>occupied</b> preset, <code>08–18</code>, and re-read again.</li>
+          <li>Read the <span class="ce-mono">Comfortable hours</span> tile, then the
+            <span class="ce-mono">Outside comfort band</span> tile. Write down both, and write one
+            sentence on why they disagree.</li>
+        </ol>
+        <p class="ce-principle"><b>Principle.</b> The position of the cloud decides the strategy
+          before any arithmetic does. A cloud sitting to the left of comfort is a heating climate,
+          and no amount of ventilation moves it rightwards. A cloud sitting high and to the right
+          is warm and humid, where evaporative cooling has nothing to work with and ventilation
+          does what work there is. The same climate recommends a different strategy over summer
+          than over the year, and a different one again over occupied hours — which is why a
+          strategy claim that does not carry its period is not a claim about anything. The two
+          comfort tiles disagree because they are two different quantities: one is a region of the
+          psychrometric plane, the other is a dry-bulb band with humidity ignored.</p>
+      </div>
+
+      <div class="ce-ex">
+        <span class="ce-ex-n">Exercise 03</span>
+        <h3>Latitude fixes the sun and almost nothing else</h3>
+        <ol class="ce-steps">
+          <li>Download two files at nearly the same latitude but in different situations — one
+            maritime and western-coastal, one deep inland and continental. Aim for within two
+            degrees of latitude.</li>
+          <li>Load the first. <b>Solar</b> mode, <b>Sun path dome</b>. Note the solstice arcs and
+            the day length.</li>
+          <li>Load the second into the same view and satisfy yourself that the sun path is
+            <em>almost identical</em>. That is the control in this experiment.</li>
+          <li>Turn on <b>Compare</b>, set the source to <b>Two files</b>, and load the second file
+            into panel B. Go to <b>Annual heatmap</b>, then <b>Distribution</b>, then <b>Monthly
+            statistics</b>.</li>
+          <li>Record for both: annual mean, annual minimum and maximum, and the difference between
+            the warmest and coldest monthly mean. Then read both psychrometric charts.</li>
+        </ol>
+        <p class="ce-principle"><b>Principle.</b> Two sites at the same latitude receive the same
+          sun on the same days, and can still differ by twenty kelvin in annual range. Ocean,
+          altitude, prevailing wind and distance from a coast do the rest, and they do far more of
+          it than latitude. This is the exercise that stops "what latitude is it?" being the first
+          question asked about a site. One caution specific to this tool: <b>in two-file compare
+          the colour scales are computed separately for each panel</b>, so the same colour means a
+          different temperature on the left and on the right. Read the numbers, not the
+          colours.</p>
+      </div>
+
+      <p class="ce-note">A caution for all three: <b>quote the settings with the figure</b>. Every
+        number these exercises produce depends on a file you chose, a period you set and, for the
+        comfort figures, on band limits and a humidity limit. A percentage without them cannot be
+        checked by anyone reading you.</p>
+    </div>
+  </div>
+
+  <div class="ce-footer">
+    <p>Everything on this page was read from the tool's source code at version 1.0.0, released
+      15 September 2026. Where a figure is quoted it is read, not estimated. Where the code names
+      no source, or contains something the interface cannot reach, this page says so rather than
+      passing over it.</p>
+    <p>For anything that must stand up, use a simulation tool and a measured or morphed weather
+      file appropriate to the site. This tool is built to make a climate legible, and it contains
+      no building model at all — deliberately, so that what it does do stays honest.</p>
+
+    <h3>Licence</h3>
+    <p>© Karam Al-Obaidi. The app is licensed <b>MIT</b>; this documentation is
+      <b><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></b>.
+      Both permit any use, including commercial, and ask only that you credit the author.</p>
+    <p>Two properties are unusual enough to be worth stating, and both were verified in the
+      source rather than assumed. <b>It bundles no third-party library</b> — the project declares
+      no runtime or build dependencies, vendors no code, and the built file loads no script,
+      stylesheet or webfont from anywhere. <b>It makes no network request</b> — there is no
+      <span class="ce-mono">fetch</span>, no <span class="ce-mono">XMLHttpRequest</span>, no
+      socket, no CDN and no analytics of any kind. The only outbound addresses in the application
+      are the two links to public weather archives on its opening card, which do nothing until a
+      reader clicks them; embedded in a page, it also posts its own height to the surrounding
+      frame, which carries no data beyond a number. Weather files are read in the browser and
+      nothing is uploaded.</p>
+    <p>The app also <b>ships with no weather data</b>, as <a href="#ce-02">The data</a> explains.
+      A file you load is yours, and so are its terms — check them before you republish anything
+      derived from it. The analysis you make with the tool is yours too: neither licence claims
+      anything over your charts or the images you export.</p>
+
+    <h3>How to cite</h3>
+    <p>Cite it as software. Keeping the copyright notice in the file satisfies the licence; a
+      citation is the scholarly act on top of that.</p>
+    <p class="ce-ref">Al-Obaidi, K. M. (2026). <i>Climate Explorer: a browser-based weather data
+      analysis and visualisation tool</i> (Version 1.0.0) [Computer software].
+      <a href="https://karam.me.uk/applications/climate-explorer/" target="_blank" rel="noopener">https://karam.me.uk/applications/climate-explorer/</a></p>
+<pre>@software{alobaidi2026climateexplorer,
+  author  = {Al-Obaidi, Karam M.},
+  title   = {Climate Explorer: a browser-based weather data
+             analysis and visualisation tool},
+  year    = {2026},
+  version = {1.0.0},
+  date    = {2026-09-15},
+  url     = {https://karam.me.uk/applications/climate-explorer/},
+  note    = {MIT licensed}
+}</pre>
+    <p>No figure from this tool can be checked by a reader without the settings that produced it.
+      Report, at minimum, the <b>weather file by station name and source</b>, and the
+      <b>analysis period</b>. For a comfort figure add the <b>band limits</b>, the <b>humidity
+      limit</b>, <b>whether adaptive was in use</b> — it cannot be, in this version, and saying so
+      is the point — and <b>which of the two comfort numbers</b> you are quoting. For a wind
+      frequency add the <b>sector count</b> and the <b>speed bands</b>. For a degree-day figure add
+      the <b>base temperature</b> and note the hourly-÷24 convention.</p>
+
+    <h3>References</h3>
+    <p>What the calculations are drawn from, and what each one contributes. <b>These are the
+      sources the code itself names</b>; where it names none — the degree-day convention, the
+      colour interpolation — none is listed here either, and that absence is recorded below rather
+      than quietly filled in. This tool is unusual in citing specific equation numbers, so those
+      are carried into the annotations. The code names the works but never an edition, a year or a
+      URL, so every edition below is <b>this document's choice</b>, not something transcribed from
+      the source, and should be checked against the edition you have.</p>
+    <ul class="ce-refs">
+      <li>ASHRAE. (2021). <i>ASHRAE handbook &mdash; fundamentals</i> (SI ed.). ASHRAE.
+        &mdash; named as "ASHRAE Handbook of Fundamentals (Ch. 1) formulations", and the only
+        source in the tool cited by equation number: <b>eq. 3</b> for standard atmospheric
+        pressure at altitude, <b>eq. 5 and 6</b> for saturation vapour pressure over ice and over
+        water, and <b>eq. 33/35</b> for the adiabatic-saturation relation that the wet-bulb
+        bisection solves. The equations for humidity ratio, enthalpy and relative-humidity-from-W
+        carry no number in the source although they sit in the same module. A 2025 edition has
+        since appeared; the code names no edition at all, so which one the coefficients were taken
+        from cannot be confirmed from the source.</li>
+      <li>ASHRAE. (2023). <i>Thermal environmental conditions for human occupancy</i>
+        (ANSI/ASHRAE Standard 55-2023). ASHRAE. &mdash; named three times: for the still-air
+        comfort zones "for still air at 50% RH, with the conventional 0.012 kg/kg upper humidity
+        limit"; for the adaptive comfort band and its 10&ndash;33.5&nbsp;°C validity range; and for
+        the prevailing mean outdoor temperature as an exponentially weighted running mean with
+        &alpha;&nbsp;=&nbsp;0.8. Only the first of the three is reachable in the application. No
+        edition is named in the code.</li>
+      <li>Givoni, B. (1969). <i>Man, climate and architecture</i>. Elsevier. &mdash; the
+        bioclimatic chart the strategy polygons descend from. The code names the construction as
+        "the Givoni&ndash;Milne bioclimatic construction" without citing a publication, so this
+        entry and the next are this document's attribution of a named method to its literature,
+        not a transcription.</li>
+      <li>Milne, M., &amp; Givoni, B. (1979). Architectural design based on climate. In D. Watson
+        (Ed.), <i>Energy conservation through building design</i> (pp. 96&ndash;113). McGraw-Hill.
+        &mdash; the Milne half of the named construction.</li>
+      <li>Ladybug Tools. <i>Ladybug</i> [Computer software]. &mdash; named in the source as one of
+        the two implementations the polygons follow. <b>No version or release date is recoverable
+        from the code</b>, so none is given here.</li>
+      <li>Milne, M., et al. <i>Climate Consultant</i> [Computer software]. UCLA Energy Design Tools
+        Group. &mdash; named alongside Ladybug as the other implementation followed. As above, the
+        code names no version, so none is given.</li>
+      <li>National Oceanic and Atmospheric Administration, Global Monitoring Laboratory. (n.d.).
+        <i>General solar position calculations</i>. NOAA GML. &mdash; named as "the NOAA General
+        Solar Position Calculations" for the fractional year, equation of time, declination, hour
+        angle and azimuth, and separately for the atmospheric refraction correction. The source
+        gives no URL, no document number and no date, and the document itself is undated.</li>
+      <li>U.S. Department of Energy. <i>Auxiliary programs: EnergyPlus weather file (EPW) data
+        dictionary</i>. EnergyPlus documentation. &mdash; named as the authority for "field order
+        and missing-value sentinels", and the only specification the code cites. It is the source
+        of the 0-based field indices and the sentinel values in <a href="#ce-02">The data</a>.
+        <b>No version or URL is given in the code</b>, and EnergyPlus revises this document with
+        each release, so the release the registry was written against cannot be confirmed.</li>
+    </ul>
+
+    <h4>Implemented without attribution</h4>
+    <p class="ce-note">Three things the tool computes, and names no source for. <b>The degree-day
+      convention</b> — hourly departures summed and divided by 24 — is justified in a code comment
+      as handling partial days and gaps correctly, and is attributed to no standard, which matters
+      because it does not match the daily-mean convention most published series use. <b>The OKLab
+      colour interpolation</b> behind every ramp is named as a technique and its transformation
+      matrices are given as bare literals; the colour space's author is never credited, and the
+      further-reading entry below is this document adding what the code omits. And the
+      <b>humidity-ratio, enthalpy and RH-from-W formulas</b> carry no equation number even though
+      the module around them cites ASHRAE by number three times.</p>
+
+    <h4>Further reading &mdash; not named by the code</h4>
+    <p>Nothing on this page rests on any of these. They are listed because a student following up
+      the methods above will want them, and because the first of them is the credit the source
+      does not give.</p>
+    <ul class="ce-refs">
+      <li>Ottosson, B. (2020). <i>A perceptual color space for image processing</i>. &mdash; the
+        origin of OKLab, whose matrices the colour ramps use uncredited.</li>
+      <li>Chartered Institution of Building Services Engineers. (2006). <i>Degree-days: Theory and
+        application</i> (TM41). CIBSE. &mdash; on why degree-day conventions differ and what each
+        one is good for. The tool follows none of the conventions it sets out.</li>
+      <li>Olgyay, V. (1963). <i>Design with climate: Bioclimatic approach to architectural
+        regionalism</i>. Princeton University Press. &mdash; the bioclimatic chart that preceded
+        Givoni's, and the clearest statement of why any of this is an architectural question.</li>
+      <li>Szokolay, S. V. (2014). <i>Introduction to architectural science: The basis of
+        sustainable design</i> (3rd ed.). Routledge. &mdash; a working text for the psychrometry
+        and solar geometry in <a href="#ce-01">What it calculates</a>.</li>
+      <li>Crawley, D. B., &amp; Lawrie, L. K. (2019). Should we be using just "typical"
+        meteorological years in building performance simulation? <i>Building Simulation
+        Conference Proceedings</i>. &mdash; on the limits of the single synthesised year that
+        every figure from this tool rests on.</li>
+    </ul>
+    <p class="ce-cite">For anything that must stand up, none of the above substitutes for a
+      simulation and a weather file chosen for the site. They are where the tool's methods come
+      from, not a design authority.</p>
+  </div>
+
+</div>
