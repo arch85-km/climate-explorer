@@ -52,7 +52,10 @@ function fitCanvas(canvas) {
  */
 function beginFrame(canvas, root, margins = {}) {
   const ctx = canvas.getContext('2d');
-  const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  // `renderScale` lets the PNG export re-draw this chart at a higher pixel density
+  // without changing its layout: everything below works in logical units, so only
+  // the backing store grows. Stretching the finished bitmap would only blur it.
+  const dpr = canvas.renderScale || Math.min(window.devicePixelRatio || 1, 2.5);
   const width = canvas.width / dpr;
   const height = canvas.height / dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);

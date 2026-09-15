@@ -13,7 +13,7 @@ const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'test', 'screenshots');
 mkdirSync(OUT, { recursive: true });
 
-const FILE = pathToFileURL(join(ROOT, 'dist', 'epw-visualiser.html')).href;
+const FILE = pathToFileURL(join(ROOT, 'dist', 'climate-explorer.html')).href;
 const EPW = readFileSync(join(ROOT, 'test', 'fixtures', 'chicago_ohare_tmy3.epw'), 'utf8');
 const EPW2 = readFileSync(join(ROOT, 'test', 'fixtures', 'london_gatwick_iwec.epw'), 'utf8');
 
@@ -379,6 +379,8 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   await page.evaluate(() => window.EPWVisualiser.setState({ mode: 'comfort', view: 'psychrometric' }));
   await page.waitForTimeout(700);
   const canvasHeight = await page.evaluate(() => document.querySelector('.epwviz-canvas2d').height);
+  const canvasWidthBefore = await page.evaluate(() => document.querySelector('.epwviz-canvas2d').width);
+  const canvasHeightBefore = canvasHeight;
   const pending = page.waitForEvent('download');
   await page.locator('.epwviz-btn', { hasText: 'PNG' }).click();
   const download = await pending;
@@ -393,6 +395,40 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   const exportedHeight = png.readUInt32BE(20);
   if (exportedHeight <= canvasHeight) {
     problems.push(`[export] no caption bar: export is ${exportedHeight}px for a ${canvasHeight}px canvas`);
+  }
+
+  // Resolution: exporting at 1x and 3x must differ by exactly 3x in width, which
+  // only holds if the chart is re-rendered rather than the bitmap stretched.
+  const dims = {};
+  for (const factor of [1, 3]) {
+    await page.evaluate((f) => window.EPWVisualiser.setState({ exportScale: f }), factor);
+    await page.waitForTimeout(400);
+    const pending2 = page.waitForEvent('download');
+    await page.locator('.epwviz-btn', { hasText: 'PNG' }).click();
+    const dl = await pending2;
+    const file = join(OUT, `export-${factor}x.png`);
+    await dl.saveAs(file);
+    const buf = readFileSync(file);
+    dims[factor] = { w: buf.readUInt32BE(16), h: buf.readUInt32BE(20), bytes: buf.length };
+  }
+  console.log(`  export 1x ${dims[1].w}x${dims[1].h}  ->  3x ${dims[3].w}x${dims[3].h}`);
+  if (dims[3].w !== dims[1].w * 3) {
+    problems.push(`[export] 3x width is ${dims[3].w}, expected ${dims[1].w * 3}`);
+  }
+  if (dims[3].h < dims[1].h * 2.9) {
+    problems.push(`[export] 3x height is ${dims[3].h}, expected about ${dims[1].h * 3}`);
+  }
+  if (dims[3].bytes <= dims[1].bytes) {
+    problems.push('[export] the 3x PNG is no larger than the 1x — it may be an upscale of the same pixels');
+  }
+
+  // The live canvas must be untouched by exporting.
+  const liveAfter = await page.evaluate(() => {
+    const c = document.querySelector('.epwviz-canvas2d');
+    return { w: c.width, h: c.height };
+  });
+  if (liveAfter.w !== canvasWidthBefore || liveAfter.h !== canvasHeightBefore) {
+    problems.push(`[export] the live canvas changed size after exporting: ${liveAfter.w}x${liveAfter.h}`);
   }
   // The attribution the caption bar draws must actually be in the shipped bundle.
   if (!readFileSync(FILE.replace('file://', '')).includes('Karam Al-Obaidi')) {

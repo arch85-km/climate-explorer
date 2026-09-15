@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Climate Explorer — a browser-based weather data analysis and visualisation tool
+   Climate Explorer: a browser-based weather data analysis and visualisation tool
    Every rule is scoped under .epwviz-root so a host page's theme cannot reach
    in, and nothing here escapes to affect the host page.
    ========================================================================== */

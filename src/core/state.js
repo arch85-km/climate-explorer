@@ -27,6 +27,8 @@ const DEFAULTS = {
 
   units: 'si',
   theme: 'light',
+  // PNG export pixel density. 3x of a ~1200px chart is about 300 DPI at 12in.
+  exportScale: 3,
   presentation: false,
   compare: false,
   compareSource: 'period', // 'period' | 'file'

@@ -224,7 +224,16 @@ function createToolbar(store, actions) {
     compareBody);
 
   // ── export ────────────────────────────────────────────────────────────────
+  controls.exportScale = segmented(
+    [1, 2, 3, 4].map((v) => ({ value: v, label: `${v}\u00d7`, title: `Export at ${v} times screen resolution` })),
+    state().exportScale,
+    (v) => set({ exportScale: Number(v) }),
+    { label: 'PNG resolution' },
+  );
+  const exportHint = el('div.hint');
   sections.export = group('Export',
+    controls.exportScale.node,
+    exportHint,
     el('div.row.row-tight', {},
       button('PNG', () => actions.exportPng(), { icon: ICONS.download }).node,
       button('CSV', () => actions.exportCsv(), { icon: ICONS.download }).node,
@@ -364,6 +373,13 @@ function createToolbar(store, actions) {
     // Sun path.
     controls.projection.set(s.sunpathProjection || 'stereo');
     controls.tint.set(s.sunpathTint || '');
+
+    // Export.
+    controls.exportScale.set(s.exportScale);
+    const size = actions.exportSize && actions.exportSize();
+    exportHint.textContent = size
+      ? `PNG will be ${size.width.toLocaleString()} \u00d7 ${size.height.toLocaleString()} px`
+      : '';
 
     // Presentation.
     controls.theme.set(s.theme);

@@ -214,9 +214,13 @@ function createRenderer(canvas) {
     uint32Indices,
     lost: false,
 
-    resize() {
+    /**
+     * @param {number} [scaleOverride] pixel density to use instead of the display's,
+     *   so the PNG export can render one frame at a higher resolution.
+     */
+    resize(scaleOverride) {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = scaleOverride || Math.min(window.devicePixelRatio || 1, 2);
       const w = Math.max(1, Math.round(rect.width * dpr));
       const h = Math.max(1, Math.round(rect.height * dpr));
       if (canvas.width !== w || canvas.height !== h) {

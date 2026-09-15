@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { drawColorbar, drawValueAxis, scaleLinear } from '../src/render/canvas2d.js';
+import { drawColorbar, drawValueAxis, scaleLinear, niceTicks } from '../src/render/canvas2d.js';
 import { makeRamp } from '../src/render/colormaps.js';
 
 /**
@@ -123,4 +123,60 @@ test('the value-axis title tracks its tick labels instead of a fixed offset', ()
   const wx = wide.ops.find((o) => o.text === 'Illuminance').x;
   assert.ok(nx > wx, `narrow-tick title (${nx}) should sit further right than wide-tick (${wx})`);
   assert.ok(nx >= 11, 'the title stays inside the canvas');
+});
+
+
+// ── export resolution ───────────────────────────────────────────────────────────
+
+test('chart layout is identical at any render scale', () => {
+  // This is the property that makes a high-resolution export a true re-render
+  // rather than an upscale: every view works in logical units, so raising the pixel
+  // density must move nothing. If layout drifted with scale, the exported image
+  // would not match what is on screen.
+  const place = (scale) => {
+    const { ops, frame } = stubFrame();
+    frame.dpr = scale;
+    drawValueAxis(frame, scaleLinear(0, 30, 458, 30), { label: 'Humidity ratio' });
+    drawColorbar(frame, RAMP, (v) => v / 40, 0, 40, { x: frame.plot.right + 14, label: '°C' });
+    return {
+      plot: { x: frame.plot.x, y: frame.plot.y, w: frame.plot.w, h: frame.plot.h },
+      text: ops.map((o) => `${o.text}@${Math.round(o.x)},${Math.round(o.y)}`),
+    };
+  };
+  const at1 = place(1);
+  const at3 = place(3);
+  assert.deepEqual(at3.plot, at1.plot, 'the plot rectangle must not move with scale');
+  assert.deepEqual(at3.text, at1.text, 'every label must land in the same logical spot');
+});
+
+test('beginFrame honours an explicit renderScale over the display density', async () => {
+  // Exercises the real beginFrame against a minimal canvas stub, since this is the
+  // single hook the export relies on.
+  const { beginFrame } = await import('../src/render/canvas2d.js');
+  const calls = [];
+  const makeCanvas = (renderScale, w, h) => ({
+    width: w,
+    height: h,
+    renderScale,
+    getBoundingClientRect: () => ({ width: 600, height: 400 }),
+    getContext: () => ({
+      setTransform: (...a) => calls.push(a),
+      clearRect() {}, save() {}, restore() {}, fillText() {}, measureText: () => ({ width: 10 }),
+      beginPath() {}, moveTo() {}, lineTo() {}, stroke() {}, fillRect() {}, strokeRect() {},
+      translate() {}, rotate() {}, arcTo() {}, closePath() {}, fill() {}, clip() {}, rect() {},
+      setLineDash() {}, arc() {},
+    }),
+  });
+  const root = { }; // readTheme falls back to defaults when getComputedStyle is absent
+  globalThis.window = { devicePixelRatio: 1 };
+  globalThis.getComputedStyle = () => ({ getPropertyValue: () => '' });
+
+  const at3 = beginFrame(makeCanvas(3, 1800, 1200), root, {});
+  assert.equal(at3.width, 600, 'logical width stays the CSS width');
+  assert.equal(at3.height, 400, 'logical height stays the CSS height');
+  assert.deepEqual(calls.at(-1), [3, 0, 0, 3, 0, 0], 'the context is scaled by renderScale');
+
+  const at1 = beginFrame(makeCanvas(0, 600, 400), root, {});
+  assert.equal(at1.width, 600, 'without an override it falls back to devicePixelRatio');
+  assert.deepEqual(calls.at(-1), [1, 0, 0, 1, 0, 0]);
 });

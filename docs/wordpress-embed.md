@@ -1,6 +1,6 @@
 # Embedding in WordPress
 
-`dist/epw-visualiser.html` is a single self-contained page: all CSS and JavaScript
+`dist/climate-explorer.html` is a single self-contained page: all CSS and JavaScript
 are inline, there are no external requests, and nothing is uploaded anywhere — the
 `.epw` file a student drops is read locally by the browser.
 
@@ -30,8 +30,8 @@ with it. This is the method to use for a page students will actually rely on.
 WordPress blocks `.html` uploads in the Media Library by default. Either:
 
 - **Via SFTP / your host's file manager (simplest):** upload
-  `epw-visualiser.html` to `wp-content/uploads/apps/epw-visualiser.html`.
-  Its URL is then `https://example.com/wp-content/uploads/apps/epw-visualiser.html`.
+  `climate-explorer.html` to `wp-content/uploads/apps/climate-explorer.html`.
+  Its URL is then `https://example.com/wp-content/uploads/apps/climate-explorer.html`.
 - **Or allow HTML uploads** by adding this to your child theme's `functions.php`:
 
   ```php
@@ -51,9 +51,9 @@ Replace the `src` with your uploaded URL.
 ```html
 <div class="epw-embed" style="position:relative;width:100%">
   <iframe
-    id="epw-visualiser"
-    src="/wp-content/uploads/apps/epw-visualiser.html"
-    title="Climate Explorer — weather data analysis and visualisation"
+    id="climate-explorer"
+    src="/wp-content/uploads/apps/climate-explorer.html"
+    title="Climate Explorer: a browser-based weather data analysis and visualisation tool"
     loading="lazy"
     allowfullscreen
     style="width:100%;height:900px;border:0;border-radius:8px;display:block"
@@ -64,7 +64,7 @@ Replace the `src` with your uploaded URL.
 // The app posts its height whenever the layout changes, so the iframe can grow
 // and shrink with it instead of being pinned to a guessed height.
 (function () {
-  var frame = document.getElementById('epw-visualiser');
+  var frame = document.getElementById('climate-explorer');
   window.addEventListener('message', function (event) {
     if (!frame || event.source !== frame.contentWindow) return;
     var data = event.data;
@@ -86,8 +86,8 @@ starting point is `900px` on desktop and `680px` on phones:
 
 ```html
 <style>
-  #epw-visualiser { height: 900px; }
-  @media (max-width: 782px) { #epw-visualiser { height: 680px; } }
+  #climate-explorer { height: 900px; }
+  @media (max-width: 782px) { #climate-explorer { height: 680px; } }
 </style>
 ```
 
@@ -98,7 +98,7 @@ starting point is `900px` on desktop and `680px` on phones:
 Use this only if you cannot upload a file. It works, but the page then shares a
 document with your theme, so theme CSS and plugin scripts are in play.
 
-1. Open `dist/epw-visualiser.html` in a text editor.
+1. Open `dist/climate-explorer.html` in a text editor.
 2. Copy everything from `<style>` to the closing `</script>` — that is, the
    contents of `<head>`'s style block, the `<div id="epwviz"></div>`, and the
    script block. Do **not** copy the `<!DOCTYPE>`, `<html>`, `<head>` or `<body>`

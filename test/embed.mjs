@@ -28,13 +28,13 @@ writeFileSync('/tmp/host.html', `<!doctype html><html><head><meta charset="utf-8
 </style></head><body>
 <h2>Course page</h2>
 <div class="epw-embed" style="position:relative;width:100%">
-  <iframe id="epw-visualiser" src="${pathToFileURL(process.cwd() + '/dist/epw-visualiser.html').href}"
-    title="EPW Climate Explorer" allowfullscreen
+  <iframe id="climate-explorer" src="${pathToFileURL(process.cwd() + '/dist/climate-explorer.html').href}"
+    title="Climate Explorer: a browser-based weather data analysis and visualisation tool" allowfullscreen
     style="width:100%;height:900px;border:0;border-radius:8px;display:block"></iframe>
 </div>
 <script>
 (function () {
-  var frame = document.getElementById('epw-visualiser');
+  var frame = document.getElementById('climate-explorer');
   window.__heights = [];
   window.addEventListener('message', function (event) {
     if (!frame || event.source !== frame.contentWindow) return;
@@ -57,7 +57,7 @@ page.on('console', m => { if (m.type()==='error') errors.push(m.text()); });
 await page.goto(pathToFileURL('/tmp/host.html').href, { waitUntil: 'load' });
 await page.waitForTimeout(700);
 
-const frame = page.frameLocator('#epw-visualiser');
+const frame = page.frameLocator('#climate-explorer');
 await frame.locator('#epwviz').waitFor({ timeout: 5000 });
 await page.frames()[1].evaluate((t) => window.EPWVisualiser.load(t, 'chicago.epw'), EPW);
 await page.waitForTimeout(900);
@@ -90,7 +90,7 @@ console.log('  canvas backing width     :', probe.canvasBackingWidth);
 console.log('  readout tiles rendered   :', probe.tiles);
 
 const heights = await page.evaluate(() => window.__heights);
-const frameH = await page.evaluate(() => document.getElementById('epw-visualiser').style.height);
+const frameH = await page.evaluate(() => document.getElementById('climate-explorer').style.height);
 console.log('\nheight messages received  :', heights.length, heights.slice(0,3));
 console.log('iframe height now         :', frameH);
 
@@ -111,7 +111,7 @@ console.log('narrow embed collapses the rail:', railHidden);
 // so the frame's own background showed below the app.
 await page.setViewportSize({ width: 1920, height: 1080 });
 await page.waitForTimeout(600);
-await page.evaluate(() => document.getElementById('epw-visualiser').requestFullscreen());
+await page.evaluate(() => document.getElementById('climate-explorer').requestFullscreen());
 await page.waitForTimeout(1400);
 const fs = await page.frames()[1].evaluate(() => {
   const root = document.getElementById('epwviz');

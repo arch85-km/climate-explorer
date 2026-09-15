@@ -1,6 +1,6 @@
 <!DOCTYPE html>
 <!--
-  Climate Explorer — a browser-based weather data analysis and visualisation tool
+  Climate Explorer: a browser-based weather data analysis and visualisation tool
   Version 1.0.0 · 2026-09-15
   Copyright (c) 2026 Karam Al-Obaidi. Released under the MIT License.
   Accompanying documentation and teaching material: CC BY 4.0.
@@ -10,7 +10,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Climate Explorer: a browser-based weather data analysis and visualisation tool</title>
-<meta name="description" content="Climate Explorer — a browser-based weather data analysis and visualisation tool. Explore EnergyPlus (EPW) weather data in 2D and 3D: annual heatmaps, sun path, wind roses, psychrometrics and shadow studies. Runs entirely in the browser.">
+<meta name="description" content="Climate Explorer: a browser-based weather data analysis and visualisation tool. Explore EnergyPlus (EPW) weather data in 2D and 3D: annual heatmaps, sun path, wind roses, psychrometrics and shadow studies. Runs entirely in the browser.">
 <meta name="author" content="Karam Al-Obaidi">
 <meta name="version" content="1.0.0">
 <meta name="build-date" content="2026-09-15">
@@ -26,7 +26,7 @@ body { background: #0d0f12; }
 /* When embedded rather than standalone, the host sizes the container. */
 #epwviz.epwviz-embedded { height: auto; min-height: 640px; }
 /* ==========================================================================
-   Climate Explorer — a browser-based weather data analysis and visualisation tool
+   Climate Explorer: a browser-based weather data analysis and visualisation tool
    Every rule is scoped under .epwviz-root so a host page's theme cannot reach
    in, and nothing here escapes to affect the host page.
    ========================================================================== */
@@ -1622,6 +1622,8 @@ const DEFAULTS = {
 
   units: 'si',
   theme: 'light',
+  // PNG export pixel density. 3x of a ~1200px chart is about 300 DPI at 12in.
+  exportScale: 3,
   presentation: false,
   compare: false,
   compareSource: 'period', // 'period' | 'file'
@@ -2080,6 +2082,35 @@ function cardinal(deg) {
 
 
 Object.assign(__exports, {summarise, sortedValues, percentileOf, percentiles, circularMean, monthlyAggregate, monthlyStats, diurnalByMonth, diurnalProfile, dailyAggregate, histogram, degreeDays, monthlyDegreeDays, countHours, windRose, cardinal, CARDINALS});
+});
+
+__def("data/branding", function (__exports, __req) {
+/**
+ * The project's name, in one place.
+ *
+ * Six variants of the title had drifted across the tree: colon and em-dash forms,
+ * two survivals of the project's older name, and a shorter phrasing in the embed
+ * docs. Everything that displays the name now reads it from here, including the
+ * static shell, which `build.js` fills through injection markers.
+ *
+ * @version 1.0.0 — 2026-09-15
+ */
+
+/** The short name: the header lockup, and anywhere the name stands alone. */
+const APP_NAME = 'Climate Explorer';
+
+/** The descriptive half, lower-cased so it reads as a continuation of the name. */
+const APP_TAGLINE = 'a browser-based weather data analysis and visualisation tool';
+
+/** The full title. The colon form is canonical. */
+const APP_TITLE = `${APP_NAME}: ${APP_TAGLINE}`;
+
+/** Short strapline for the header, where the full tagline will not fit. */
+const APP_STRAPLINE = 'Weather data analysis and visualisation';
+
+
+
+Object.assign(__exports, {APP_NAME, APP_TAGLINE, APP_TITLE, APP_STRAPLINE});
 });
 
 __def("data/sample", function (__exports, __req) {
@@ -2670,7 +2701,8 @@ const { createToolbar } = __req("ui/toolbar");
 const { createStage } = __req("ui/stage");
 const { buildViewContext } = __req("ui/viewctx");
 const { render: renderSummary } = __req("ui/summary");
-const { exportPng, exportCsv } = __req("ui/export");
+const { exportPng, exportSize, exportCsv } = __req("ui/export");
+const { APP_NAME, APP_TAGLINE, APP_STRAPLINE } = __req("data/branding");
 const { parseEpw, EpwParseError, datasetLabel } = __req("epw/parse");
 const { buildDataset } = __req("core/dataset");
 const { loadSample, sampleAvailable, SAMPLE_LABEL } = __req("core/sample");
@@ -2709,8 +2741,8 @@ function boot() {
   // ── shell ─────────────────────────────────────────────────────────────────
   const title = el('div.brand', {},
     el('span.brand-mark', {}, icon(ICONS.sun, 18)),
-    el('span.brand-text', {}, el('strong', { text: 'Climate Explorer' }),
-      el('span', { text: 'Weather data analysis and visualisation' })));
+    el('span.brand-text', {}, el('strong', { text: APP_NAME }),
+      el('span', { text: APP_STRAPLINE })));
   const headerLocation = el('div.header-location');
   const menuBtn = el('button.icon-btn.menu-btn', {
     type: 'button', 'aria-label': 'Show controls', 'aria-expanded': 'false',
@@ -2736,8 +2768,7 @@ function boot() {
     el('div.empty-card', {},
       el('div.empty-icon', {}, icon(ICONS.upload, 30)),
       el('h2', { text: 'Open a weather file to begin' }),
-      el('p.empty-lead', { text: 'Climate Explorer is a browser-based weather data '
-        + 'analysis and visualisation tool.' }),
+      el('p.empty-lead', { text: `${APP_NAME} is ${APP_TAGLINE}.` }),
       el('p', {}, 'An ', el('strong', { text: 'EPW' }), ' file holds one year of hourly '
         + 'weather for a single location — temperature, humidity, solar radiation, wind '
         + 'and sky conditions. It is the file building simulation runs on.'),
@@ -2951,11 +2982,12 @@ function boot() {
       if (preset) store.set({ period: { ...preset.period }, presetKey: key }, { immediate: true });
     },
     exportPng() {
-      exportPng(stages[0], buildViewContext(store.state, { root }), store.state);
+      exportPng(stages[0], buildViewContext(store.state, { root }), store.state, VIEWS_2D);
     },
     exportCsv() {
       exportCsv(store.state.view, buildViewContext(store.state, { root }), store.state);
     },
+    exportSize: () => (stages[0] ? exportSize(stages[0], store.state) : null),
     reset() {
       store.set({
         period: { ...FULL_YEAR },
@@ -3331,7 +3363,10 @@ function fitCanvas(canvas) {
  */
 function beginFrame(canvas, root, margins = {}) {
   const ctx = canvas.getContext('2d');
-  const dpr = Math.min(window.devicePixelRatio || 1, 2.5);
+  // `renderScale` lets the PNG export re-draw this chart at a higher pixel density
+  // without changing its layout: everything below works in logical units, so only
+  // the backing store grows. Stretching the finished bitmap would only blur it.
+  const dpr = canvas.renderScale || Math.min(window.devicePixelRatio || 1, 2.5);
   const width = canvas.width / dpr;
   const height = canvas.height / dpr;
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
@@ -4528,9 +4563,13 @@ function createRenderer(canvas) {
     uint32Indices,
     lost: false,
 
-    resize() {
+    /**
+     * @param {number} [scaleOverride] pixel density to use instead of the display's,
+     *   so the PNG export can render one frame at a higher resolution.
+     */
+    resize(scaleOverride) {
       const rect = canvas.getBoundingClientRect();
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = scaleOverride || Math.min(window.devicePixelRatio || 1, 2);
       const w = Math.max(1, Math.round(rect.width * dpr));
       const h = Math.max(1, Math.round(rect.height * dpr));
       if (canvas.width !== w || canvas.height !== h) {
@@ -4925,6 +4964,7 @@ __def("ui/export", function (__exports, __req) {
  * @version 1.0.0 — 2026-09-15
  */
 const { MONTH_ABBR, locationLabel, datasetLabel } = __req("epw/parse");
+const { APP_TITLE } = __req("data/branding");
 const { monthlyStats, diurnalByMonth, dailyAggregate, windRose } = __req("core/stats");
 const { unitFor, convert } = __req("epw/fields");
 const { describePeriod } = __req("core/filter");
@@ -4952,55 +4992,114 @@ const COPYRIGHT = '\u00a9 Karam Al-Obaidi';
  * Compose the visible view into a PNG, with a caption bar so the image still says
  * which climate and which period it came from — and who made it — once it leaves
  * the app.
+ *
+ * The chart is RE-RENDERED at `state.exportScale` rather than the on-screen bitmap
+ * being stretched: a 2D view redraws through the same `draw()` at a higher pixel
+ * density, and a 3D view renders one frame into a larger drawing buffer. Upscaling
+ * the finished bitmap would only interpolate it — text and hairlines would blur.
+ *
+ * @param {object} stage the live stage, used for its CSS size and 3D scene
+ * @param {object} views2d the 2D view registry, so a chart can be redrawn offscreen
  */
-function exportPng(stage, context, state) {
-  const source = stage.is3d ? stage.scene?.canvas : stage.canvas;
-  if (!source) return;
-  const overlay = stage.is3d ? stage.scene?.overlay : null;
+function exportPng(stage, context, state, views2d) {
+  const scale = Math.max(1, Math.min(4, Math.round(state.exportScale || 3)));
+  const live = stage.is3d ? stage.scene?.canvas : stage.canvas;
+  if (!live) return;
+  const rect = live.getBoundingClientRect();
+  const cssW = Math.max(1, Math.round(rect.width));
+  const cssH = Math.max(1, Math.round(rect.height));
+  const w = cssW * scale;
+  const h = cssH * scale;
 
-  const scale = 2;
-  const w = source.width;
-  const h = source.height;
-  const captionH = Math.round(52 * (w / 1200 || 1) * 0.9) + 24;
+  const styles = getComputedStyle(stage.surface);
+  const surface = styles.getPropertyValue('--surface-1').trim() || '#ffffff';
+  const ink1 = styles.getPropertyValue('--ink-1').trim() || '#111';
+  const ink3 = styles.getPropertyValue('--ink-3').trim() || '#888';
+  const font = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
+
+  const base = Math.max(11, Math.round((cssW / 90) * scale));
+  const captionH = Math.round(base * 2.6) + Math.round(18 * scale);
 
   const out = document.createElement('canvas');
   out.width = w;
   out.height = h + captionH;
   const ctx = out.getContext('2d');
-
-  const styles = getComputedStyle(stage.surface);
-  ctx.fillStyle = styles.getPropertyValue('--surface-1').trim() || '#ffffff';
+  ctx.fillStyle = surface;
   ctx.fillRect(0, 0, out.width, out.height);
-  ctx.drawImage(source, 0, 0);
-  if (overlay) ctx.drawImage(overlay, 0, 0, w, h);
 
-  const ink1 = styles.getPropertyValue('--ink-1').trim() || '#111';
-  const ink3 = styles.getPropertyValue('--ink-3').trim() || '#888';
-  const font = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
-  const base = Math.max(11, Math.round(w / 90));
-  ctx.textBaseline = 'alphabetic';
-  ctx.textAlign = 'left';
-  ctx.fillStyle = ink1;
-  ctx.font = `600 ${base}px ${font}`;
-  const title = context ? `${context.field.label} — ${datasetLabel(context.data)}` : 'EPW climate data';
-  ctx.fillText(title, 24, h + base + 14);
-  ctx.fillStyle = ink3;
-  ctx.font = `400 ${Math.round(base * 0.82)}px ${font}`;
-  const sub = context
-    ? `${describePeriod(context.period, context.data.isLeap)} · ${state.fileName || 'EPW file'}`
-    : '';
-  ctx.fillText(sub, 24, h + base * 2 + 16);
+  /** Draw the caption bar and hand the finished PNG to the browser. */
+  const finish = () => {
+    const pad = Math.round(24 * scale);
+    ctx.textBaseline = 'alphabetic';
+    ctx.textAlign = 'left';
+    ctx.fillStyle = ink1;
+    ctx.font = `600 ${base}px ${font}`;
+    const title = context
+      ? `${context.field.label} — ${datasetLabel(context.data)}`
+      : APP_TITLE;
+    ctx.fillText(title, pad, h + base + Math.round(14 * scale));
 
-  // Attribution, set against the right edge of the caption bar so it never collides
-  // with the title or the period line however long those run.
-  ctx.textAlign = 'right';
-  ctx.font = `500 ${Math.round(base * 0.82)}px ${font}`;
-  ctx.fillStyle = ink3;
-  ctx.fillText(COPYRIGHT, w - 24, h + base * 2 + 16);
+    ctx.fillStyle = ink3;
+    ctx.font = `400 ${Math.round(base * 0.82)}px ${font}`;
+    const sub = context
+      ? `${describePeriod(context.period, context.data.isLeap)} · ${state.fileName || 'EPW file'}`
+      : '';
+    ctx.fillText(sub, pad, h + base * 2 + Math.round(16 * scale));
 
-  out.toBlob((blob) => {
-    if (blob) download(blob, `${safeName(context ? datasetLabel(context.data) : 'climate')}-${stage.activeId}.png`);
-  }, 'image/png');
+    // Attribution, set against the right edge so it never collides with the title
+    // or the period line however long those run.
+    ctx.textAlign = 'right';
+    ctx.font = `500 ${Math.round(base * 0.82)}px ${font}`;
+    ctx.fillStyle = ink3;
+    ctx.fillText(COPYRIGHT, w - pad, h + base * 2 + Math.round(16 * scale));
+
+    out.toBlob((blob) => {
+      if (blob) download(blob, `${safeName(context ? datasetLabel(context.data) : 'climate')}-${stage.activeId}.png`);
+    }, 'image/png');
+  };
+
+  if (stage.is3d) {
+    const scene = stage.scene;
+    if (!scene) return;
+    scene.renderAtScale(scale, () => {
+      ctx.drawImage(scene.canvas, 0, 0, w, h);
+      ctx.drawImage(scene.overlay, 0, 0, w, h);
+    });
+    finish();
+    return;
+  }
+
+  // Redraw the chart offscreen at the requested density. The layout is identical
+  // because every view works in logical units; only the backing store grows.
+  const view = views2d && views2d[stage.activeId];
+  if (!view || !context) {
+    ctx.drawImage(live, 0, 0, w, h);
+    finish();
+    return;
+  }
+  const offscreen = document.createElement('canvas');
+  offscreen.width = w;
+  offscreen.height = h;
+  offscreen.renderScale = scale;
+  // beginFrame reads the CSS box for nothing, but getBoundingClientRect on a
+  // detached canvas returns zeroes, so give it the live element's size.
+  offscreen.getBoundingClientRect = () => ({ width: cssW, height: cssH, x: 0, y: 0, top: 0, left: 0, right: cssW, bottom: cssH });
+  view.draw(offscreen, context);
+  ctx.drawImage(offscreen, 0, 0);
+  finish();
+}
+
+/** The pixel dimensions an export would produce, for the toolbar's hint line. */
+function exportSize(stage, state) {
+  const scale = Math.max(1, Math.min(4, Math.round(state.exportScale || 3)));
+  const live = stage?.is3d ? stage.scene?.canvas : stage?.canvas;
+  if (!live) return null;
+  const rect = live.getBoundingClientRect();
+  const cssW = Math.max(1, Math.round(rect.width));
+  const cssH = Math.max(1, Math.round(rect.height));
+  const base = Math.max(11, Math.round((cssW / 90) * scale));
+  const captionH = Math.round(base * 2.6) + Math.round(18 * scale);
+  return { width: cssW * scale, height: cssH * scale + captionH };
 }
 
 function toCsv(rows) {
@@ -5018,7 +5117,8 @@ function exportCsv(viewId, context, state) {
   const unit = unitFor(field, u);
   const conv = (v) => (Number.isFinite(v) ? +convert(field, v, u).toFixed(4) : '');
   const header = [
-    `# EPW climate data export — ${datasetLabel(data)}`,
+    `# ${APP_TITLE}`,
+    `# Export — ${datasetLabel(data)}`,
     `# ${data.location.latitude}, ${data.location.longitude}, elevation ${data.location.elevation} m`,
     `# Variable: ${field.label} (${unit})`,
     `# Period: ${describePeriod(context.period, data.isLeap)}`,
@@ -5085,7 +5185,7 @@ function exportCsv(viewId, context, state) {
 
 
 
-Object.assign(__exports, {exportPng, exportCsv, download, safeName});
+Object.assign(__exports, {exportPng, exportSize, exportCsv, download, safeName});
 });
 
 __def("ui/modes", function (__exports, __req) {
@@ -5756,7 +5856,16 @@ function createToolbar(store, actions) {
     compareBody);
 
   // ── export ────────────────────────────────────────────────────────────────
+  controls.exportScale = segmented(
+    [1, 2, 3, 4].map((v) => ({ value: v, label: `${v}\u00d7`, title: `Export at ${v} times screen resolution` })),
+    state().exportScale,
+    (v) => set({ exportScale: Number(v) }),
+    { label: 'PNG resolution' },
+  );
+  const exportHint = el('div.hint');
   sections.export = group('Export',
+    controls.exportScale.node,
+    exportHint,
     el('div.row.row-tight', {},
       button('PNG', () => actions.exportPng(), { icon: ICONS.download }).node,
       button('CSV', () => actions.exportCsv(), { icon: ICONS.download }).node,
@@ -5896,6 +6005,13 @@ function createToolbar(store, actions) {
     // Sun path.
     controls.projection.set(s.sunpathProjection || 'stereo');
     controls.tint.set(s.sunpathTint || '');
+
+    // Export.
+    controls.exportScale.set(s.exportScale);
+    const size = actions.exportSize && actions.exportSize();
+    exportHint.textContent = size
+      ? `PNG will be ${size.width.toLocaleString()} \u00d7 ${size.height.toLocaleString()} px`
+      : '';
 
     // Presentation.
     controls.theme.set(s.theme);
@@ -8004,9 +8120,19 @@ function createScene(container, root) {
     dirty = true;
   }
 
-  function resize() {
-    size = renderer.resize();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // Non-null only while the export is rendering an oversized frame. The label
+  // overlay has to use the same value as the GL buffer or the labels land in the
+  // wrong place at export size.
+  let scaleOverride = 0;
+
+  function overlayScale() {
+    return scaleOverride || Math.min(window.devicePixelRatio || 1, 2);
+  }
+
+  function resize(scale) {
+    scaleOverride = scale || 0;
+    size = renderer.resize(scaleOverride || undefined);
+    const dpr = overlayScale();
     overlay.width = Math.max(1, Math.round(size.width * dpr));
     overlay.height = Math.max(1, Math.round(size.height * dpr));
     dirty = true;
@@ -8014,7 +8140,7 @@ function createScene(container, root) {
 
   function drawLabels(theme) {
     const ctx = overlay.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = overlayScale();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, size.width, size.height);
     if (!description || !description.labels) return;
@@ -8108,7 +8234,14 @@ function createScene(container, root) {
     homeCamera,
     get frames() { return frames; },
     setScene,
-    resize() { resize(); requestRender(); },
+    /** @param {number} [scale] render one frame at this pixel density (export). */
+    resize(scale) { resize(scale); requestRender(); },
+    /** Draw synchronously at `scale`, run `fn`, then restore. Used by the export. */
+    renderAtScale(scale, fn) {
+      resize(scale);
+      frame();
+      try { return fn(); } finally { resize(); frame(); }
+    },
     render: requestRender,
     get needsRender() { return dirty; },
     dispose() {

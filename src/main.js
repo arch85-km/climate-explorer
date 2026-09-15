@@ -13,7 +13,8 @@ import { createToolbar } from './ui/toolbar.js';
 import { createStage } from './ui/stage.js';
 import { buildViewContext } from './ui/viewctx.js';
 import { render as renderSummary } from './ui/summary.js';
-import { exportPng, exportCsv } from './ui/export.js';
+import { exportPng, exportSize, exportCsv } from './ui/export.js';
+import { APP_NAME, APP_TAGLINE, APP_STRAPLINE } from './data/branding.js';
 import { parseEpw, EpwParseError, datasetLabel } from './epw/parse.js';
 import { buildDataset } from './core/dataset.js';
 import { loadSample, sampleAvailable, SAMPLE_LABEL } from './core/sample.js';
@@ -52,8 +53,8 @@ function boot() {
   // ── shell ─────────────────────────────────────────────────────────────────
   const title = el('div.brand', {},
     el('span.brand-mark', {}, icon(ICONS.sun, 18)),
-    el('span.brand-text', {}, el('strong', { text: 'Climate Explorer' }),
-      el('span', { text: 'Weather data analysis and visualisation' })));
+    el('span.brand-text', {}, el('strong', { text: APP_NAME }),
+      el('span', { text: APP_STRAPLINE })));
   const headerLocation = el('div.header-location');
   const menuBtn = el('button.icon-btn.menu-btn', {
     type: 'button', 'aria-label': 'Show controls', 'aria-expanded': 'false',
@@ -79,8 +80,7 @@ function boot() {
     el('div.empty-card', {},
       el('div.empty-icon', {}, icon(ICONS.upload, 30)),
       el('h2', { text: 'Open a weather file to begin' }),
-      el('p.empty-lead', { text: 'Climate Explorer is a browser-based weather data '
-        + 'analysis and visualisation tool.' }),
+      el('p.empty-lead', { text: `${APP_NAME} is ${APP_TAGLINE}.` }),
       el('p', {}, 'An ', el('strong', { text: 'EPW' }), ' file holds one year of hourly '
         + 'weather for a single location — temperature, humidity, solar radiation, wind '
         + 'and sky conditions. It is the file building simulation runs on.'),
@@ -294,11 +294,12 @@ function boot() {
       if (preset) store.set({ period: { ...preset.period }, presetKey: key }, { immediate: true });
     },
     exportPng() {
-      exportPng(stages[0], buildViewContext(store.state, { root }), store.state);
+      exportPng(stages[0], buildViewContext(store.state, { root }), store.state, VIEWS_2D);
     },
     exportCsv() {
       exportCsv(store.state.view, buildViewContext(store.state, { root }), store.state);
     },
+    exportSize: () => (stages[0] ? exportSize(stages[0], store.state) : null),
     reset() {
       store.set({
         period: { ...FULL_YEAR },

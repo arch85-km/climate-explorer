@@ -1,10 +1,10 @@
 {
-  "name": "epw-climate-visualiser",
+  "name": "climate-explorer",
   "version": "1.0.0",
   "releaseDate": "2026-09-15",
   "private": true,
   "type": "module",
-  "description": "Climate Explorer — a browser-based weather data analysis and visualisation tool",
+  "description": "Climate Explorer: a browser-based weather data analysis and visualisation tool",
   "scripts": {
     "build": "node build.js",
     "stamp": "node tools/stamp-version.mjs",

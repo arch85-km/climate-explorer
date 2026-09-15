@@ -12,7 +12,7 @@ passive-strategy polygons, wind roses, sun path diagrams, and a massing block
 casting the real sun shadow for any date and time. Drop your own `.epw` on it to
 replace the example.
 
-- **One file, no dependencies.** `dist/epw-visualiser.html` is ~650 KB of
+- **One file, no dependencies.** `dist/climate-explorer.html` is ~650 KB of
   self-contained HTML, of which ~350 KB is the bundled example climate. No CDN, no
   build step at the point of use, no server.
 - **Nothing is uploaded.** Weather files are read in the browser with the File API.
@@ -48,12 +48,12 @@ study gets checked from.
 
 ```bash
 ./tools/fetch-samples.sh   # real EPW files for the tests (not shipped with the app)
-npm run build              # src/ -> dist/epw-visualiser.html
+npm run build              # src/ -> dist/climate-explorer.html
 npm test                   # 45 unit tests
 node test/visual.mjs       # renders every view and screenshots it
 ```
 
-Then open `dist/epw-visualiser.html` in a browser. Nothing else is required.
+Then open `dist/climate-explorer.html` in a browser. Nothing else is required.
 
 For WordPress, see **[docs/wordpress-embed.md](docs/wordpress-embed.md)**.
 

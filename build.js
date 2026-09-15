@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * Dependency-free build: concatenates src/**.js (ES modules) plus styles.css
- * into a single self-contained HTML file at dist/epw-visualiser.html.
+ * into a single self-contained HTML file at dist/climate-explorer.html.
  *
  * Source authoring rules enforced by this bundler:
  *   - imports must be single-line: `import { a, b } from './x.js';`
@@ -91,6 +91,15 @@ function transform(id, source) {
  * single source of truth for both. The constants ship empty in the repository so
  * that running from source leaves them blank rather than stale.
  */
+/** The canonical title, read from src/data/branding.js for the static shell. */
+function readTitle() {
+  const src = readFileSync(join(SRC, 'data', 'branding.js'), 'utf8');
+  const name = src.match(/const APP_NAME = '([^']+)'/);
+  const tagline = src.match(/const APP_TAGLINE = '([^']+)'/);
+  if (!name || !tagline) throw new Error('src/data/branding.js: APP_NAME/APP_TAGLINE not found');
+  return { name: name[1], tagline: tagline[1], title: `${name[1]}: ${tagline[1]}` };
+}
+
 function embedVersion(code) {
   const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
   const out = code
@@ -165,6 +174,7 @@ const body = modules
 
 const bundle = `${runtime}\n${body}\n\n  __req("main");\n})();`;
 
+const branding = readTitle();
 const css = readFileSync(join(SRC, 'styles.css'), 'utf8');
 const shell = readFileSync(join(SRC, 'shell.html'), 'utf8');
 
@@ -172,12 +182,14 @@ const html = shell
   .replace('/*INJECT:css*/', () => css)
   .replace('//INJECT:js', () => bundle)
   .replace(/<!--INJECT:version-->/g, () => versionInfo.version)
-  .replace(/<!--INJECT:releaseDate-->/g, () => versionInfo.releaseDate);
+  .replace(/<!--INJECT:releaseDate-->/g, () => versionInfo.releaseDate)
+  .replace(/<!--INJECT:title-->/g, () => branding.title)
+  .replace(/<!--INJECT:tagline-->/g, () => branding.tagline);
 
 if (html.includes('INJECT:')) throw new Error('shell.html injection markers not consumed');
 
 mkdirSync(join(ROOT, 'dist'), { recursive: true });
-const outPath = join(ROOT, 'dist', 'epw-visualiser.html');
+const outPath = join(ROOT, 'dist', 'climate-explorer.html');
 writeFileSync(outPath, html);
 
 const kb = (Buffer.byteLength(html) / 1024).toFixed(1);

@@ -80,9 +80,19 @@ function createScene(container, root) {
     dirty = true;
   }
 
-  function resize() {
-    size = renderer.resize();
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+  // Non-null only while the export is rendering an oversized frame. The label
+  // overlay has to use the same value as the GL buffer or the labels land in the
+  // wrong place at export size.
+  let scaleOverride = 0;
+
+  function overlayScale() {
+    return scaleOverride || Math.min(window.devicePixelRatio || 1, 2);
+  }
+
+  function resize(scale) {
+    scaleOverride = scale || 0;
+    size = renderer.resize(scaleOverride || undefined);
+    const dpr = overlayScale();
     overlay.width = Math.max(1, Math.round(size.width * dpr));
     overlay.height = Math.max(1, Math.round(size.height * dpr));
     dirty = true;
@@ -90,7 +100,7 @@ function createScene(container, root) {
 
   function drawLabels(theme) {
     const ctx = overlay.getContext('2d');
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const dpr = overlayScale();
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     ctx.clearRect(0, 0, size.width, size.height);
     if (!description || !description.labels) return;
@@ -184,7 +194,14 @@ function createScene(container, root) {
     homeCamera,
     get frames() { return frames; },
     setScene,
-    resize() { resize(); requestRender(); },
+    /** @param {number} [scale] render one frame at this pixel density (export). */
+    resize(scale) { resize(scale); requestRender(); },
+    /** Draw synchronously at `scale`, run `fn`, then restore. Used by the export. */
+    renderAtScale(scale, fn) {
+      resize(scale);
+      frame();
+      try { return fn(); } finally { resize(); frame(); }
+    },
     render: requestRender,
     get needsRender() { return dirty; },
     dispose() {
