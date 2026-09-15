@@ -1124,8 +1124,7 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
 
     <h4>Block one &mdash; named in the shipped application</h4>
     <ul class="ce-refs">
-      <li>ASHRAE. (2021). <i>ASHRAE handbook &mdash; fundamentals</i> (SI ed.). Atlanta, GA:
-        ASHRAE. &mdash; the code says it follows <span class="ce-mono">"ASHRAE Handbook of
+      <li>ASHRAE. (2021). <i>ASHRAE handbook &mdash; fundamentals</i> (SI ed.). ASHRAE. &mdash; the code says it follows <span class="ce-mono">"ASHRAE Handbook of
         Fundamentals (Ch. 1) formulations"</span> and is the only source in the tool cited by
         equation number: <b>eq. 3</b> for standard atmospheric pressure at altitude,
         <b>eq. 5 and 6</b> for saturation vapour pressure over ice and over water, and
@@ -1138,7 +1137,7 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
         edition exists, the Handbook being quadrennial.</li>
 
       <li>ASHRAE. (2023). <i>Thermal environmental conditions for human occupancy</i>
-        (ANSI/ASHRAE Standard 55-2023). Atlanta, GA: ASHRAE. &mdash; the code's own term is
+        (ANSI/ASHRAE Standard 55-2023). ASHRAE. &mdash; the code's own term is
         <span class="ce-mono">"ASHRAE 55"</span>; it never writes "ANSI" or "Standard 55". It
         is named three times: for the still-air comfort zones <span class="ce-mono">"for still
         air at 50% RH, with the conventional 0.012 kg/kg upper humidity limit"</span>; for the
@@ -1154,19 +1153,25 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
       <li>Roudsari, M. S., &amp; Pak, M. (2013). Ladybug: A parametric environmental plugin for
         Grasshopper to help designers create an environmentally-conscious design. In
         <i>Proceedings of BS2013: 13th Conference of the International Building Performance
-        Simulation Association</i>, Chambéry, France, 25&ndash;28 August 2013 (pp.
-        3128&ndash;3135). IBPSA. Software:
-        <a href="https://www.ladybug.tools" target="_blank" rel="noopener">ladybug.tools</a>.
+        Simulation Association</i>, Chambéry, France, 26&ndash;28 August 2013 (pp.
+        3128&ndash;3135). IBPSA.
+        <a href="https://doi.org/10.26868/25222708.2013.2499" target="_blank" rel="noopener">https://doi.org/10.26868/25222708.2013.2499</a>
+        Software: <a href="https://www.ladybug.tools" target="_blank" rel="noopener">ladybug.tools</a>.
         &mdash; the code names only the software, as one of two implementations whose
         Givoni&ndash;Milne construction the polygons follow. It names <b>no version and no
-        paper</b>; this is the tool's canonical citation, supplied here. The page range could
-        not be independently confirmed for this document.</li>
+        paper</b>; this is the tool's canonical citation, supplied here. One caution, since
+        this page is about provenance: the Ladybug project's own recommended citation gives the
+        venue as "Lyon, France, Aug 25&ndash;30", which is wrong on both city and dates. BS2013
+        was in Chambéry. Do not copy that citation from the project's repository.</li>
 
       <li>Milne, M., Liggett, R., &amp; Al-Shaali, R. (2007). Climate Consultant 3.0: A tool
         for visualizing building energy implications of climates. In <i>Proceedings of the
-        Solar 2007 Conference (36th ASES Annual Conference)</i>, Cleveland, OH. American Solar
-        Energy Society. Software: UCLA Energy Design Tools Group,
-        <a href="https://www.energy-design-tools.aud.ucla.edu" target="_blank" rel="noopener">energy-design-tools.aud.ucla.edu</a>.
+        Solar 2007 Conference (36th ASES Annual Conference)</i>, Cleveland, OH, July 2007
+        (Vol. 1, pp. 466&ndash;473). American Solar Energy Society.
+        <a href="https://energy-design-tools.sbse.org/papers/ASES07-CC.pdf" target="_blank" rel="noopener">energy-design-tools.sbse.org/papers/ASES07-CC.pdf</a>
+        Software: Energy Design Tools, developed at UCLA and now hosted by the Society of
+        Building Science Educators,
+        <a href="https://energy-design-tools.sbse.org" target="_blank" rel="noopener">energy-design-tools.sbse.org</a>.
         &mdash; named alongside Ladybug as the other implementation followed. As above, the
         code names no version and no paper.</li>
 
@@ -1240,45 +1245,46 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
       because the first four supply credit the code omits.</p>
     <ul class="ce-refs">
       <li>Givoni, B. (1969). <i>Man, climate and architecture</i> (Architectural Science
-        Series). Amsterdam &amp; London: Elsevier. &mdash; the bioclimatic chart the strategy
+        Series). Elsevier. &mdash; the bioclimatic chart the strategy
         polygons descend from. <b>The code names "the Givoni&ndash;Milne bioclimatic
         construction" but no publication</b>, so this entry and the next are this document
         attributing a named method to its literature. A second edition followed from Applied
         Science Publishers in 1976.</li>
       <li>Milne, M., &amp; Givoni, B. (1979). Architectural design based on climate. In D.
         Watson (Ed.), <i>Energy conservation through building design</i> (pp. 96&ndash;113).
-        New York: McGraw-Hill. &mdash; the Milne half of that construction.</li>
-      <li>Meeus, J. (1998). <i>Astronomical algorithms</i> (2nd ed.). Richmond, VA:
-        Willmann-Bell. &mdash; the basis NOAA states for both its solar position equations and
+        McGraw-Hill. &mdash; the Milne half of that construction.</li>
+      <li>Meeus, J. (1998). <i>Astronomical algorithms</i> (2nd ed.). Willmann-Bell. &mdash; the basis NOAA states for both its solar position equations and
         its refraction correction. The code names NOAA but never Meeus.</li>
       <li>Ottosson, B. (2020, 23 December). <i>A perceptual color space for image processing</i>
         [Blog post].
         <a href="https://bottosson.github.io/posts/oklab/" target="_blank" rel="noopener">bottosson.github.io/posts/oklab/</a>
         &mdash; the origin of OKLab, whose matrices the colour ramps use uncredited. It has no
         DOI; the URL is the citation.</li>
-      <li>European Committee for Standardization. (2019). <i>Energy performance of buildings:
-        Ventilation for buildings. Part 1: Indoor environmental input parameters</i>
-        (EN 16798-1:2019). CEN. &mdash; the likely origin of the
-        <span class="ce-mono">&alpha;&nbsp;=&nbsp;0.8</span> the code attributes to ASHRAE 55.
-        Listed to explain a value, not because anything cites it.</li>
+      <li>European Committee for Standardization. (2019). <i>Energy performance of buildings
+        &mdash; Ventilation for buildings &mdash; Part 1: Indoor environmental input parameters
+        for design and assessment of energy performance of buildings addressing indoor air
+        quality, thermal environment, lighting and acoustics &mdash; Module M1-6</i>
+        (EN 16798-1:2019). CEN. &mdash; the origin of the
+        <span class="ce-mono">&alpha;&nbsp;=&nbsp;0.8</span> the code attributes to ASHRAE 55;
+        the value is specified here, inherited from EN 15251. The UK adoption is
+        BS EN 16798-1:2019 (BSI). Listed to explain a value, not because anything cites it.</li>
       <li>Chartered Institution of Building Services Engineers. (2006). <i>Degree-days: Theory
-        and application</i> (TM41). London: CIBSE. &mdash; on why degree-day conventions differ
+        and application</i> (TM41). CIBSE. &mdash; on why degree-day conventions differ
         and what each suits. The tool follows none of the conventions it sets out.</li>
       <li>Olgyay, V. (1963). <i>Design with climate: Bioclimatic approach to architectural
-        regionalism</i>. Princeton, NJ: Princeton University Press. &mdash; the bioclimatic
+        regionalism</i>. Princeton University Press. &mdash; the bioclimatic
         chart that preceded Givoni's. Reissued in 2015 with new essays; 1963 is the edition to
         cite for the chart itself.</li>
       <li>Szokolay, S. V. (2014). <i>Introduction to architectural science: The basis of
-        sustainable design</i> (3rd ed.). Abingdon: Routledge. &mdash; a working text for the
+        sustainable design</i> (3rd ed.). Routledge. &mdash; a working text for the
         psychrometry and solar geometry in <a href="#ce-01">What it calculates</a>.</li>
       <li>Crawley, D. B., &amp; Lawrie, L. K. (2019). Should we be using just "typical" weather
         data in building performance simulation? In <i>Proceedings of Building Simulation 2019:
         16th Conference of the International Building Performance Simulation Association</i>,
-        Rome, Italy. IBPSA. &mdash; on the limits of the single synthesised year that every
-        figure from this tool rests on. A DOI of the form
-        <span class="ce-mono">10.26868/25222708.2019.210594</span> is reported for this paper
-        and follows IBPSA's scheme, but <b>it could not be confirmed at the publisher for this
-        document</b> and is given here for tracing only.</li>
+        Rome, Italy, 2&ndash;4 September 2019 (pp. 4801&ndash;4808). IBPSA.
+        <a href="https://doi.org/10.26868/25222708.2019.210594" target="_blank" rel="noopener">https://doi.org/10.26868/25222708.2019.210594</a>
+        &mdash; on the limits of the single synthesised year that every figure from this tool
+        rests on. An open copy is also held at climate.onebuilding.org/papers/.</li>
     </ul>
     <p class="ce-cite">For anything that must stand up, none of the above substitutes for a
       simulation and a weather file chosen for the site. They are where the tool's methods come
