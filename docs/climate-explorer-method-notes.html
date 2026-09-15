@@ -245,8 +245,8 @@
     <h2>Three things to know before you cite a number</h2>
     <ol>
       <li><b>The comfort figures describe outdoor air, and there are two of them.</b>
-        The psychrometric chart plots the weather file's own hours against the ASHRAE 55 still-air
-        zones. The <span class="ce-mono">Comfortable hours</span> tile is therefore the share of
+        The psychrometric chart plots the weather file's own hours against the ANSI/ASHRAE Standard 55 still-air
+        zones (“ASHRAE 55” hereafter, which is the code’s own term). The <span class="ce-mono">Comfortable hours</span> tile is therefore the share of
         <em>outdoor</em> hours a person standing outside in still air would find comfortable — no
         building, fabric, gain, system or control enters it. It counts an hour that falls inside
         <em>either</em> zone: winter 19.5&ndash;24.5&nbsp;°C or summer 22.5&ndash;27.5&nbsp;°C,
@@ -335,7 +335,7 @@
               + 4.1764768e&minus;5&middot;T&sup2; &minus; 1.4452093e&minus;8&middot;T&sup3;
               + 6.5459673&middot;ln T
 
-<em>no equation number cited for these three</em>
+<em>the code cites no equation number for these three</em>
   W = 0.621945 &middot; p_w / (p &minus; p_w)
   h = 1.006&middot;t + W&middot;(2501 + 1.86&middot;t)
   RH from W by inverting the first of those</div>
@@ -380,13 +380,20 @@
   flag is returned alongside — which nothing reads
 
 <em>prevailing mean outdoor temperature</em>
-  exponentially weighted running mean of daily means, &alpha; = 0.8</div>
+  exponentially weighted running mean of daily means, &alpha; = 0.8
+  &mdash; but the Standard permits 0.6 to 0.9 and fixes no value</div>
       <p class="ce-note">The clamp is the behaviour to understand if this is ever wired up: a
         climate outside the standard's 10&ndash;33.5&nbsp;°C validity range does not get a refusal,
         it gets a band computed from the clamped value. The function does return a flag saying so.
         No caller reads it. One further detail worth knowing before trusting the running mean: it
         is seeded from the <b>last seven daily means in the array</b> — the end of December — not
         from the week preceding the period being evaluated.</p>
+      <p class="ce-note">A provenance limitation worth recording while the code is open.
+        <b>The code attributes <span class="ce-mono">&alpha;&nbsp;=&nbsp;0.8</span> to
+        ASHRAE 55, and the Standard does not fix that value</b> — it permits the running mean
+        with &alpha; between 0.6 and 0.9. The figure is the EN 16798-1 default, which the code
+        does not name. The implementation is defensible; the attribution is loose. Do not cite
+        Standard 55 as the authority for 0.8 itself.</p>
 
       <h3>The passive-strategy polygons</h3>
       <p>The source names its lineage directly: the polygons <i>"follow the Givoni&ndash;Milne
@@ -735,7 +742,7 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
       <p>Where the source cites an equation number, it implements that equation with its published
         coefficients, and the implementation is checked against published values — saturation
         pressure against ASHRAE Fundamentals Table 1 across &minus;10 to 40&nbsp;°C to within
-        0.05%, and the 25&nbsp;°C / 50% RH state against published psychrometric values. The
+        0.05% &mdash; that table is named by the test suite, not by the application, and the 25&nbsp;°C / 50% RH state against published psychrometric values. The
         departures are these, all of them deliberate or structural rather than errors:</p>
       <div class="ce-tbl"><table>
         <thead><tr><th>Where it simplifies</th><th>Consequence</th></tr></thead>
@@ -1101,88 +1108,177 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
       the <b>base temperature</b> and note the hourly-÷24 convention.</p>
 
     <h3>References</h3>
-    <p>What the calculations are drawn from, and what each one contributes. <b>These are the
-      sources the code itself names</b>; where it names none — the degree-day convention, the
-      colour interpolation — none is listed here either, and that absence is recorded below rather
-      than quietly filled in. This tool is unusual in citing specific equation numbers, so those
-      are carried into the annotations. The code names the works but never an edition, a year or a
-      URL, so every edition below is <b>this document's choice</b>, not something transcribed from
-      the source, and should be checked against the edition you have.</p>
+    <p>Two rules govern this list. <b>Block one contains only what the shipped application
+      code itself names</b>, in its own words, with the place in the code that names it. Where
+      the code names nothing &mdash; the degree-day convention, the percentile convention, the
+      colour interpolation &mdash; nothing is listed, and the absence is recorded below rather
+      than quietly filled in. Everything the code does <em>not</em> name sits under Further
+      reading, and nothing on this page rests on any of it.</p>
+    <p class="ce-note">What the code supplies, and what it does not. It names a chapter and
+      four equation numbers for the psychrometrics, and nothing else: <b>no edition, no year
+      and no clause anywhere</b>. It supplies a URL in exactly two places, both of them weather
+      archives rather than methods. Every edition, year, publisher and URL below for a
+      <em>method</em> is therefore <b>this document's choice</b>, not a transcription, and
+      should be checked against the copy you hold. Where a detail could not be confirmed, the
+      entry says so.</p>
+
+    <h4>Block one &mdash; named in the shipped application</h4>
     <ul class="ce-refs">
-      <li>ASHRAE. (2021). <i>ASHRAE handbook &mdash; fundamentals</i> (SI ed.). ASHRAE.
-        &mdash; named as "ASHRAE Handbook of Fundamentals (Ch. 1) formulations", and the only
-        source in the tool cited by equation number: <b>eq. 3</b> for standard atmospheric
-        pressure at altitude, <b>eq. 5 and 6</b> for saturation vapour pressure over ice and over
-        water, and <b>eq. 33/35</b> for the adiabatic-saturation relation that the wet-bulb
-        bisection solves. The equations for humidity ratio, enthalpy and relative-humidity-from-W
-        carry no number in the source although they sit in the same module. A 2025 edition has
-        since appeared; the code names no edition at all, so which one the coefficients were taken
-        from cannot be confirmed from the source.</li>
+      <li>ASHRAE. (2021). <i>ASHRAE handbook &mdash; fundamentals</i> (SI ed.). Atlanta, GA:
+        ASHRAE. &mdash; the code says it follows <span class="ce-mono">"ASHRAE Handbook of
+        Fundamentals (Ch. 1) formulations"</span> and is the only source in the tool cited by
+        equation number: <b>eq. 3</b> for standard atmospheric pressure at altitude,
+        <b>eq. 5 and 6</b> for saturation vapour pressure over ice and over water, and
+        <b>eq. 33/35</b> for the adiabatic-saturation relation the wet-bulb bisection solves.
+        Those numbers match the 2017 and 2021 numbering, and the coefficients have been
+        unchanged since 2009, so the edition does not affect the values. The Handbook also
+        numbers the humidity-ratio and enthalpy relations &mdash; eq. 20 and eq. 30 &mdash;
+        but <b>the code cites no number for them</b>; the gap is the code's, not the
+        Handbook's. The code names no edition, so 2021 is this document's choice; a 2025
+        edition exists, the Handbook being quadrennial.</li>
+
       <li>ASHRAE. (2023). <i>Thermal environmental conditions for human occupancy</i>
-        (ANSI/ASHRAE Standard 55-2023). ASHRAE. &mdash; named three times: for the still-air
-        comfort zones "for still air at 50% RH, with the conventional 0.012 kg/kg upper humidity
-        limit"; for the adaptive comfort band and its 10&ndash;33.5&nbsp;°C validity range; and for
-        the prevailing mean outdoor temperature as an exponentially weighted running mean with
-        &alpha;&nbsp;=&nbsp;0.8. Only the first of the three is reachable in the application. No
-        edition is named in the code.</li>
-      <li>Givoni, B. (1969). <i>Man, climate and architecture</i>. Elsevier. &mdash; the
-        bioclimatic chart the strategy polygons descend from. The code names the construction as
-        "the Givoni&ndash;Milne bioclimatic construction" without citing a publication, so this
-        entry and the next are this document's attribution of a named method to its literature,
-        not a transcription.</li>
-      <li>Milne, M., &amp; Givoni, B. (1979). Architectural design based on climate. In D. Watson
-        (Ed.), <i>Energy conservation through building design</i> (pp. 96&ndash;113). McGraw-Hill.
-        &mdash; the Milne half of the named construction.</li>
-      <li>Ladybug Tools. <i>Ladybug</i> [Computer software]. &mdash; named in the source as one of
-        the two implementations the polygons follow. <b>No version or release date is recoverable
-        from the code</b>, so none is given here.</li>
-      <li>Milne, M., et al. <i>Climate Consultant</i> [Computer software]. UCLA Energy Design Tools
-        Group. &mdash; named alongside Ladybug as the other implementation followed. As above, the
-        code names no version, so none is given.</li>
-      <li>National Oceanic and Atmospheric Administration, Global Monitoring Laboratory. (n.d.).
-        <i>General solar position calculations</i>. NOAA GML. &mdash; named as "the NOAA General
-        Solar Position Calculations" for the fractional year, equation of time, declination, hour
-        angle and azimuth, and separately for the atmospheric refraction correction. The source
-        gives no URL, no document number and no date, and the document itself is undated.</li>
+        (ANSI/ASHRAE Standard 55-2023). Atlanta, GA: ASHRAE. &mdash; the code's own term is
+        <span class="ce-mono">"ASHRAE 55"</span>; it never writes "ANSI" or "Standard 55". It
+        is named three times: for the still-air comfort zones <span class="ce-mono">"for still
+        air at 50% RH, with the conventional 0.012 kg/kg upper humidity limit"</span>; for the
+        adaptive band and its 10&ndash;33.5&nbsp;°C validity range; and for the prevailing mean
+        outdoor temperature as an exponentially weighted running mean. Only the first is
+        reachable in the application. <b>One caution about the third.</b> The code attributes
+        <span class="ce-mono">&alpha;&nbsp;=&nbsp;0.8</span> to Standard 55, but the Standard
+        specifies the running mean with &alpha; anywhere between <b>0.6 and 0.9</b> and does
+        not fix a value; 0.8 is the EN 16798-1 default. The implementation is defensible and
+        the attribution is loose &mdash; do not cite Standard 55 as the authority for 0.8
+        itself. No clause or edition is named in the code.</li>
+
+      <li>Roudsari, M. S., &amp; Pak, M. (2013). Ladybug: A parametric environmental plugin for
+        Grasshopper to help designers create an environmentally-conscious design. In
+        <i>Proceedings of BS2013: 13th Conference of the International Building Performance
+        Simulation Association</i>, Chambéry, France, 25&ndash;28 August 2013 (pp.
+        3128&ndash;3135). IBPSA. Software:
+        <a href="https://www.ladybug.tools" target="_blank" rel="noopener">ladybug.tools</a>.
+        &mdash; the code names only the software, as one of two implementations whose
+        Givoni&ndash;Milne construction the polygons follow. It names <b>no version and no
+        paper</b>; this is the tool's canonical citation, supplied here. The page range could
+        not be independently confirmed for this document.</li>
+
+      <li>Milne, M., Liggett, R., &amp; Al-Shaali, R. (2007). Climate Consultant 3.0: A tool
+        for visualizing building energy implications of climates. In <i>Proceedings of the
+        Solar 2007 Conference (36th ASES Annual Conference)</i>, Cleveland, OH. American Solar
+        Energy Society. Software: UCLA Energy Design Tools Group,
+        <a href="https://www.energy-design-tools.aud.ucla.edu" target="_blank" rel="noopener">energy-design-tools.aud.ucla.edu</a>.
+        &mdash; named alongside Ladybug as the other implementation followed. As above, the
+        code names no version and no paper.</li>
+
+      <li>National Oceanic and Atmospheric Administration, Global Monitoring Laboratory.
+        (n.d.). <i>General solar position calculations</i>. NOAA GML.
+        <a href="https://gml.noaa.gov/grad/solcalc/solareqns.PDF" target="_blank" rel="noopener">gml.noaa.gov/grad/solcalc/solareqns.PDF</a>
+        &mdash; named as <span class="ce-mono">"the NOAA General Solar Position
+        Calculations"</span>. This undated document is the source of the fractional year,
+        equation of time, declination, hour angle, zenith and azimuth, and of the 90.833°
+        sunrise/sunset zenith.</li>
+
+      <li>National Oceanic and Atmospheric Administration, Global Monitoring Laboratory.
+        (n.d.). <i>Solar calculator</i> [Calculator and spreadsheets]. NOAA GML.
+        <a href="https://gml.noaa.gov/grad/solcalc/" target="_blank" rel="noopener">gml.noaa.gov/grad/solcalc/</a>
+        &mdash; a <b>separate</b> entry, because the code's
+        <span class="ce-mono">"NOAA atmospheric refraction correction"</span> is not in the
+        document above. The elevation-dependent refraction polynomial the tool implements comes
+        from NOAA's calculator and its spreadsheets, not from the equations PDF. Both rest on
+        Meeus (1998), which the code does not name &mdash; see Further reading.</li>
+
       <li>U.S. Department of Energy. <i>Auxiliary programs: EnergyPlus weather file (EPW) data
-        dictionary</i>. EnergyPlus documentation. &mdash; named as the authority for "field order
-        and missing-value sentinels", and the only specification the code cites. It is the source
-        of the 0-based field indices and the sentinel values in <a href="#ce-02">The data</a>.
-        <b>No version or URL is given in the code</b>, and EnergyPlus revises this document with
-        each release, so the release the registry was written against cannot be confirmed.</li>
+        dictionary</i>. EnergyPlus documentation.
+        <a href="https://energyplus.net/documentation" target="_blank" rel="noopener">energyplus.net/documentation</a>
+        &mdash; named as the authority for <span class="ce-mono">"field order and missing-value
+        sentinels"</span>, and the only specification the code cites. It stands behind the
+        0-based field indices and the sentinel values in <a href="#ce-02">The data</a>.
+        <b>The code names no version and no URL, and EnergyPlus revises this document with
+        every release.</b> The field table on this page reports the indices and sentinels
+        <em>the code uses</em>; they have not been checked against any particular published
+        revision, and the revision the registry was written against cannot be recovered from
+        the source.</li>
+    </ul>
+
+    <h4>Data sources &mdash; named, with URLs, in the application</h4>
+    <p>The only two places the code supplies a URL. Neither is a method: they are where the
+      app tells a student to get a weather file, and between them they are the provenance of
+      every number anyone will quote from this tool.</p>
+    <ul class="ce-refs">
+      <li><i>Climate.OneBuilding.org</i> [Weather data repository].
+        <a href="https://climate.onebuilding.org" target="_blank" rel="noopener">climate.onebuilding.org</a>
+        &mdash; linked from the empty state. Source of TMYx files, among others. Each file
+        carries its own provenance and terms in its COMMENTS headers; cite the station and the
+        file, not this page.</li>
+      <li>U.S. Department of Energy. <i>EnergyPlus weather data</i> [Weather data repository].
+        <a href="https://energyplus.net/weather" target="_blank" rel="noopener">energyplus.net/weather</a>
+        &mdash; linked from the empty state. Source of the TMY3, IWEC and related sets.</li>
     </ul>
 
     <h4>Implemented without attribution</h4>
-    <p class="ce-note">Three things the tool computes, and names no source for. <b>The degree-day
-      convention</b> — hourly departures summed and divided by 24 — is justified in a code comment
-      as handling partial days and gaps correctly, and is attributed to no standard, which matters
-      because it does not match the daily-mean convention most published series use. <b>The OKLab
-      colour interpolation</b> behind every ramp is named as a technique and its transformation
-      matrices are given as bare literals; the colour space's author is never credited, and the
-      further-reading entry below is this document adding what the code omits. And the
-      <b>humidity-ratio, enthalpy and RH-from-W formulas</b> carry no equation number even though
-      the module around them cites ASHRAE by number three times.</p>
+    <p>Everything below bears on a number a reader might quote, and <b>the code names no source
+      for any of it</b>. This is the honest counterpart to block one, and the reason the page
+      does not claim more provenance than it has.</p>
+    <div class="ce-tbl"><table>
+      <thead><tr><th>Method</th><th>What the code says</th><th>What is missing</th></tr></thead>
+      <tbody>
+        <tr><td><b>Degree-day convention</b></td><td class="ce-p">"computed hourly then divided by 24"</td><td>No standard named. It is not the daily-mean convention of most published series, and the code does not say so.</td></tr>
+        <tr><td><b>Percentile interpolation</b></td><td class="ce-p">"linear-interpolated percentile"</td><td>This is the R-7 / spreadsheet convention. Neither is named, and other conventions give different answers at the same percentile.</td></tr>
+        <tr><td><b>Humidity ratio, enthalpy, RH-from-W</b></td><td class="ce-p">descriptive docstrings only</td><td>No equation numbers, though the same module cites ASHRAE by number four times. The constants are unsourced literals.</td></tr>
+        <tr><td><b>Circular mean</b></td><td class="ce-p">"mean of a circular quantity"</td><td>The vector-mean method and the resultant length it returns are standard circular statistics, cited to nothing.</td></tr>
+        <tr><td><b>Point-in-polygon</b></td><td class="ce-p">"by the even-odd ray rule"</td><td>Rule named, source not. It decides which hours count as comfortable.</td></tr>
+        <tr><td><b>Shadow projection</b></td><td class="ce-p">"planar shadow projection"</td><td>The classical projection-matrix construction, uncited. It produces every shadow the massing view draws.</td></tr>
+        <tr><td><b>90.833° zenith</b></td><td class="ce-p">"the standard 90.833° zenith"</td><td>Called "the standard" without naming a standard. It sets every sunrise and sunset time.</td></tr>
+        <tr><td><b>OKLab colour ramps</b></td><td class="ce-p">"interpolated in OKLab"</td><td>The colour space is named; its author is not, and the conversion matrices are bare literals. See Further reading.</td></tr>
+      </tbody>
+      <caption>One further gap worth recording: a comment in the colour module refers to "the reference palette" with a definite article, as though it had been identified. It is named nowhere in the repository, so the colour stops have no stated provenance at all.</caption>
+    </table></div>
 
     <h4>Further reading &mdash; not named by the code</h4>
-    <p>Nothing on this page rests on any of these. They are listed because a student following up
-      the methods above will want them, and because the first of them is the credit the source
-      does not give.</p>
+    <p>None of these is cited anywhere in the source, and nothing on this page rests on any of
+      them. They are here because a reader following up the methods above will want them, and
+      because the first four supply credit the code omits.</p>
     <ul class="ce-refs">
-      <li>Ottosson, B. (2020). <i>A perceptual color space for image processing</i>. &mdash; the
-        origin of OKLab, whose matrices the colour ramps use uncredited.</li>
-      <li>Chartered Institution of Building Services Engineers. (2006). <i>Degree-days: Theory and
-        application</i> (TM41). CIBSE. &mdash; on why degree-day conventions differ and what each
-        one is good for. The tool follows none of the conventions it sets out.</li>
+      <li>Givoni, B. (1969). <i>Man, climate and architecture</i> (Architectural Science
+        Series). Amsterdam &amp; London: Elsevier. &mdash; the bioclimatic chart the strategy
+        polygons descend from. <b>The code names "the Givoni&ndash;Milne bioclimatic
+        construction" but no publication</b>, so this entry and the next are this document
+        attributing a named method to its literature. A second edition followed from Applied
+        Science Publishers in 1976.</li>
+      <li>Milne, M., &amp; Givoni, B. (1979). Architectural design based on climate. In D.
+        Watson (Ed.), <i>Energy conservation through building design</i> (pp. 96&ndash;113).
+        New York: McGraw-Hill. &mdash; the Milne half of that construction.</li>
+      <li>Meeus, J. (1998). <i>Astronomical algorithms</i> (2nd ed.). Richmond, VA:
+        Willmann-Bell. &mdash; the basis NOAA states for both its solar position equations and
+        its refraction correction. The code names NOAA but never Meeus.</li>
+      <li>Ottosson, B. (2020, 23 December). <i>A perceptual color space for image processing</i>
+        [Blog post].
+        <a href="https://bottosson.github.io/posts/oklab/" target="_blank" rel="noopener">bottosson.github.io/posts/oklab/</a>
+        &mdash; the origin of OKLab, whose matrices the colour ramps use uncredited. It has no
+        DOI; the URL is the citation.</li>
+      <li>European Committee for Standardization. (2019). <i>Energy performance of buildings:
+        Ventilation for buildings. Part 1: Indoor environmental input parameters</i>
+        (EN 16798-1:2019). CEN. &mdash; the likely origin of the
+        <span class="ce-mono">&alpha;&nbsp;=&nbsp;0.8</span> the code attributes to ASHRAE 55.
+        Listed to explain a value, not because anything cites it.</li>
+      <li>Chartered Institution of Building Services Engineers. (2006). <i>Degree-days: Theory
+        and application</i> (TM41). London: CIBSE. &mdash; on why degree-day conventions differ
+        and what each suits. The tool follows none of the conventions it sets out.</li>
       <li>Olgyay, V. (1963). <i>Design with climate: Bioclimatic approach to architectural
-        regionalism</i>. Princeton University Press. &mdash; the bioclimatic chart that preceded
-        Givoni's, and the clearest statement of why any of this is an architectural question.</li>
+        regionalism</i>. Princeton, NJ: Princeton University Press. &mdash; the bioclimatic
+        chart that preceded Givoni's. Reissued in 2015 with new essays; 1963 is the edition to
+        cite for the chart itself.</li>
       <li>Szokolay, S. V. (2014). <i>Introduction to architectural science: The basis of
-        sustainable design</i> (3rd ed.). Routledge. &mdash; a working text for the psychrometry
-        and solar geometry in <a href="#ce-01">What it calculates</a>.</li>
-      <li>Crawley, D. B., &amp; Lawrie, L. K. (2019). Should we be using just "typical"
-        meteorological years in building performance simulation? <i>Building Simulation
-        Conference Proceedings</i>. &mdash; on the limits of the single synthesised year that
-        every figure from this tool rests on.</li>
+        sustainable design</i> (3rd ed.). Abingdon: Routledge. &mdash; a working text for the
+        psychrometry and solar geometry in <a href="#ce-01">What it calculates</a>.</li>
+      <li>Crawley, D. B., &amp; Lawrie, L. K. (2019). Should we be using just "typical" weather
+        data in building performance simulation? In <i>Proceedings of Building Simulation 2019:
+        16th Conference of the International Building Performance Simulation Association</i>,
+        Rome, Italy. IBPSA. &mdash; on the limits of the single synthesised year that every
+        figure from this tool rests on. A DOI of the form
+        <span class="ce-mono">10.26868/25222708.2019.210594</span> is reported for this paper
+        and follows IBPSA's scheme, but <b>it could not be confirmed at the publisher for this
+        document</b> and is given here for tracing only.</li>
     </ul>
     <p class="ce-cite">For anything that must stand up, none of the above substitutes for a
       simulation and a weather file chosen for the site. They are where the tool's methods come
