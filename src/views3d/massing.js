@@ -9,6 +9,8 @@
  * Shadows are cast by projecting the block's geometry onto the ground plane
  * along the sun vector. For a single plane and a directional light this is exact,
  * costs one extra draw call, and needs no shadow map.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { shadowOntoGround } from '../render/mat4.js';

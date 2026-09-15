@@ -5,6 +5,8 @@
  * Every chart draws through this module so that typography, spacing and grid
  * weight stay identical across views — which is what makes a set of charts read
  * as one instrument rather than eight unrelated pictures.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';

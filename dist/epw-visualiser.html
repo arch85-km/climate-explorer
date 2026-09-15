@@ -1,10 +1,20 @@
 <!DOCTYPE html>
+<!--
+  Climate Explorer — a browser-based weather data analysis and visualisation tool
+  Version 1.0.0 · 2026-09-15
+  Copyright (c) 2026 Karam Al-Obaidi. Released under the MIT License.
+  Accompanying documentation and teaching material: CC BY 4.0.
+-->
 <html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>Climate Explorer — Weather Data Visualisation</title>
-<meta name="description" content="Explore EnergyPlus (EPW) weather data in 2D and 3D — annual heatmaps, sun path, wind roses, psychrometrics and shadow studies. Runs entirely in the browser.">
+<title>Climate Explorer: a browser-based weather data analysis and visualisation tool</title>
+<meta name="description" content="Climate Explorer — a browser-based weather data analysis and visualisation tool. Explore EnergyPlus (EPW) weather data in 2D and 3D: annual heatmaps, sun path, wind roses, psychrometrics and shadow studies. Runs entirely in the browser.">
+<meta name="author" content="Karam Al-Obaidi">
+<meta name="version" content="1.0.0">
+<meta name="build-date" content="2026-09-15">
+<meta name="license" content="MIT">
 <meta name="color-scheme" content="light dark">
 <style>
 /* Only these few rules touch anything outside the app root. They are scoped to
@@ -16,7 +26,7 @@ body { background: #0d0f12; }
 /* When embedded rather than standalone, the host sizes the container. */
 #epwviz.epwviz-embedded { height: auto; min-height: 640px; }
 /* ==========================================================================
-   EPW Climate Explorer
+   Climate Explorer — a browser-based weather data analysis and visualisation tool
    Every rule is scoped under .epwviz-root so a host page's theme cannot reach
    in, and nothing here escapes to affect the host page.
    ========================================================================== */
@@ -607,6 +617,25 @@ body { background: #0d0f12; }
 
 .epwviz-scrim { display: none; }
 
+/* Build identity, at the foot of the control rail — kept well away from the
+   footer copyright. */
+.epwviz-rail-version {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  padding: 12px 14px 20px;
+  font-size: var(--fs-label);
+  color: var(--ink-3);
+  border-top: 1px solid var(--line);
+}
+.epwviz-rail-version span:first-child { font-weight: 550; }
+
+.epwviz-empty-lead {
+  font-size: var(--fs-small);
+  color: var(--ink-2) !important;
+  font-weight: 550;
+}
+
 /* ---- footer ------------------------------------------------------------ */
 .epwviz-footer {
   flex: 0 0 auto;
@@ -823,6 +852,8 @@ __def("core/dataset", function (__exports, __req) {
  * Wraps a parsed EPW file with the series the app derives rather than reads:
  * solar position for every hour, and the psychrometric quantities the comfort
  * views need. Computed once on load so view switching stays instant.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { annualSunPositions } = __req("core/solar");
 const { humidityRatio, enthalpy, wetBulb, pressureAtElevation } = __req("core/psychro");
@@ -901,6 +932,8 @@ __def("core/filter", function (__exports, __req) {
  * Date ranges may wrap the year end (e.g. 1 Nov to 28 Feb) and hour ranges may wrap
  * midnight (e.g. 22:00 to 06:00), because both are things students genuinely want
  * to look at.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { dayOfYear, daysInMonth } = __req("core/solar");
 const { MONTH_ABBR } = __req("epw/parse");
@@ -1029,6 +1062,8 @@ __def("core/psychro", function (__exports, __req) {
  *
  * Temperatures are °C, pressures Pa, humidity ratio kg water / kg dry air,
  * enthalpy kJ/kg dry air.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const STANDARD_PRESSURE = 101325;
@@ -1284,6 +1319,8 @@ __def("core/sample", function (__exports, __req) {
  * own DecompressionStream — no library, no network request. It then goes through
  * exactly the same parseEpw/buildDataset path as an imported file, so the sample is
  * never a special case downstream.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { SAMPLE_GZIP_B64, SAMPLE_NAME, SAMPLE_LABEL } = __req("data/sample");
 const { parseEpw } = __req("epw/parse");
@@ -1335,6 +1372,8 @@ __def("core/solar", function (__exports, __req) {
  *
  * Times are *local standard time* with no daylight-saving shift, matching the
  * EnergyPlus convention for EPW files.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const DEG = Math.PI / 180;
@@ -1560,6 +1599,8 @@ __def("core/state", function (__exports, __req) {
  * Views never hold state of their own: they read from here and re-render when
  * notified, so the toolbar, the 2D charts and the 3D scenes can never disagree
  * about which hour is selected.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { FULL_YEAR } = __req("core/filter");
 
@@ -1687,6 +1728,8 @@ __def("core/stats", function (__exports, __req) {
  *
  * Every function takes an optional `mask` (Uint8Array, 1 = include) so that all views
  * respond to the toolbar's analysis period without each one re-implementing filtering.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 /** Basic descriptive statistics, ignoring NaN and masked-out hours. */
@@ -2052,6 +2095,8 @@ __def("data/sample", function (__exports, __req) {
  * to match, and rebuild. `build.js` gzips it and substitutes the base64 below; with
  * the constant empty, `sampleAvailable()` is false and the app opens on its empty
  * state, which is the shipped behaviour.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 // Name of the file to look for in assets/. Nothing is shipped unless it is there.
@@ -2069,6 +2114,35 @@ const SAMPLE_GZIP_B64 = '';
 Object.assign(__exports, {SAMPLE_SOURCE, SAMPLE_NAME, SAMPLE_LABEL, SAMPLE_GZIP_B64});
 });
 
+__def("data/version", function (__exports, __req) {
+/**
+ * Build identity.
+ *
+ * Both constants are empty here and substituted by `build.js` from `package.json`
+ * (`version` and `releaseDate`) — the single source of truth. Running from source
+ * rather than from a build simply leaves them blank, and the app omits the line.
+ *
+ * @version 1.0.0 — 2026-09-15
+ */
+
+const VERSION = '1.0.0';
+const RELEASE_DATE = '2026-09-15';
+
+/** "15 September 2026", or '' when running unbuilt. */
+function releaseDateLong() {
+  if (!RELEASE_DATE) return '';
+  const [y, m, d] = RELEASE_DATE.split('-').map(Number);
+  const months = ['January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'];
+  if (!y || !m || !d) return RELEASE_DATE;
+  return `${d} ${months[m - 1]} ${y}`;
+}
+
+
+
+Object.assign(__exports, {VERSION, RELEASE_DATE, releaseDateLong});
+});
+
 __def("epw/fields", function (__exports, __req) {
 /**
  * EPW hourly-record field registry.
@@ -2082,6 +2156,8 @@ __def("epw/fields", function (__exports, __req) {
  * `missing` is the sentinel written by EnergyPlus when a value is absent. Values at or
  * above the sentinel are normalised to NaN by the parser (EPW writers are inconsistent,
  * e.g. illuminance uses both 999999 and 999900), so the threshold is treated as ">=".
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const C_TO_F = (v) => v * 9 / 5 + 32;
@@ -2320,6 +2396,8 @@ __def("epw/parse", function (__exports, __req) {
  *
  * The record count is read from the DATA PERIODS header rather than assumed to be
  * 8760, so leap-year files (8784) and partial-year files parse correctly.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { FIELDS } = __req("epw/fields");
 
@@ -2583,6 +2661,8 @@ __def("main", function (__exports, __req) {
  * Wires the store to the toolbar, the stage(s) and the readout strip, and owns
  * the things that are genuinely global: file loading, the animation loop,
  * presentation mode, and the responsive layout.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { el, clear, icon, ICONS, NS } = __req("ui/dom");
 const { createStore } = __req("core/state");
@@ -2594,6 +2674,7 @@ const { exportPng, exportCsv } = __req("ui/export");
 const { parseEpw, EpwParseError, datasetLabel } = __req("epw/parse");
 const { buildDataset } = __req("core/dataset");
 const { loadSample, sampleAvailable, SAMPLE_LABEL } = __req("core/sample");
+const { VERSION, releaseDateLong } = __req("data/version");
 const { presetPeriods, FULL_YEAR } = __req("core/filter");
 const { VIEW_BY_ID, MODE_BY_ID, viewsForMode } = __req("ui/modes");
 const { invalidate: invalidateHeatmap } = __req("views2d/heatmap");
@@ -2629,7 +2710,7 @@ function boot() {
   const title = el('div.brand', {},
     el('span.brand-mark', {}, icon(ICONS.sun, 18)),
     el('span.brand-text', {}, el('strong', { text: 'Climate Explorer' }),
-      el('span', { text: 'Weather Data Visualisation' })));
+      el('span', { text: 'Weather data analysis and visualisation' })));
   const headerLocation = el('div.header-location');
   const menuBtn = el('button.icon-btn.menu-btn', {
     type: 'button', 'aria-label': 'Show controls', 'aria-expanded': 'false',
@@ -2655,6 +2736,8 @@ function boot() {
     el('div.empty-card', {},
       el('div.empty-icon', {}, icon(ICONS.upload, 30)),
       el('h2', { text: 'Open a weather file to begin' }),
+      el('p.empty-lead', { text: 'Climate Explorer is a browser-based weather data '
+        + 'analysis and visualisation tool.' }),
       el('p', {}, 'An ', el('strong', { text: 'EPW' }), ' file holds one year of hourly '
         + 'weather for a single location — temperature, humidity, solar radiation, wind '
         + 'and sky conditions. It is the file building simulation runs on.'),
@@ -2888,6 +2971,11 @@ function boot() {
 
   toolbar = createToolbar(store, actions);
   rail.appendChild(toolbar.node);
+  if (VERSION) {
+    rail.appendChild(el('div.rail-version', {},
+      el('span', { text: `Version ${VERSION}` }),
+      el('span', { text: releaseDateLong() })));
+  }
 
   // ── responsive rail ───────────────────────────────────────────────────────
   function toggleRail(force) {
@@ -3044,6 +3132,8 @@ __def("render/camera", function (__exports, __req) {
  * Orbit camera: drag to rotate, wheel or pinch to zoom, two-finger or right-drag
  * to pan. Elevation is clamped so the scene never turns upside down, which is
  * disorienting when the ground plane carries meaning.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { perspective, lookAt } = __req("render/mat4");
 
@@ -3194,6 +3284,8 @@ __def("render/canvas2d", function (__exports, __req) {
  * Every chart draws through this module so that typography, spacing and grid
  * weight stay identical across views — which is what makes a set of charts read
  * as one instrument rather than eight unrelated pictures.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';
@@ -3631,6 +3723,8 @@ __def("render/colormaps", function (__exports, __req) {
  *     single-hue ramps;
  *   - angular quantities (wind direction, solar azimuth) use a CYCLIC ramp of
  *     near-constant lightness, because the data genuinely wraps at 360°.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 // ── OKLab conversion ─────────────────────────────────────────────────────────
@@ -3808,6 +3902,8 @@ __def("render/geometry", function (__exports, __req) {
  * Everything accumulates into flat arrays through a builder, so a whole scene
  * (dome, grid, arcs, labels' anchor points) can be assembled into two or three
  * buffers rather than hundreds of draw calls.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 /** Accumulates triangles with per-vertex normals and colours. */
@@ -4076,6 +4172,8 @@ __def("render/mat4", function (__exports, __req) {
  *
  * Only the operations the 3D views actually need are implemented, so this stays
  * small enough to read in one sitting.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 function identity(out = new Float32Array(16)) {
@@ -4224,6 +4322,8 @@ __def("render/webgl", function (__exports, __req) {
  *
  * Shaders are GLSL ES 1.00 so the same source runs on a WebGL 1 context, which
  * matters for the older machines found in teaching labs.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { identity, multiply, normalMatrix } = __req("render/mat4");
 
@@ -4550,6 +4650,8 @@ __def("ui/controls", function (__exports, __req) {
  *
  * Each returns { node, set(value) } so the toolbar can rebuild cheaply and still
  * push state changes back into controls the user is not currently touching.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { el, icon } = __req("ui/dom");
 
@@ -4732,6 +4834,8 @@ __def("ui/dom", function (__exports, __req) {
  * Everything the app creates lives under one root element and carries an
  * `epwviz-` class prefix, so a WordPress theme's stylesheet cannot reach in and
  * a plugin's script cannot collide with anything here.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const NS = 'epwviz';
@@ -4817,6 +4921,8 @@ __def("ui/export", function (__exports, __req) {
 /**
  * Export: a PNG of whatever is on screen, and a CSV of the aggregated data
  * behind it. Students need both — one for the crit wall, one for a spreadsheet.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { MONTH_ABBR, locationLabel, datasetLabel } = __req("epw/parse");
 const { monthlyStats, diurnalByMonth, dailyAggregate, windRose } = __req("core/stats");
@@ -4990,6 +5096,8 @@ __def("ui/modes", function (__exports, __req) {
  * variable they open on, and which toolbar controls are relevant. Switching mode
  * reconfigures the whole instrument in one move, so a tutor can step a class
  * through a structured climate study without hunting through menus.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const VIEWS = [
@@ -5082,6 +5190,8 @@ __def("ui/stage", function (__exports, __req) {
  *
  * Owns one 2D canvas and one 3D scene and swaps between them, so switching views
  * never tears down the WebGL context (which is slow and, on some drivers, leaks).
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { el, clear, icon, ICONS } = __req("ui/dom");
 const { fitCanvas, readTheme } = __req("render/canvas2d");
@@ -5313,6 +5423,8 @@ __def("ui/summary", function (__exports, __req) {
  * about a climate after looking at it for thirty seconds.
  *
  * These are hero numbers, not a chart — they get large type and no decoration.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { el, clear } = __req("ui/dom");
 const { summarise, degreeDays, windRose, countHours, percentiles } = __req("core/stats");
@@ -5424,6 +5536,8 @@ __def("ui/toolbar", function (__exports, __req) {
  * Built once, then updated in place from state. Controls are grouped by the
  * question they answer — where, when, what, how — rather than by which module
  * implements them, because that is the order a student works in.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { el, clear, icon, ICONS } = __req("ui/dom");
 const { group, select, slider, segmented, toggle, button, dayPicker } = __req("ui/controls");
@@ -5829,6 +5943,8 @@ __def("ui/viewctx", function (__exports, __req) {
  * Centralising this is what keeps the 2D charts, the 3D scenes and the summary
  * panel showing the same numbers: they all derive their scale, mask and colour
  * ramp here rather than each computing its own.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { ALL_BY_KEY } = __req("epw/fields");
 const { buildMask, describePeriod, normalisePeriod } = __req("core/filter");
@@ -5904,6 +6020,8 @@ __def("views2d/diurnal", function (__exports, __req) {
  * Months are an ordered, wrapping sequence rather than twelve unrelated
  * categories, so they are coloured with a cyclic ramp — hue carries the month,
  * and January sits next to December in colour as it does in the calendar.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle, drawEmpty, clipPlot } = __req("render/canvas2d");
 const { MONTH_ABBR } = __req("epw/parse");
@@ -6042,6 +6160,8 @@ __def("views2d/heatmap", function (__exports, __req) {
  *
  * Hours outside the analysis period are drawn faded rather than removed, so the
  * selection stays readable in the context of the whole year.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, drawTitle, drawColorbar, drawBottomAxis, drawPlotFrame, drawEmpty, hexRgb } = __req("render/canvas2d");
 const { MONTH_ABBR } = __req("epw/parse");
@@ -6215,6 +6335,8 @@ __def("views2d/histogram", function (__exports, __req) {
  * Frequency and cumulative frequency are drawn as two stacked panels sharing one
  * x axis rather than as two y scales on one plot — the two quantities differ by
  * an order of magnitude, and a second y axis would misrepresent both.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle, drawEmpty, roundRect, niceTicks, tickLabel } = __req("render/canvas2d");
 const { histogram, percentiles } = __req("core/stats");
@@ -6385,6 +6507,8 @@ __def("views2d/monthly", function (__exports, __req) {
  *
  * The box and whiskers are the point of this view — a bare monthly mean tells a
  * student almost nothing about what a month is actually like to be in.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle, drawEmpty, drawLegend, roundRect, clipPlot } = __req("render/canvas2d");
 const { MONTH_ABBR } = __req("epw/parse");
@@ -6551,6 +6675,8 @@ __def("views2d/psychrometric", function (__exports, __req) {
  * 8760 overlapping dots, so the shape of the climate is visible instead of a
  * solid smear. The polygons answer the question the chart exists to answer:
  * which hours are already comfortable, and which passive strategy reaches the rest.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, scaleLinear, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle, drawEmpty, drawLegend, measureLegend, niceTicks, clipPlot } = __req("render/canvas2d");
 const { humidityRatio, satHumidityRatio, comfortPolygons, pointInPolygon, rhCurve, wForWetBulb, STANDARD_PRESSURE } = __req("core/psychro");
@@ -6880,6 +7006,8 @@ __def("views2d/sunpath", function (__exports, __req) {
  *
  * The day arcs are the solstices and equinox plus the first of each month; the
  * analemmas are the sun's position at each clock hour across the year.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, drawTitle, drawEmpty, drawLegend, drawColorbar } = __req("render/canvas2d");
 const { sunPosition, dayArc, analemma, dayOfYear, sunTimes } = __req("core/solar");
@@ -7161,6 +7289,8 @@ __def("views2d/timeseries", function (__exports, __req) {
  * Annual time series: the daily minimum-to-maximum range as a band, with the
  * daily mean drawn over it. The band is what shows a climate's diurnal swing,
  * which a mean-only line hides completely.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle, drawEmpty, drawLegend, clipPlot } = __req("render/canvas2d");
 const { MONTH_ABBR } = __req("epw/parse");
@@ -7314,6 +7444,8 @@ __def("views2d/windrose", function (__exports, __req) {
  * categorical hues. Calm hours are pulled out into the centre disc instead of
  * being binned by direction, because EPW records calm hours with direction 0 and
  * would otherwise stack a false spike on due north.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { beginFrame, drawTitle, drawEmpty, drawLegend } = __req("render/canvas2d");
 const { windRose } = __req("core/stats");
@@ -7519,6 +7651,8 @@ __def("views3d/massing", function (__exports, __req) {
  * Shadows are cast by projecting the block's geometry onto the ground plane
  * along the sun vector. For a single plane and a directional light this is exact,
  * costs one extra draw call, and needs no shadow map.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { MeshBuilder, LineBuilder, rgb01, towards } = __req("render/geometry");
 const { shadowOntoGround } = __req("render/mat4");
@@ -7795,6 +7929,8 @@ __def("views3d/scene", function (__exports, __req) {
  * camera and the render loop. Each scene module is a pure function from app
  * state to a scene description; this module turns that description into GL
  * buffers and keeps them in step with the camera.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { createRenderer } = __req("render/webgl");
 const { createCamera } = __req("render/camera");
@@ -8000,6 +8136,8 @@ __def("views3d/sundome", function (__exports, __req) {
  * analemma for each clock hour, and a marker at the selected instant. This is
  * the diagram that connects a number in a weather file to where the sun actually
  * is over a site, so it is worth being generous with it.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { MeshBuilder, LineBuilder, PointBuilder, skyPoint, rgb01, towards } = __req("render/geometry");
 const { dayArc, analemma, sunPosition, dayOfYear, sunTimes } = __req("core/solar");
@@ -8190,6 +8328,8 @@ __def("views3d/surface", function (__exports, __req) {
  * the same data as a surface rather than a flat carpet makes the diurnal ridge
  * and the seasonal swell obvious, which is exactly the intuition the flat view
  * asks students to infer.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { MeshBuilder, LineBuilder, rgb01, towards } = __req("render/geometry");
 const { hexRgb } = __req("render/canvas2d");
@@ -8334,6 +8474,8 @@ __def("views3d/windrose3d", function (__exports, __req) {
  * to encode two of those three in one radius; giving frequency its own axis lets
  * a student read "how often" and "how fast" independently, which is what matters
  * when deciding whether a facade opening is worth having.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 const { MeshBuilder, LineBuilder, rgb01, towards } = __req("render/geometry");
 const { hexRgb } = __req("render/canvas2d");

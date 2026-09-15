@@ -262,6 +262,7 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
     sampleButton: [...document.querySelectorAll('.epwviz-btn')]
       .some((b) => /example/i.test(b.textContent) && b.offsetParent !== null),
     sources: [...document.querySelectorAll('.epwviz-empty-sources a')].map((a2) => a2.getAttribute('href')),
+    lead: document.querySelector('.epwviz-empty-lead')?.textContent || '',
   }));
   if (boot.hasData) problems.push('[boot] weather data loaded on its own — nothing should be bundled');
   if (!boot.emptyShown) problems.push('[boot] the empty state is not showing');
@@ -270,6 +271,9 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   if (boot.copyright !== '\u00a9 Karam Al-Obaidi') problems.push(`[boot] copyright reads "${boot.copyright}"`);
   if (boot.sampleButton) problems.push('[boot] the example-climate button is visible but nothing is bundled');
   if (boot.sources.length !== 2) problems.push(`[boot] expected 2 source links, found ${boot.sources.length}`);
+  if (!/browser-based weather data analysis and visualisation/.test(boot.lead)) {
+    problems.push(`[boot] the empty state does not carry the full description: "${boot.lead}"`);
+  }
   await page.screenshot({ path: join(OUT, 'boot-empty.png') });
 
   // The path a student actually takes: the real file input, not the JS API.
@@ -336,12 +340,39 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   await page.evaluate((t) => window.EPWVisualiser.load(t, 'chicago_ohare_tmy3.epw'), EPW);
   await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
 
-  const strapline = await page.locator('.epwviz-brand-text span').textContent();
-  if (strapline.trim() !== 'Weather Data Visualisation') {
-    problems.push(`[brand] strapline reads "${strapline}"`);
-  }
+  // The full sentence belongs where there is room for it — the tab title, the meta
+  // description and the empty state. The header lockup keeps a short strapline, or
+  // it grows a second line on every screen.
+  const FULL = 'a browser-based weather data analysis and visualisation tool';
+  const brand = await page.evaluate(() => ({
+    name: document.querySelector('.epwviz-brand-text strong').textContent.trim(),
+    strapline: document.querySelector('.epwviz-brand-text span').textContent.trim(),
+    description: document.querySelector('meta[name=description]')?.content || '',
+    version: document.querySelector('meta[name=version]')?.content || '',
+    buildDate: document.querySelector('meta[name="build-date"]')?.content || '',
+    license: document.querySelector('meta[name=license]')?.content || '',
+    rail: document.querySelector('.epwviz-rail-version')?.textContent || '',
+  }));
   const title = await page.title();
-  if (!/Weather Data Visualisation/.test(title)) problems.push(`[brand] page title reads "${title}"`);
+
+  if (brand.name !== 'Climate Explorer') problems.push(`[brand] main title reads "${brand.name}"`);
+  if (!title.includes(FULL)) problems.push(`[brand] the tab title omits the full sentence: "${title}"`);
+  if (!brand.description.includes(FULL)) problems.push('[brand] the meta description omits the full sentence');
+  if (brand.strapline.length > 45) {
+    problems.push(`[brand] the header strapline is ${brand.strapline.length} chars — too long for the lockup`);
+  }
+  if (brand.strapline.includes(FULL)) problems.push('[brand] the full sentence leaked into the header lockup');
+
+  // Version identity: package.json is the single source, so the page must agree.
+  const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+  if (brand.version !== pkg.version) problems.push(`[version] meta version "${brand.version}" != package.json "${pkg.version}"`);
+  if (brand.buildDate !== pkg.releaseDate) problems.push(`[version] meta build-date "${brand.buildDate}" != "${pkg.releaseDate}"`);
+  if (brand.license !== 'MIT') problems.push(`[version] meta license reads "${brand.license}"`);
+  if (!brand.rail.includes(pkg.version)) problems.push(`[version] the rail does not show v${pkg.version} (reads "${brand.rail.trim()}")`);
+
+  // ...and must not sit beside the copyright.
+  const footer = await page.evaluate(() => document.querySelector('.epwviz-footer')?.textContent || '');
+  if (footer.includes(pkg.version)) problems.push('[version] the version is in the footer, next to the copyright');
 
   // Exported images must carry the attribution. The caption bar is drawn below the
   // chart, so a correct export is taller than the canvas it came from.

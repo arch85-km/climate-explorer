@@ -12,6 +12,8 @@
  *     single-hue ramps;
  *   - angular quantities (wind direction, solar azimuth) use a CYCLIC ramp of
  *     near-constant lightness, because the data genuinely wraps at 360°.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 // ── OKLab conversion ─────────────────────────────────────────────────────────

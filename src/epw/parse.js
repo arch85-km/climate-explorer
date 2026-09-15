@@ -7,6 +7,8 @@
  *
  * The record count is read from the DATA PERIODS header rather than assumed to be
  * 8760, so leap-year files (8784) and partial-year files parse correctly.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { FIELDS } from './fields.js';
 

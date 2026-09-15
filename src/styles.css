@@ -1,5 +1,5 @@
 /* ==========================================================================
-   EPW Climate Explorer
+   Climate Explorer — a browser-based weather data analysis and visualisation tool
    Every rule is scoped under .epwviz-root so a host page's theme cannot reach
    in, and nothing here escapes to affect the host page.
    ========================================================================== */
@@ -589,6 +589,25 @@
 .epwviz-error-bar.is-visible { display: block; }
 
 .epwviz-scrim { display: none; }
+
+/* Build identity, at the foot of the control rail — kept well away from the
+   footer copyright. */
+.epwviz-rail-version {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px 8px;
+  padding: 12px 14px 20px;
+  font-size: var(--fs-label);
+  color: var(--ink-3);
+  border-top: 1px solid var(--line);
+}
+.epwviz-rail-version span:first-child { font-weight: 550; }
+
+.epwviz-empty-lead {
+  font-size: var(--fs-small);
+  color: var(--ink-2) !important;
+  font-weight: 550;
+}
 
 /* ---- footer ------------------------------------------------------------ */
 .epwviz-footer {

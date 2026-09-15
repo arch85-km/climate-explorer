@@ -10,6 +10,8 @@
  * `missing` is the sentinel written by EnergyPlus when a value is absent. Values at or
  * above the sentinel are normalised to NaN by the parser (EPW writers are inconsistent,
  * e.g. illuminance uses both 999999 and 999900), so the threshold is treated as ">=".
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const C_TO_F = (v) => v * 9 / 5 + 32;

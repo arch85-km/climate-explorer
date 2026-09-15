@@ -4,6 +4,8 @@
  * Wires the store to the toolbar, the stage(s) and the readout strip, and owns
  * the things that are genuinely global: file loading, the animation loop,
  * presentation mode, and the responsive layout.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { el, clear, icon, ICONS, NS } from './ui/dom.js';
 import { createStore } from './core/state.js';
@@ -15,6 +17,7 @@ import { exportPng, exportCsv } from './ui/export.js';
 import { parseEpw, EpwParseError, datasetLabel } from './epw/parse.js';
 import { buildDataset } from './core/dataset.js';
 import { loadSample, sampleAvailable, SAMPLE_LABEL } from './core/sample.js';
+import { VERSION, releaseDateLong } from './data/version.js';
 import { presetPeriods, FULL_YEAR } from './core/filter.js';
 import { VIEW_BY_ID, MODE_BY_ID, viewsForMode } from './ui/modes.js';
 import { invalidate as invalidateHeatmap } from './views2d/heatmap.js';
@@ -50,7 +53,7 @@ function boot() {
   const title = el('div.brand', {},
     el('span.brand-mark', {}, icon(ICONS.sun, 18)),
     el('span.brand-text', {}, el('strong', { text: 'Climate Explorer' }),
-      el('span', { text: 'Weather Data Visualisation' })));
+      el('span', { text: 'Weather data analysis and visualisation' })));
   const headerLocation = el('div.header-location');
   const menuBtn = el('button.icon-btn.menu-btn', {
     type: 'button', 'aria-label': 'Show controls', 'aria-expanded': 'false',
@@ -76,6 +79,8 @@ function boot() {
     el('div.empty-card', {},
       el('div.empty-icon', {}, icon(ICONS.upload, 30)),
       el('h2', { text: 'Open a weather file to begin' }),
+      el('p.empty-lead', { text: 'Climate Explorer is a browser-based weather data '
+        + 'analysis and visualisation tool.' }),
       el('p', {}, 'An ', el('strong', { text: 'EPW' }), ' file holds one year of hourly '
         + 'weather for a single location — temperature, humidity, solar radiation, wind '
         + 'and sky conditions. It is the file building simulation runs on.'),
@@ -309,6 +314,11 @@ function boot() {
 
   toolbar = createToolbar(store, actions);
   rail.appendChild(toolbar.node);
+  if (VERSION) {
+    rail.appendChild(el('div.rail-version', {},
+      el('span', { text: `Version ${VERSION}` }),
+      el('span', { text: releaseDateLong() })));
+  }
 
   // ── responsive rail ───────────────────────────────────────────────────────
   function toggleRail(force) {

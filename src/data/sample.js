@@ -10,6 +10,8 @@
  * to match, and rebuild. `build.js` gzips it and substitutes the base64 below; with
  * the constant empty, `sampleAvailable()` is false and the app opens on its empty
  * state, which is the shipped behaviour.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 // Name of the file to look for in assets/. Nothing is shipped unless it is there.

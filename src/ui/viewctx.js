@@ -4,6 +4,8 @@
  * Centralising this is what keeps the 2D charts, the 3D scenes and the summary
  * panel showing the same numbers: they all derive their scale, mask and colour
  * ramp here rather than each computing its own.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { ALL_BY_KEY } from '../epw/fields.js';
 import { buildMask, describePeriod, normalisePeriod } from '../core/filter.js';

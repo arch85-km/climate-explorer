@@ -5,6 +5,8 @@
  * Date ranges may wrap the year end (e.g. 1 Nov to 28 Feb) and hour ranges may wrap
  * midnight (e.g. 22:00 to 06:00), because both are things students genuinely want
  * to look at.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { dayOfYear, daysInMonth } from './solar.js';
 import { MONTH_ABBR } from '../epw/parse.js';

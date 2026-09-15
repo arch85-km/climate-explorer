@@ -3,6 +3,8 @@
  * about a climate after looking at it for thirty seconds.
  *
  * These are hero numbers, not a chart — they get large type and no decoration.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { el, clear } from './dom.js';
 import { summarise, degreeDays, windRose, countHours, percentiles } from '../core/stats.js';

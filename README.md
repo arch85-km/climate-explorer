@@ -1,4 +1,6 @@
-# EPW Climate Explorer
+# Climate Explorer
+
+**A browser-based weather data analysis and visualisation tool.**
 
 A single-file, responsive web app for exploring **EnergyPlus Weather (`.epw`)**
 data in 2D and 3D, built for teaching climate-responsive design to architecture
@@ -128,6 +130,35 @@ magnitudes use single-hue sequential ramps; wind direction and solar azimuth use
 constant-lightness cyclic ramp, because those quantities genuinely wrap at 360°.
 Sequential ramps are monotonic in lightness in every theme, and each theme has its
 own steps chosen against its own surface rather than being flipped automatically.
+
+## Licence
+
+Two licences, because the repository holds two kinds of thing:
+
+- **The code** — MIT. See [`LICENSE`](LICENSE). Use it, change it, redistribute
+  it, including commercially; keep the copyright and permission notice.
+- **The accompanying material** — Creative Commons Attribution 4.0 International
+  (CC BY 4.0). See [`LICENSE-DOCS`](LICENSE-DOCS). This covers `README.md`,
+  `docs/`, screenshots and any teaching exercises distributed with the project:
+  share and adapt freely, with credit.
+
+Copyright © 2026 Karam Al-Obaidi.
+
+No third-party code and no third-party weather data are redistributed by the
+built file — see the dependency note above.
+
+## Version
+
+The version and release date live in one place, `package.json` (`version` and
+`releaseDate`), and flow from there to:
+
+- the built file's `<meta name="version">` and `<meta name="build-date">`, and the
+  licence comment at the top of the HTML;
+- a line at the foot of the app's control rail;
+- an `@version` line in each source file's header comment, written by
+  `npm run stamp`.
+
+Run `npm run stamp` after changing the version, then `npm run build`.
 
 ## Keyboard
 

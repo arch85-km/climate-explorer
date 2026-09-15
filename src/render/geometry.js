@@ -4,6 +4,8 @@
  * Everything accumulates into flat arrays through a builder, so a whole scene
  * (dome, grid, arcs, labels' anchor points) can be assembled into two or three
  * buffers rather than hundreds of draw calls.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 /** Accumulates triangles with per-vertex normals and colours. */

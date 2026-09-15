@@ -7,6 +7,8 @@
  *
  * Hours outside the analysis period are drawn faded rather than removed, so the
  * selection stays readable in the context of the whole year.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import {
   beginFrame, drawTitle, drawColorbar, drawBottomAxis, drawPlotFrame, drawEmpty, hexRgb,

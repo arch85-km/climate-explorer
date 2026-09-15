@@ -5,6 +5,8 @@
  * camera and the render loop. Each scene module is a pure function from app
  * state to a scene description; this module turns that description into GL
  * buffers and keeps them in step with the camera.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { createRenderer } from '../render/webgl.js';
 import { createCamera } from '../render/camera.js';

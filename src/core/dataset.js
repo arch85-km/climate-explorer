@@ -2,6 +2,8 @@
  * Wraps a parsed EPW file with the series the app derives rather than reads:
  * solar position for every hour, and the psychrometric quantities the comfort
  * views need. Computed once on load so view switching stays instant.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { annualSunPositions } from './solar.js';
 import { humidityRatio, enthalpy, wetBulb, pressureAtElevation } from './psychro.js';

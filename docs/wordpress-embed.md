@@ -53,7 +53,7 @@ Replace the `src` with your uploaded URL.
   <iframe
     id="epw-visualiser"
     src="/wp-content/uploads/apps/epw-visualiser.html"
-    title="EPW Climate Explorer"
+    title="Climate Explorer — weather data analysis and visualisation"
     loading="lazy"
     allowfullscreen
     style="width:100%;height:900px;border:0;border-radius:8px;display:block"

@@ -1,6 +1,8 @@
 /**
  * Export: a PNG of whatever is on screen, and a CSV of the aggregated data
  * behind it. Students need both — one for the crit wall, one for a spreadsheet.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { MONTH_ABBR, locationLabel, datasetLabel } from '../epw/parse.js';
 import { monthlyStats, diurnalByMonth, dailyAggregate, windRose } from '../core/stats.js';

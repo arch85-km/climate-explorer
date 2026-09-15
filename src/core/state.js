@@ -4,6 +4,8 @@
  * Views never hold state of their own: they read from here and re-render when
  * notified, so the toolbar, the 2D charts and the 3D scenes can never disagree
  * about which hour is selected.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { FULL_YEAR } from './filter.js';
 

@@ -87,6 +87,20 @@ function transform(id, source) {
 }
 
 /**
+ * Stamp the build identity into src/data/version.js from package.json, which is the
+ * single source of truth for both. The constants ship empty in the repository so
+ * that running from source leaves them blank rather than stale.
+ */
+function embedVersion(code) {
+  const pkg = JSON.parse(readFileSync(join(ROOT, 'package.json'), 'utf8'));
+  const out = code
+    .replace(/const VERSION = '';/, `const VERSION = '${pkg.version}';`)
+    .replace(/const RELEASE_DATE = '';/, `const RELEASE_DATE = '${pkg.releaseDate || ''}';`);
+  if (out === code) throw new Error('src/data/version.js: placeholders not found');
+  return { code: out, version: pkg.version, releaseDate: pkg.releaseDate || '' };
+}
+
+/**
  * Embed the bundled example EPW into src/data/sample.js.
  *
  * The file is gzipped and base64-encoded here rather than committed pre-encoded, so
@@ -114,12 +128,17 @@ const files = walk(SRC);
 if (!files.length) throw new Error('no source modules found');
 
 let sampleInfo = { bytes: 0 };
+let versionInfo = { version: '0.0.0', releaseDate: '' };
 const modules = files.map((file) => {
   const id = relative(SRC, file).split(/[\\/]/).join('/').replace(/\.js$/, '');
   let source = readFileSync(file, 'utf8');
   if (id === 'data/sample') {
     sampleInfo = embedSample(source);
     source = sampleInfo.code;
+  }
+  if (id === 'data/version') {
+    versionInfo = embedVersion(source);
+    source = versionInfo.code;
   }
   return { id, code: transform(id, source) };
 });
@@ -151,7 +170,9 @@ const shell = readFileSync(join(SRC, 'shell.html'), 'utf8');
 
 const html = shell
   .replace('/*INJECT:css*/', () => css)
-  .replace('//INJECT:js', () => bundle);
+  .replace('//INJECT:js', () => bundle)
+  .replace(/<!--INJECT:version-->/g, () => versionInfo.version)
+  .replace(/<!--INJECT:releaseDate-->/g, () => versionInfo.releaseDate);
 
 if (html.includes('INJECT:')) throw new Error('shell.html injection markers not consumed');
 
@@ -163,4 +184,5 @@ const kb = (Buffer.byteLength(html) / 1024).toFixed(1);
 const sample = sampleInfo.bytes
   ? `, sample ${(sampleInfo.raw / 1024).toFixed(0)} KB -> ${(sampleInfo.bytes * 4 / 3 / 1024).toFixed(0)} KB embedded`
   : ', no sample embedded';
-console.log(`built ${relative(ROOT, outPath)}  (${modules.length} modules, ${kb} KB${sample})`);
+console.log(`built ${relative(ROOT, outPath)}  v${versionInfo.version} (${versionInfo.releaseDate})`
+  + `  ${modules.length} modules, ${kb} KB${sample}`);

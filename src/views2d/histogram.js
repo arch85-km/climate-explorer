@@ -4,6 +4,8 @@
  * Frequency and cumulative frequency are drawn as two stacked panels sharing one
  * x axis rather than as two y scales on one plot — the two quantities differ by
  * an order of magnitude, and a second y axis would misrepresent both.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import {
   beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame,

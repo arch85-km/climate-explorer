@@ -5,6 +5,8 @@
  * the same data as a surface rather than a flat carpet makes the diurnal ridge
  * and the seasonal swell obvious, which is exactly the intuition the flat view
  * asks students to infer.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { hexRgb } from '../render/canvas2d.js';

@@ -8,6 +8,8 @@
  * Everything the app creates lives under one root element and carries an
  * `epwviz-` class prefix, so a WordPress theme's stylesheet cannot reach in and
  * a plugin's script cannot collide with anything here.
+ *
+ * @version 1.0.0 — 2026-09-15
  */
 
 const NS = 'epwviz';
