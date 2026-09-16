@@ -53,7 +53,7 @@ study gets checked from.
 ```bash
 ./tools/fetch-samples.sh   # real EPW files for the tests (not shipped with the app)
 npm run build              # src/ -> dist/climate-explorer.html
-npm test                   # 45 unit tests
+npm test                   # 54 unit tests
 node test/visual.mjs       # renders every view and screenshots it
 ```
 
