@@ -43,7 +43,6 @@ const DEFAULTS = {
     comfortHigh: 26,
     humidityLimit: 0.012,
     showStrategies: true,
-    adaptive: false,
   },
 
   // Massing study parameters.

@@ -12,7 +12,7 @@ import {
 import { buildMask, maskCount, normalisePeriod, describePeriod, FULL_YEAR, presetPeriods } from '../src/core/filter.js';
 import {
   satPressure, humidityRatio, enthalpy, wetBulb, dewPointFromW, relHumidityFromW,
-  adaptiveComfort, pressureAtElevation, STANDARD_PRESSURE,
+  adaptiveComfort, runningMean, pressureAtElevation, STANDARD_PRESSURE,
 } from '../src/core/psychro.js';
 
 const ROOT = join(dirname(fileURLToPath(import.meta.url)), '..');
@@ -226,4 +226,34 @@ test('the ASHRAE 55 adaptive comfort band follows 0.31 x prevailing + 17.8', () 
   assert.equal(adaptiveComfort(40).inRange, false);
   // Clamped, not extrapolated.
   assert.equal(adaptiveComfort(5).neutral, adaptiveComfort(10).neutral);
+});
+
+test('the prevailing mean is an exponentially weighted running mean, alpha 0.8', () => {
+  // A constant climate must converge to its own value and stay there.
+  const flat = Float64Array.from({ length: 30 }, () => 18);
+  const steady = runningMean(flat, 0.8);
+  assert.ok(Math.abs(steady[29] - 18) < 1e-6, `got ${steady[29]}`);
+
+  // One step change: each day closes (1 - alpha) of the remaining gap, so the
+  // series lags rather than jumping. Seeded from the trailing week, which is
+  // the warm end here, so it decays towards the cold start.
+  const step = Float64Array.from({ length: 14 }, (_, i) => (i < 7 ? 10 : 30));
+  const r = runningMean(step, 0.8);
+  const seed = 30; // mean of the last seven entries
+  assert.ok(Math.abs(r[0] - (0.2 * 10 + 0.8 * seed)) < 1e-6, `got ${r[0]}`);
+  assert.ok(r[6] < r[0], 'the cold week must pull the running mean down');
+  assert.ok(r[13] > r[6], 'the warm week must pull it back up');
+  assert.ok(r[13] < 30, 'and it must lag the step rather than reaching it');
+
+  // Alpha is how much memory it keeps, so a higher alpha responds more slowly
+  // and therefore lags further behind the temperature actually being recorded.
+  const slow = runningMean(step, 0.9);
+  assert.ok(Math.abs(slow[13] - 30) > Math.abs(r[13] - 30),
+    `alpha 0.9 must lag the recent 30 more than alpha 0.8: ${slow[13]} vs ${r[13]}`);
+
+  // A gap carries the previous value forward rather than emitting NaN.
+  const gappy = Float64Array.from([20, NaN, 20, 20]);
+  assert.ok(runningMean(gappy, 0.8).every(Number.isFinite), 'no NaN may escape');
+
+  assert.equal(runningMean(Float64Array.from([]), 0.8).length, 0);
 });

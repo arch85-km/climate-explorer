@@ -205,6 +205,17 @@ function pointInPolygon(t, w, points) {
   return inside;
 }
 
+/*
+ * The two functions below implement ASHRAE 55 adaptive comfort. NO VIEW CALLS
+ * THEM — there is no adaptive comfort in the shipped interface, and the Method
+ * Notes say so. They are kept because the arithmetic is correct and needs only
+ * the weather file, which makes adaptive comfort the one comfort model this tool
+ * could compute honestly; `dataset.js` already derives the daily means
+ * `runningMean` wants. Wiring them up is a deliberate feature, not a tidy-up:
+ * it needs a toggle, a day-varying band on the time series, and a revision of
+ * the Method Notes, which document their absence in several places.
+ */
+
 /**
  * ASHRAE 55 adaptive comfort band for a prevailing mean outdoor temperature.
  * Valid for 10 °C <= prevailing <= 33.5 °C.

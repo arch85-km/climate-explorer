@@ -50,6 +50,9 @@ function buildDataset(parsed) {
   parsed.series.wetBulb = wb;
 
   parsed.pressureFallback = fallbackPressure;
+  // Daily means on the real calendar, unmasked, which is what the ASHRAE 55
+  // prevailing mean is defined on. Nothing reads this yet: it is the input
+  // `runningMean` in psychro.js takes, kept ready for the adaptive band.
   parsed.daily = {
     dryBulbMean: dailyAggregate(parsed, dryBulb, 'mean').values,
   };

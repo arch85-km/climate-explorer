@@ -900,6 +900,9 @@ function buildDataset(parsed) {
   parsed.series.wetBulb = wb;
 
   parsed.pressureFallback = fallbackPressure;
+  // Daily means on the real calendar, unmasked, which is what the ASHRAE 55
+  // prevailing mean is defined on. Nothing reads this yet: it is the input
+  // `runningMean` in psychro.js takes, kept ready for the adaptive band.
   parsed.daily = {
     dryBulbMean: dailyAggregate(parsed, dryBulb, 'mean').values,
   };
@@ -1263,6 +1266,17 @@ function pointInPolygon(t, w, points) {
   }
   return inside;
 }
+
+/*
+ * The two functions below implement ASHRAE 55 adaptive comfort. NO VIEW CALLS
+ * THEM — there is no adaptive comfort in the shipped interface, and the Method
+ * Notes say so. They are kept because the arithmetic is correct and needs only
+ * the weather file, which makes adaptive comfort the one comfort model this tool
+ * could compute honestly; `dataset.js` already derives the daily means
+ * `runningMean` wants. Wiring them up is a deliberate feature, not a tidy-up:
+ * it needs a toggle, a day-varying band on the time series, and a revision of
+ * the Method Notes, which document their absence in several places.
+ */
 
 /**
  * ASHRAE 55 adaptive comfort band for a prevailing mean outdoor temperature.
@@ -1638,7 +1652,6 @@ const DEFAULTS = {
     comfortHigh: 26,
     humidityLimit: 0.012,
     showStrategies: true,
-    adaptive: false,
   },
 
   // Massing study parameters.
@@ -2425,8 +2438,10 @@ __def("epw/parse", function (__exports, __req) {
  *   LOCATION, DESIGN CONDITIONS, TYPICAL/EXTREME PERIODS, GROUND TEMPERATURES,
  *   HOLIDAYS/DAYLIGHT SAVINGS, COMMENTS 1, COMMENTS 2, DATA PERIODS
  *
- * The record count is read from the DATA PERIODS header rather than assumed to be
- * 8760, so leap-year files (8784) and partial-year files parse correctly.
+ * The record count comes from counting the data lines rather than being assumed to
+ * be 8760, so leap-year files (8784) and partial-year files parse correctly. The
+ * DATA PERIODS header is parsed and reported, but nothing is sized from it — a
+ * file whose header disagrees with its own contents is read as written.
  *
  * @version 1.0.0 — 2026-09-15
  */
@@ -5243,7 +5258,7 @@ const MODES = [
     variable: 'windSpeed',
     views: ['windrose', 'windrose3d', 'heatmap', 'timeseries', 'monthly', 'histogram'],
     variables: ['windSpeed', 'windDirection'],
-    controls: ['period', 'sectors', 'speedBands'],
+    controls: ['period', 'sectors'],
   },
   {
     id: 'daylight',
@@ -5261,7 +5276,7 @@ const MODES = [
     variable: 'dryBulb',
     views: ['psychrometric', 'heatmap', 'histogram', 'monthly', 'diurnal'],
     variables: ['dryBulb', 'relHumidity', 'humidityRatio', 'enthalpy'],
-    controls: ['period', 'comfortBand', 'strategies', 'adaptive'],
+    controls: ['period', 'strategies'],
   },
 ];
 

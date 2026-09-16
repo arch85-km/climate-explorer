@@ -5,8 +5,10 @@
  *   LOCATION, DESIGN CONDITIONS, TYPICAL/EXTREME PERIODS, GROUND TEMPERATURES,
  *   HOLIDAYS/DAYLIGHT SAVINGS, COMMENTS 1, COMMENTS 2, DATA PERIODS
  *
- * The record count is read from the DATA PERIODS header rather than assumed to be
- * 8760, so leap-year files (8784) and partial-year files parse correctly.
+ * The record count comes from counting the data lines rather than being assumed to
+ * be 8760, so leap-year files (8784) and partial-year files parse correctly. The
+ * DATA PERIODS header is parsed and reported, but nothing is sized from it — a
+ * file whose header disagrees with its own contents is read as written.
  *
  * @version 1.0.0 — 2026-09-15
  */

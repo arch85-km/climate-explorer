@@ -6,21 +6,22 @@ A single-file, responsive web app for exploring **EnergyPlus Weather (`.epw`)**
 data in 2D and 3D, built for teaching climate-responsive design to architecture
 students.
 
-It opens already showing a climate — London (St James's Park, TMYx) is bundled —
-and becomes an instrument: an annual heatmap, a psychrometric chart with
+It opens on an empty state and waits for a weather file. Drop an `.epw` onto it
+and it becomes an instrument: an annual heatmap, a psychrometric chart with
 passive-strategy polygons, wind roses, sun path diagrams, and a massing block
-casting the real sun shadow for any date and time. Drop your own `.epw` on it to
-replace the example.
+casting the real sun shadow for any date and time.
 
-- **One file, no dependencies.** `dist/climate-explorer.html` is ~650 KB of
-  self-contained HTML, of which ~350 KB is the bundled example climate. No CDN, no
-  build step at the point of use, no server.
+- **One file, no dependencies.** `dist/climate-explorer.html` is about 320 KB of
+  self-contained HTML. No CDN, no build step at the point of use, no server.
+- **No weather data ships with it.** Publishing the app would mean redistributing
+  whatever climate file were embedded in it, and those carry their own attribution
+  terms. Students supply their own, which every other tool asks of them anyway.
 - **Nothing is uploaded.** Weather files are read in the browser with the File API.
 - **Works offline**, straight from `file://`, and inside a WordPress page.
 
-The bundled example is stored gzipped and inflated at startup with the browser's
-own `DecompressionStream`. On a browser without it (pre-2023 Firefox, pre-16.4
-Safari) the app falls back to its empty state and still works by import.
+The machinery for embedding an example is kept but dormant — see
+[Bundling your own example](#bundling-your-own-example) for how to switch it on
+for a file you hold the rights to redistribute.
 
 ## Views
 
@@ -37,8 +38,11 @@ structured climate study in one click per step.
 
 Three **themes** — light grey (the default), dark for projection, and high-contrast
 white for print — plus a **presentation mode** (fullscreen, larger type, collapsed
-toolbar) and a **compare mode** that puts two periods, or two climates, side by side
-on locked identical scales.
+toolbar) and a **compare mode** that puts two periods, or two climates, side by
+side. Two periods of one file share a colour scale, so the panels are directly
+comparable. Two *files* are each scaled from their own data, so the same colour
+means a different value on the left and on the right — read the numbers, not the
+colours.
 
 Every 3D view **orbits**: drag to rotate, scroll to zoom, shift-drag to pan, with
 Plan / South / SE / Perspective preset angles and a reset — the angles a shadow
@@ -85,8 +89,8 @@ concatenates them into the single output file. The zero-dependency constraint
 applies to the *deliverable*, not to authoring.
 
 ```
-assets/           the bundled example EPW, committed unmodified
-src/data/         sample.js — the example's base64 is injected here at build time
+assets/           not present — create it only to bundle an example (see above)
+src/data/         sample.js — an example's base64 would be injected here at build time
 src/epw/          parse.js (8 header lines + hourly records), fields.js (field registry)
 src/core/         solar.js (NOAA position), psychro.js (ASHRAE), stats.js,
                   filter.js (analysis period), dataset.js, state.js
@@ -117,7 +121,8 @@ references rather than eyeballed:
   (17.87 °C) and dew point (13.85 °C).
 - **Parsing** — verified against real files. Chicago O'Hare TMY3 gives an annual
   mean dry bulb of 9.99 °C, 1407 kWh/m² global horizontal, and HDD18 of 3524;
-  the bundled London TMYx gives 11.4 °C, 1073 kWh/m² and HDD18 of 2573.
+  London St James's Park TMYx gives 11.4 °C, 1073 kWh/m² and HDD18 of 2573. Both
+  are test fixtures, not shipped with the app.
 
 ### Colour
 

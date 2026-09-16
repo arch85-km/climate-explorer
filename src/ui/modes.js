@@ -52,7 +52,7 @@ const MODES = [
     variable: 'windSpeed',
     views: ['windrose', 'windrose3d', 'heatmap', 'timeseries', 'monthly', 'histogram'],
     variables: ['windSpeed', 'windDirection'],
-    controls: ['period', 'sectors', 'speedBands'],
+    controls: ['period', 'sectors'],
   },
   {
     id: 'daylight',
@@ -70,7 +70,7 @@ const MODES = [
     variable: 'dryBulb',
     views: ['psychrometric', 'heatmap', 'histogram', 'monthly', 'diurnal'],
     variables: ['dryBulb', 'relHumidity', 'humidityRatio', 'enthalpy'],
-    controls: ['period', 'comfortBand', 'strategies', 'adaptive'],
+    controls: ['period', 'strategies'],
   },
 ];
 

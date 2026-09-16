@@ -258,10 +258,9 @@
       <li><b>There is no adaptive comfort in this tool, although the code contains it.</b>
         The ASHRAE 55 adaptive band is implemented — neutral temperature
         <span class="ce-mono">0.31&nbsp;&times;&nbsp;prevailing&nbsp;+&nbsp;17.8</span>, with the
-        ±3.5&nbsp;K and ±2.5&nbsp;K acceptability limits — and it is never called. Nothing in the
-        interface reaches it, the Comfort mode advertises an
-        <span class="ce-mono">adaptive</span> control that is never built, and the state flag
-        behind it is never read. Every comfort figure this tool reports is the static, still-air
+        ±3.5&nbsp;K and ±2.5&nbsp;K acceptability limits — and <b>no view calls it</b>. There is
+        no control for it and no chart draws it, so nothing a reader can do in the interface will
+        produce an adaptive result. Every comfort figure this tool reports is the static, still-air
         zone. For a naturally ventilated building in a warm climate that understates comfort, and
         the tool cannot be cited for adaptive comfort at all.</li>
       <li><b>A wind frequency means nothing without its binning.</b>
@@ -661,10 +660,10 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
         arithmetic. The same file, period and variable give the same numbers in any mode.</p>
       <p class="ce-note">Two loose ends in the mode definitions, worth knowing if you read the
         source. The list of "relevant controls" each mode carries is almost entirely decorative:
-        it is consulted <b>once</b>, to dim the date-and-time group, and it hides nothing. And two
-        of the names in those lists — <span class="ce-mono">speedBands</span> in Wind mode and
-        <span class="ce-mono">adaptive</span> in Comfort mode — refer to controls that are never
-        built.</p>
+        it is consulted <b>once</b>, to dim the date-and-time group, and it hides nothing. Every
+        name remaining in those lists refers to a control that exists; three that did not
+        — <span class="ce-mono">speedBands</span>, <span class="ce-mono">comfortBand</span> and
+        <span class="ce-mono">adaptive</span> — have been removed from them.</p>
 
       <h3>Compare</h3>
       <p>Compare splits the stage into two panels, A and B, from one of two sources: <b>another
@@ -854,9 +853,9 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
           <tr><td>Comfort band, upper</td><td class="ce-d">26 °C</td><td class="ce-n">18 &ndash; 36, step 0.5</td><td>As above. <b>Nothing stops you setting it below the lower limit</b></td></tr>
           <tr><td>Humidity limit</td><td class="ce-d">0.012 kg/kg</td><td class="ce-n">&mdash;</td><td>Live state, used by the zones and the comfort share. <b>No control exposes it</b></td></tr>
           <tr><td>Passive strategies</td><td class="ce-d">on</td><td class="ce-n">on / off</td><td>One switch for all three polygons, not one per strategy</td></tr>
-          <tr><td>Adaptive</td><td class="ce-d">off</td><td class="ce-n">&mdash;</td><td><b>Declared in the state and read by nothing.</b> No control is built for it</td></tr>
+          <tr><td>Adaptive</td><td class="ce-d">&mdash;</td><td class="ce-n">&mdash;</td><td><b>No such setting.</b> The adaptive band is implemented in the code but no view calls it, so there is nothing to switch</td></tr>
           <tr><td>Wind sectors</td><td class="ce-d">16</td><td class="ce-n">8 · 12 · 16 · 36</td><td></td></tr>
-          <tr><td>Wind speed bands</td><td class="ce-d">0.5 &ndash; 10 m/s</td><td class="ce-n">&mdash;</td><td><b>Fixed.</b> No control, despite Wind mode naming one</td></tr>
+          <tr><td>Wind speed bands</td><td class="ce-d">0.5 &ndash; 10 m/s</td><td class="ce-n">&mdash;</td><td><b>Fixed in the source.</b> No control exposes them</td></tr>
         </tbody>
       </table></div>
       <p class="ce-note">The degree-day base has a second effect that is easy to miss and useful
