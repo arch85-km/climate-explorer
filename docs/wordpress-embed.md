@@ -10,9 +10,9 @@ That keeps the page free of any third-party data you would otherwise be
 redistributing to every visitor. (See "Bundling your own example" in the README if
 you want a file you hold the rights to loaded automatically instead.)
 
-It is about **650 KB**, roughly half of which is the bundled London example climate
-that makes the page useful the moment it loads. Serve it with gzip enabled (most
-hosts do by default) and it arrives in about 360 KB.
+It is about **323 KB** — all of it the application itself, since no weather data is
+embedded. Serve it with gzip enabled, as most hosts do by default, and it arrives
+in about **90 KB**.
 
 There are two ways to put it in a WordPress page. **Use the iframe method** unless
 you have a specific reason not to.
