@@ -5,14 +5,17 @@
  * (city names, header comments) reaches the UI, and all of it goes through
  * textContent so a crafted file cannot inject markup.
  *
- * Everything the app creates lives under one root element and carries an
- * `epwviz-` class prefix, so a WordPress theme's stylesheet cannot reach in and
+ * Everything the app creates lives under one root element and carries a
+ * `cx-` class prefix, so a WordPress theme's stylesheet cannot reach in and
  * a plugin's script cannot collide with anything here.
  *
  * @version 1.0.0 — 2026-09-17
  */
 
-const NS = 'epwviz';
+// The class-name namespace `el()` prepends. Deliberately short: it appears on
+// every element the app creates. Distinct from the `ce-` prefix the Method Notes
+// page uses, so the two can sit on one page without colliding.
+const NS = 'cx';
 
 /** el('div.foo#bar', { attrs }, ...children) */
 function el(spec, props, ...children) {

@@ -39,7 +39,7 @@ writeFileSync('/tmp/host.html', `<!doctype html><html><head><meta charset="utf-8
   window.addEventListener('message', function (event) {
     if (!frame || event.source !== frame.contentWindow) return;
     var data = event.data;
-    if (data && data.type === 'epwviz:height' && typeof data.height === 'number') {
+    if (data && data.type === 'climate-explorer:height' && typeof data.height === 'number') {
       window.__heights.push(data.height);
       frame.style.height = Math.max(640, Math.min(2400, data.height)) + 'px';
     }
@@ -58,25 +58,25 @@ await page.goto(pathToFileURL('/tmp/host.html').href, { waitUntil: 'load' });
 await page.waitForTimeout(700);
 
 const frame = page.frameLocator('#climate-explorer');
-await frame.locator('#epwviz').waitFor({ timeout: 5000 });
-await page.frames()[1].evaluate((t) => window.EPWVisualiser.load(t, 'chicago.epw'), EPW);
+await frame.locator('#climate-explorer').waitFor({ timeout: 5000 });
+await page.frames()[1].evaluate((t) => window.ClimateExplorer.load(t, 'chicago.epw'), EPW);
 await page.waitForTimeout(900);
 
 // Did the host theme leak in?
 const probe = await page.frames()[1].evaluate(() => {
-  const btn = document.querySelector('.epwviz-btn-primary');
-  const sel = document.querySelector('.epwviz-select');
+  const btn = document.querySelector('.cx-btn-primary');
+  const sel = document.querySelector('.cx-select');
   const cs = getComputedStyle(btn);
   const cs2 = getComputedStyle(sel);
-  const canvas = document.querySelector('.epwviz-canvas2d');
+  const canvas = document.querySelector('.cx-canvas2d');
   return {
     btnFont: cs.fontSize, btnBorder: cs.borderTopColor, btnBg: cs.backgroundColor,
-    accent: getComputedStyle(document.getElementById('epwviz')).getPropertyValue('--accent').trim(),
-    theme: document.getElementById('epwviz').dataset.theme,
+    accent: getComputedStyle(document.getElementById('climate-explorer')).getPropertyValue('--accent').trim(),
+    theme: document.getElementById('climate-explorer').dataset.theme,
     selBg: cs2.backgroundColor, boxSizing: cs.boxSizing,
     canvasCssWidth: getComputedStyle(canvas).width,
     canvasBackingWidth: canvas.width,
-    tiles: document.querySelectorAll('.epwviz-tile').length,
+    tiles: document.querySelectorAll('.cx-tile').length,
   };
 });
 console.log('inside the iframe, with a hostile host theme applied:');
@@ -101,7 +101,7 @@ await page.setViewportSize({ width: 420, height: 900 });
 await page.waitForTimeout(800);
 await page.screenshot({ path: 'test/screenshots/wordpress-embed-narrow.png' });
 const railHidden = await page.frames()[1].evaluate(() =>
-  document.querySelector('.epwviz-rail').getBoundingClientRect().right <= 2);
+  document.querySelector('.cx-rail').getBoundingClientRect().right <= 2);
 console.log('narrow embed collapses the rail:', railHidden);
 
 // ── the host page fullscreening the iframe must not leave a band ────────────────
@@ -114,7 +114,7 @@ await page.waitForTimeout(600);
 await page.evaluate(() => document.getElementById('climate-explorer').requestFullscreen());
 await page.waitForTimeout(1400);
 const fs = await page.frames()[1].evaluate(() => {
-  const root = document.getElementById('epwviz');
+  const root = document.getElementById('climate-explorer');
   return { app: Math.round(root.getBoundingClientRect().height), win: window.innerHeight };
 });
 console.log('fullscreen band          :', fs.win - fs.app, 'px');

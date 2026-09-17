@@ -9,7 +9,7 @@
 import { el, icon } from './dom.js';
 
 let uid = 0;
-const nextId = (prefix) => `epwviz-${prefix}-${(uid += 1)}`;
+const nextId = (prefix) => `cx-${prefix}-${(uid += 1)}`;
 
 /** A labelled group of controls. */
 function group(label, ...children) {
@@ -122,8 +122,8 @@ function button(label, onClick, opts = {}) {
     onclick: onClick,
   }, opts.icon ? icon(opts.icon, opts.iconSize || 15) : null,
   opts.iconOnly ? null : el('span', { text: label }));
-  if (opts.variant) node.classList.add(`epwviz-btn-${opts.variant}`);
-  if (opts.iconOnly) node.classList.add('epwviz-btn-icon');
+  if (opts.variant) node.classList.add(`cx-btn-${opts.variant}`);
+  if (opts.iconOnly) node.classList.add('cx-btn-icon');
   return {
     node,
     setLabel(text) { const s = node.querySelector('span'); if (s) s.textContent = text; },

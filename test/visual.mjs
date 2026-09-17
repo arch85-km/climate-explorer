@@ -36,8 +36,8 @@ async function session(width, height, theme, label, fn) {
   page.on('pageerror', (e) => errors.push(`pageerror: ${e.message}`));
   await page.goto(FILE, { waitUntil: 'load' });
   await page.evaluate(([text, t]) => {
-    window.EPWVisualiser.load(text, 'chicago_ohare_tmy3.epw');
-    window.EPWVisualiser.setState({ theme: t });
+    window.ClimateExplorer.load(text, 'chicago_ohare_tmy3.epw');
+    window.ClimateExplorer.setState({ theme: t });
   }, [EPW, theme]);
   await page.waitForTimeout(400);
   await fn(page, errors, label);
@@ -49,19 +49,19 @@ async function session(width, height, theme, label, fn) {
 await session(1600, 1000, 'light', 'desktop-light', async (page, errors) => {
   for (const view of VIEWS) {
     const t0 = Date.now();
-    await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
+    await page.evaluate((v) => window.ClimateExplorer.setState({ view: v }), view);
     await page.waitForTimeout(view === 'surface' || view === 'sundome' ? 700 : 380);
     timings.push([view, Date.now() - t0]);
     await page.screenshot({ path: join(OUT, `desktop-light-${view}.png`) });
 
     // The canvas must actually contain something other than the background.
     const filled = await page.evaluate(() => {
-      const root = document.getElementById('epwviz');
-      const gl = root.querySelector('.epwviz-gl');
-      const c2 = root.querySelector('.epwviz-canvas2d');
+      const root = document.getElementById('climate-explorer');
+      const gl = root.querySelector('.cx-gl');
+      const c2 = root.querySelector('.cx-canvas2d');
       const target = (gl && gl.style.display !== 'none' && gl.offsetParent !== null) ? gl : c2;
       if (!target || !target.width) return { ok: false, why: 'no canvas' };
-      if (target.classList.contains('epwviz-gl')) {
+      if (target.classList.contains('cx-gl')) {
         // Read back the WebGL drawing buffer via a copy into a 2D canvas.
         const tmp = document.createElement('canvas');
         tmp.width = target.width; tmp.height = target.height;
@@ -80,12 +80,12 @@ await session(1600, 1000, 'light', 'desktop-light', async (page, errors) => {
   }
 
   // Tooltip on the heatmap.
-  await page.evaluate(() => window.EPWVisualiser.setState({ view: 'heatmap' }));
+  await page.evaluate(() => window.ClimateExplorer.setState({ view: 'heatmap' }));
   await page.waitForTimeout(300);
-  const box = await page.locator('.epwviz-canvas2d').boundingBox();
+  const box = await page.locator('.cx-canvas2d').boundingBox();
   await page.mouse.move(box.x + box.width * 0.45, box.y + box.height * 0.5);
   await page.waitForTimeout(220);
-  const tip = await page.locator('.epwviz-tooltip.is-visible').count();
+  const tip = await page.locator('.cx-tooltip.is-visible').count();
   if (!tip) problems.push('[desktop-light] heatmap tooltip did not appear on hover');
   else await page.screenshot({ path: join(OUT, 'desktop-light-tooltip.png') });
 });
@@ -94,7 +94,7 @@ await session(1600, 1000, 'light', 'desktop-light', async (page, errors) => {
 for (const theme of ['dark', 'print']) {
   await session(1600, 1000, theme, `desktop-${theme}`, async (page) => {
     for (const view of (ALL ? VIEWS : ['heatmap', 'psychrometric', 'sundome', 'massing'])) {
-      await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
+      await page.evaluate((v) => window.ClimateExplorer.setState({ view: v }), view);
       await page.waitForTimeout(480);
       await page.screenshot({ path: join(OUT, `desktop-${theme}-${view}.png`) });
     }
@@ -105,18 +105,18 @@ for (const theme of ['dark', 'print']) {
 for (const [w, h, name] of [[390, 844, 'phone'], [834, 1112, 'tablet']]) {
   await session(w, h, 'dark', name, async (page) => {
     for (const view of ['heatmap', 'windrose', 'sundome']) {
-      await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
+      await page.evaluate((v) => window.ClimateExplorer.setState({ view: v }), view);
       await page.waitForTimeout(480);
       await page.screenshot({ path: join(OUT, `${name}-${view}.png`), fullPage: false });
     }
     // The rail must be off-canvas until the menu button is pressed.
     if (name === 'phone') {
       const hidden = await page.evaluate(() => {
-        const rail = document.querySelector('.epwviz-rail');
+        const rail = document.querySelector('.cx-rail');
         return rail.getBoundingClientRect().right <= 2;
       });
       if (!hidden) problems.push('[phone] control rail is not collapsed at 390px');
-      await page.locator('.epwviz-menu-btn').click();
+      await page.locator('.cx-menu-btn').click();
       await page.waitForTimeout(320);
       await page.screenshot({ path: join(OUT, 'phone-rail-open.png') });
     }
@@ -134,7 +134,7 @@ await session(1600, 1000, 'light', 'orbit', async (page) => {
   // screenshots are not byte-stable in headless Chromium, so PNG comparison gives
   // false passes; reading the preserved drawing buffer does not.
   const signature = () => page.evaluate(() => {
-    const gl = document.querySelector('.epwviz-gl');
+    const gl = document.querySelector('.cx-gl');
     const tmp = document.createElement('canvas');
     tmp.width = gl.width; tmp.height = gl.height;
     tmp.getContext('2d').drawImage(gl, 0, 0);
@@ -151,11 +151,11 @@ await session(1600, 1000, 'light', 'orbit', async (page) => {
   });
 
   const gesture = async (name, view, fn) => {
-    const before = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+    const before = await page.evaluate(() => window.ClimateExplorer.sceneInfo());
     const sigBefore = await signature();
     await fn();
     await page.waitForTimeout(420);
-    const after = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+    const after = await page.evaluate(() => window.ClimateExplorer.sceneInfo());
     const sigAfter = await signature();
     if (after.frames <= before.frames) {
       problems.push(`[orbit] ${view}: ${name} changed the camera but drew no frame`);
@@ -166,9 +166,9 @@ await session(1600, 1000, 'light', 'orbit', async (page) => {
   };
 
   for (const view of ['sundome', 'surface', 'windrose3d', 'massing']) {
-    await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
+    await page.evaluate((v) => window.ClimateExplorer.setState({ view: v }), view);
     await page.waitForTimeout(800);
-    const box = await page.locator('.epwviz-gl-overlay').boundingBox();
+    const box = await page.locator('.cx-gl-overlay').boundingBox();
     if (!box) { problems.push(`[orbit] ${view}: no 3D canvas`); continue; }
     const cx = box.x + box.width / 2;
     const cy = box.y + box.height / 2;
@@ -194,26 +194,26 @@ await session(1600, 1000, 'light', 'orbit', async (page) => {
       await page.keyboard.up('Shift');
     });
 
-    await gesture('reset view', view, () => page.locator('.epwviz-nav-reset').click());
+    await gesture('reset view', view, () => page.locator('.cx-nav-reset').click());
 
     // Reset must land back on the angle the scene opened with.
-    const home = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
-    await page.evaluate((v) => window.EPWVisualiser.setState({ view: 'heatmap' }), view);
+    const home = await page.evaluate(() => window.ClimateExplorer.sceneInfo());
+    await page.evaluate((v) => window.ClimateExplorer.setState({ view: 'heatmap' }), view);
     await page.waitForTimeout(200);
-    await page.evaluate((v) => window.EPWVisualiser.setState({ view: v }), view);
+    await page.evaluate((v) => window.ClimateExplorer.setState({ view: v }), view);
     await page.waitForTimeout(700);
-    const fresh = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+    const fresh = await page.evaluate(() => window.ClimateExplorer.sceneInfo());
     if (Math.abs(home.azimuth - fresh.azimuth) > 0.02 || Math.abs(home.elevation - fresh.elevation) > 0.02) {
       problems.push(`[orbit] ${view}: reset did not return to the scene's opening camera`);
     }
 
     if (view === 'massing') {
       await gesture('Plan camera preset', view,
-        () => page.locator('.epwviz-nav-btn', { hasText: 'Plan' }).click());
-      const plan = await page.evaluate(() => window.EPWVisualiser.sceneInfo());
+        () => page.locator('.cx-nav-btn', { hasText: 'Plan' }).click());
+      const plan = await page.evaluate(() => window.ClimateExplorer.sceneInfo());
       if (plan.elevation < 1.2) problems.push(`[orbit] the Plan preset gave elevation ${plan.elevation}`);
       await page.screenshot({ path: join(OUT, 'massing-plan-preset.png') });
-      await page.locator('.epwviz-nav-btn', { hasText: 'SE' }).click();
+      await page.locator('.cx-nav-btn', { hasText: 'SE' }).click();
       await page.waitForTimeout(420);
       await page.screenshot({ path: join(OUT, 'massing-se-preset.png') });
     }
@@ -224,17 +224,17 @@ await session(1600, 1000, 'light', 'orbit', async (page) => {
 // ── 4. compare mode with two files ───────────────────────────────────────────
 await session(1600, 1000, 'dark', 'compare', async (page) => {
   await page.evaluate((text) => {
-    window.EPWVisualiser.setState({ compare: true, compareSource: 'period', view: 'heatmap' });
+    window.ClimateExplorer.setState({ compare: true, compareSource: 'period', view: 'heatmap' });
   }, EPW2);
   await page.waitForTimeout(600);
   await page.screenshot({ path: join(OUT, 'compare-periods.png') });
-  const panels = await page.locator('.epwviz-stage-panel').count();
+  const panels = await page.locator('.cx-stage-panel').count();
   if (panels !== 2) problems.push(`[compare] expected 2 stage panels, found ${panels}`);
 });
 
 // ── 5. presentation mode ─────────────────────────────────────────────────────
 await session(1600, 1000, 'dark', 'presentation', async (page) => {
-  await page.evaluate(() => window.EPWVisualiser.setState({ presentation: true, view: 'sundome' }));
+  await page.evaluate(() => window.ClimateExplorer.setState({ presentation: true, view: 'sundome' }));
   await page.waitForTimeout(600);
   await page.screenshot({ path: join(OUT, 'presentation-sundome.png') });
 });
@@ -252,17 +252,17 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   await page.waitForTimeout(1200);
 
   const boot = await page.evaluate(() => ({
-    hasData: !!window.EPWVisualiser.getState().data,
-    theme: window.EPWVisualiser.getState().theme,
-    emptyShown: getComputedStyle(document.querySelector('.epwviz-empty')).display !== 'none',
-    loadingHidden: getComputedStyle(document.querySelector('.epwviz-loading')).display === 'none',
-    copyright: document.querySelector('.epwviz-copyright')?.textContent,
+    hasData: !!window.ClimateExplorer.getState().data,
+    theme: window.ClimateExplorer.getState().theme,
+    emptyShown: getComputedStyle(document.querySelector('.cx-empty')).display !== 'none',
+    loadingHidden: getComputedStyle(document.querySelector('.cx-loading')).display === 'none',
+    copyright: document.querySelector('.cx-copyright')?.textContent,
     // offsetParent is null for a hidden element: the button exists in the DOM
     // because the bundling mechanism is kept, but must not be offered.
-    sampleButton: [...document.querySelectorAll('.epwviz-btn')]
+    sampleButton: [...document.querySelectorAll('.cx-btn')]
       .some((b) => /example/i.test(b.textContent) && b.offsetParent !== null),
-    sources: [...document.querySelectorAll('.epwviz-empty-sources a')].map((a2) => a2.getAttribute('href')),
-    lead: document.querySelector('.epwviz-empty-lead')?.textContent || '',
+    sources: [...document.querySelectorAll('.cx-empty-sources a')].map((a2) => a2.getAttribute('href')),
+    lead: document.querySelector('.cx-empty-lead')?.textContent || '',
   }));
   if (boot.hasData) problems.push('[boot] weather data loaded on its own — nothing should be bundled');
   if (!boot.emptyShown) problems.push('[boot] the empty state is not showing');
@@ -278,14 +278,14 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
 
   // The path a student actually takes: the real file input, not the JS API.
   const chooser = page.waitForEvent('filechooser');
-  await page.locator('.epwviz-empty .epwviz-btn-primary').click();
+  await page.locator('.cx-empty .cx-btn-primary').click();
   await (await chooser).setFiles(join(ROOT, 'test', 'fixtures', 'chicago_ohare_tmy3.epw'));
-  await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
+  await page.waitForFunction(() => window.ClimateExplorer?.getState()?.data, null, { timeout: 20000 });
   await page.waitForTimeout(700);
 
   const loaded = await page.evaluate(() => {
-    const s2 = window.EPWVisualiser.getState();
-    const canvas = document.querySelector('.epwviz-canvas2d');
+    const s2 = window.ClimateExplorer.getState();
+    const canvas = document.querySelector('.cx-canvas2d');
     const d = canvas.getContext('2d').getImageData(0, 0, canvas.width, canvas.height).data;
     const seen = new Set();
     for (let i = 0; i < d.length; i += 4 * 997) seen.add(`${d[i]},${d[i + 1]},${d[i + 2]}`);
@@ -293,7 +293,7 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
       n: s2.data.n,
       city: s2.data.location.city,
       file: s2.fileName,
-      emptyHidden: getComputedStyle(document.querySelector('.epwviz-empty')).display === 'none',
+      emptyHidden: getComputedStyle(document.querySelector('.cx-empty')).display === 'none',
       distinct: seen.size,
     };
   });
@@ -317,9 +317,9 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   await page.goto(FILE, { waitUntil: 'load' });
   await page.waitForTimeout(900);
   const state = await page.evaluate(() => ({
-    hasData: !!window.EPWVisualiser.getState().data,
-    emptyShown: getComputedStyle(document.querySelector('.epwviz-empty')).display !== 'none',
-    loadingHidden: getComputedStyle(document.querySelector('.epwviz-loading')).display === 'none',
+    hasData: !!window.ClimateExplorer.getState().data,
+    emptyShown: getComputedStyle(document.querySelector('.cx-empty')).display !== 'none',
+    loadingHidden: getComputedStyle(document.querySelector('.cx-loading')).display === 'none',
   }));
   if (state.hasData) problems.push('[fallback] data loaded despite DecompressionStream being absent');
   if (!state.emptyShown) problems.push('[fallback] the empty state did not appear');
@@ -337,21 +337,21 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   page.on('pageerror', (e) => errors.push(e.message));
   page.on('console', (m) => { if (m.type() === 'error') errors.push(m.text()); });
   await page.goto(FILE, { waitUntil: 'load' });
-  await page.evaluate((t) => window.EPWVisualiser.load(t, 'chicago_ohare_tmy3.epw'), EPW);
-  await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
+  await page.evaluate((t) => window.ClimateExplorer.load(t, 'chicago_ohare_tmy3.epw'), EPW);
+  await page.waitForFunction(() => window.ClimateExplorer?.getState()?.data, null, { timeout: 20000 });
 
   // The full sentence belongs where there is room for it — the tab title, the meta
   // description and the empty state. The header lockup keeps a short strapline, or
   // it grows a second line on every screen.
   const FULL = 'a browser-based weather data analysis and visualisation tool';
   const brand = await page.evaluate(() => ({
-    name: document.querySelector('.epwviz-brand-text strong').textContent.trim(),
-    strapline: document.querySelector('.epwviz-brand-text span').textContent.trim(),
+    name: document.querySelector('.cx-brand-text strong').textContent.trim(),
+    strapline: document.querySelector('.cx-brand-text span').textContent.trim(),
     description: document.querySelector('meta[name=description]')?.content || '',
     version: document.querySelector('meta[name=version]')?.content || '',
     buildDate: document.querySelector('meta[name="build-date"]')?.content || '',
     license: document.querySelector('meta[name=license]')?.content || '',
-    rail: document.querySelector('.epwviz-rail-version')?.textContent || '',
+    rail: document.querySelector('.cx-rail-version')?.textContent || '',
   }));
   const title = await page.title();
 
@@ -371,18 +371,18 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   if (!brand.rail.includes(pkg.version)) problems.push(`[version] the rail does not show v${pkg.version} (reads "${brand.rail.trim()}")`);
 
   // ...and must not sit beside the copyright.
-  const footer = await page.evaluate(() => document.querySelector('.epwviz-footer')?.textContent || '');
+  const footer = await page.evaluate(() => document.querySelector('.cx-footer')?.textContent || '');
   if (footer.includes(pkg.version)) problems.push('[version] the version is in the footer, next to the copyright');
 
   // Exported images must carry the attribution. The caption bar is drawn below the
   // chart, so a correct export is taller than the canvas it came from.
-  await page.evaluate(() => window.EPWVisualiser.setState({ mode: 'comfort', view: 'psychrometric' }));
+  await page.evaluate(() => window.ClimateExplorer.setState({ mode: 'comfort', view: 'psychrometric' }));
   await page.waitForTimeout(700);
-  const canvasHeight = await page.evaluate(() => document.querySelector('.epwviz-canvas2d').height);
-  const canvasWidthBefore = await page.evaluate(() => document.querySelector('.epwviz-canvas2d').width);
+  const canvasHeight = await page.evaluate(() => document.querySelector('.cx-canvas2d').height);
+  const canvasWidthBefore = await page.evaluate(() => document.querySelector('.cx-canvas2d').width);
   const canvasHeightBefore = canvasHeight;
   const pending = page.waitForEvent('download');
-  await page.locator('.epwviz-btn', { hasText: 'PNG' }).click();
+  await page.locator('.cx-btn', { hasText: 'PNG' }).click();
   const download = await pending;
   const out = join(OUT, 'exported.png');
   await download.saveAs(out);
@@ -401,10 +401,10 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
   // only holds if the chart is re-rendered rather than the bitmap stretched.
   const dims = {};
   for (const factor of [1, 3]) {
-    await page.evaluate((f) => window.EPWVisualiser.setState({ exportScale: f }), factor);
+    await page.evaluate((f) => window.ClimateExplorer.setState({ exportScale: f }), factor);
     await page.waitForTimeout(400);
     const pending2 = page.waitForEvent('download');
-    await page.locator('.epwviz-btn', { hasText: 'PNG' }).click();
+    await page.locator('.cx-btn', { hasText: 'PNG' }).click();
     const dl = await pending2;
     const file = join(OUT, `export-${factor}x.png`);
     await dl.saveAs(file);
@@ -424,7 +424,7 @@ await session(1600, 1000, 'dark', 'presentation', async (page) => {
 
   // The live canvas must be untouched by exporting.
   const liveAfter = await page.evaluate(() => {
-    const c = document.querySelector('.epwviz-canvas2d');
+    const c = document.querySelector('.cx-canvas2d');
     return { w: c.width, h: c.height };
   });
   if (liveAfter.w !== canvasWidthBefore || liveAfter.h !== canvasHeightBefore) {
@@ -443,12 +443,12 @@ await session(1180, 900, 'light', 'psychro', async (page) => {
   // Two panels side by side is the tightest case: five legend entries wrap to a
   // second row, which a fixed bottom margin used to cut off.
   for (const compare of [false, true]) {
-    await page.evaluate((c) => window.EPWVisualiser.setState({
+    await page.evaluate((c) => window.ClimateExplorer.setState({
       mode: 'comfort', view: 'psychrometric', compare: c, compareSource: 'period',
     }), compare);
     await page.waitForTimeout(800);
     const fits = await page.evaluate(() => {
-      const canvas = document.querySelector('.epwviz-canvas2d');
+      const canvas = document.querySelector('.cx-canvas2d');
       const ctx = canvas.getContext('2d');
       const dpr = canvas.width / canvas.getBoundingClientRect().width;
       // Scan the bottom 4 CSS pixels: anything drawn there is being cut off.
@@ -479,18 +479,18 @@ for (const [w, h, minShare, maxTileRows, label] of [
   const errors = [];
   page.on('pageerror', (e) => errors.push(e.message));
   await page.goto(FILE, { waitUntil: 'load' });
-  await page.evaluate((t) => window.EPWVisualiser.load(t, 'chicago_ohare_tmy3.epw'), EPW);
-  await page.waitForFunction(() => window.EPWVisualiser?.getState()?.data, null, { timeout: 20000 });
+  await page.evaluate((t) => window.ClimateExplorer.load(t, 'chicago_ohare_tmy3.epw'), EPW);
+  await page.waitForFunction(() => window.ClimateExplorer?.getState()?.data, null, { timeout: 20000 });
   await page.waitForTimeout(500);
   const m = await page.evaluate(() => {
     const q = (sel) => document.querySelector(sel);
     const height = (el) => (el ? el.getBoundingClientRect().height : 0);
-    const tiles = q('.epwviz-tiles');
+    const tiles = q('.cx-tiles');
     const cols = getComputedStyle(tiles).gridTemplateColumns.split(' ').length;
     return {
-      share: height(q('.epwviz-stage-panel')) / height(q('.epwviz-app')),
-      rows: Math.ceil(document.querySelectorAll('.epwviz-tile').length / cols),
-      rail: q('.epwviz-rail').getBoundingClientRect().width,
+      share: height(q('.cx-stage-panel')) / height(q('.cx-app')),
+      rows: Math.ceil(document.querySelectorAll('.cx-tile').length / cols),
+      rail: q('.cx-rail').getBoundingClientRect().width,
     };
   });
   if (m.share < minShare) {
@@ -510,12 +510,12 @@ for (const [w, h, minShare, maxTileRows, label] of [
 // (that the caption sits above the strip rather than crammed beside it is
 //  asserted precisely in test/render.test.mjs)
 await session(1500, 900, 'light', 'colorbar', async (page) => {
-  await page.evaluate(() => window.EPWVisualiser.setState({
+  await page.evaluate(() => window.ClimateExplorer.setState({
     mode: 'solar', view: 'sunpath', sunpathTint: 'globalHorizontal',
   }));
   await page.waitForTimeout(700);
   const clipped = await page.evaluate(() => {
-    const canvas = document.querySelector('.epwviz-canvas2d');
+    const canvas = document.querySelector('.cx-canvas2d');
     const ctx = canvas.getContext('2d');
     const band = ctx.getImageData(canvas.width - 3, 0, 3, Math.round(canvas.height * 0.12)).data;
     let inked = 0;
@@ -538,7 +538,7 @@ await session(1500, 900, 'light', 'colorbar', async (page) => {
   if (errors.length) problems.push(`[empty] console errors:\n   ${errors.join('\n   ')}`);
   // A malformed file must produce a message, not a crash.
   await page.evaluate(() => {
-    try { window.EPWVisualiser.load('not,an,epw,file\nat,all', 'bad.epw'); } catch (e) { window.__err = e.message; }
+    try { window.ClimateExplorer.load('not,an,epw,file\nat,all', 'bad.epw'); } catch (e) { window.__err = e.message; }
   });
   await page.waitForTimeout(200);
   await page.close();

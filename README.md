@@ -201,15 +201,15 @@ In any 3D view: drag to orbit, scroll to zoom, shift-drag to pan.
 The page exposes a small API so a host page or a test harness can drive it:
 
 ```js
-EPWVisualiser.load(epwText, 'name.epw');
-EPWVisualiser.setState({ view: 'sundome', theme: 'light', variable: 'directNormal' });
-EPWVisualiser.getState();
+ClimateExplorer.load(epwText, 'name.epw');
+ClimateExplorer.setState({ view: 'sundome', theme: 'light', variable: 'directNormal' });
+ClimateExplorer.getState();
 ```
 
-`EPWVisualiser.sceneInfo()` returns the active 3D scene's frame count and camera,
+`ClimateExplorer.sceneInfo()` returns the active 3D scene's frame count and camera,
 which the test suite uses to assert that input actually causes a redraw.
 
-When embedded in an iframe it posts `{ type: 'epwviz:height', height }` to the
+When embedded in an iframe it posts `{ type: 'climate-explorer:height', height }` to the
 parent on every layout change, so the embed can size itself.
 
 ---

@@ -68,7 +68,7 @@ Replace the `src` with your uploaded URL.
   window.addEventListener('message', function (event) {
     if (!frame || event.source !== frame.contentWindow) return;
     var data = event.data;
-    if (data && data.type === 'epwviz:height' && typeof data.height === 'number') {
+    if (data && data.type === 'climate-explorer:height' && typeof data.height === 'number') {
       frame.style.height = Math.max(640, Math.min(2400, data.height)) + 'px';
     }
   });
@@ -100,7 +100,7 @@ document with your theme, so theme CSS and plugin scripts are in play.
 
 1. Open `dist/climate-explorer.html` in a text editor.
 2. Copy everything from `<style>` to the closing `</script>` — that is, the
-   contents of `<head>`'s style block, the `<div id="epwviz"></div>`, and the
+   contents of `<head>`'s style block, the `<div id="climate-explorer"></div>`, and the
    script block. Do **not** copy the `<!DOCTYPE>`, `<html>`, `<head>` or `<body>`
    tags.
 3. Paste into a **Custom HTML** block (not a Paragraph block — the classic editor
@@ -108,10 +108,10 @@ document with your theme, so theme CSS and plugin scripts are in play.
 4. Give the app a height, since it no longer has the standalone page's `100vh`:
 
    ```html
-   <div id="epwviz" class="epwviz-embedded" style="height:900px"></div>
+   <div id="climate-explorer" class="cx-embedded" style="height:900px"></div>
    ```
 
-   The `epwviz-embedded` class is already handled in the stylesheet.
+   The `cx-embedded` class is already handled in the stylesheet.
 
 ### If it looks wrong after pasting
 

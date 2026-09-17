@@ -41,8 +41,8 @@ const VIEWS_2D = { heatmap, timeseries, diurnal, monthly, histogram, psychrometr
 const VIEWS_3D = { sundome, surface, windrose3d, massing };
 
 function boot() {
-  const root = document.getElementById('epwviz')
-    || document.body.appendChild(el('div', { id: 'epwviz' }));
+  const root = document.getElementById('climate-explorer')
+    || document.body.appendChild(el('div', { id: 'climate-explorer' }));
   root.classList.add(`${NS}-root`);
 
   const store = createStore();
@@ -137,7 +137,7 @@ function boot() {
     }
   }
 
-  const footerFile = footer.querySelector('.epwviz-footer-file');
+  const footerFile = footer.querySelector('.cx-footer-file');
 
   // ── rendering ─────────────────────────────────────────────────────────────
   let renderQueued = false;
@@ -335,7 +335,7 @@ function boot() {
   // height from its own content — otherwise it is 100vh of the iframe and would
   // simply report the iframe's current height straight back to it.
   const embedded = window.parent !== window;
-  if (embedded) root.classList.add('epwviz-embedded');
+  if (embedded) root.classList.add('cx-embedded');
   let lastHeight = 0;
 
   function contentHeight() {
@@ -363,7 +363,7 @@ function boot() {
     if (Math.abs(wanted - lastHeight) < 6) return;
     lastHeight = wanted;
     try {
-      window.parent.postMessage({ type: 'epwviz:height', height: wanted }, '*');
+      window.parent.postMessage({ type: 'climate-explorer:height', height: wanted }, '*');
     } catch (err) { /* cross-origin parent: the embed falls back to a fixed height */ }
   }
 
@@ -448,7 +448,7 @@ function boot() {
   openSample();
 
   // Exposed so a host page (or a test harness) can feed a file in directly.
-  window.EPWVisualiser = {
+  window.ClimateExplorer = {
     load: (text, name = 'inline.epw') => {
       const data = buildDataset(parseEpw(text));
       invalidateHeatmap();

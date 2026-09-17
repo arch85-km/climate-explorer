@@ -306,7 +306,7 @@ function createToolbar(store, actions) {
           type: 'button',
           role: 'tab',
           'aria-selected': active ? 'true' : 'false',
-          class: `epwviz-view-chip${active ? ' is-active' : ''}`,
+          class: `cx-view-chip${active ? ' is-active' : ''}`,
           title: v.hint,
           onclick: () => set({ view: v.id }),
         }, el('span.view-chip-kind', { text: v.kind === '3d' ? '3D' : '2D' }),

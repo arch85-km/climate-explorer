@@ -16,15 +16,15 @@ import { rgb01 } from '../render/geometry.js';
 
 function createScene(container, root) {
   const canvas = document.createElement('canvas');
-  canvas.className = 'epwviz-gl';
+  canvas.className = 'cx-gl';
   const overlay = document.createElement('canvas');
-  overlay.className = 'epwviz-gl-overlay';
+  overlay.className = 'cx-gl-overlay';
   container.appendChild(canvas);
   container.appendChild(overlay);
 
   const renderer = createRenderer(canvas);
   if (!renderer) {
-    container.innerHTML = '<div class="epwviz-fallback">'
+    container.innerHTML = '<div class="cx-fallback">'
       + '<strong>3D views need WebGL.</strong>'
       + '<span>This browser or device has WebGL disabled. The 2D views all work — '
       + 'switch to one from the view shelf.</span></div>';
