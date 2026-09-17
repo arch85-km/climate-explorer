@@ -22,6 +22,14 @@ authors:
 version: "1.0.0"
 date-released: "2026-09-17"
 license: MIT
+doi: "10.5281/zenodo.22814693"
+identifiers:
+  - type: doi
+    value: "10.5281/zenodo.22814693"
+    description: "Version 1.0.0 — cite this when quoting a figure"
+  - type: doi
+    value: "10.5281/zenodo.22814692"
+    description: "Concept DOI — always resolves to the latest version"
 repository-code: "https://github.com/arch85-km/climate-explorer"
 url: "https://karam.me.uk/applications/climate-explorer/"
 keywords:

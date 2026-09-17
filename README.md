@@ -2,6 +2,8 @@
 
 **A browser-based weather data analysis and visualisation tool.**
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22814692.svg)](https://doi.org/10.5281/zenodo.22814692)
+
 A single-file, responsive web app for exploring **EnergyPlus Weather (`.epw`)**
 data in 2D and 3D, built for teaching climate-responsive design to architecture
 students.
@@ -158,8 +160,20 @@ Keeping the copyright notice in the file satisfies the licence; a citation is th
 scholarly act on top of that.
 
 > Al-Obaidi, K. M. (2026). *Climate Explorer: A browser-based weather data
-> analysis and visualisation tool* (Version 1.0.0) [Computer software].
-> https://karam.me.uk/applications/climate-explorer/
+> analysis and visualisation tool* (Version 1.0.0) [Computer software]. Zenodo.
+> https://doi.org/10.5281/zenodo.22814693
+
+**Two DOIs, and they are not interchangeable.** Cite the one that matches what you
+are claiming:
+
+| DOI | Resolves to | Use it when |
+|---|---|---|
+| [`10.5281/zenodo.22814693`](https://doi.org/10.5281/zenodo.22814693) | **version 1.0.0**, permanently | you quote a figure. A reader must be able to open exactly the version you used |
+| [`10.5281/zenodo.22814692`](https://doi.org/10.5281/zenodo.22814692) | **the latest version**, always | you cite the software in general, or link to it from a reading list |
+
+The version DOI is the one in the citation above, because that citation names a
+version. The badge at the top of this file is the concept DOI, so it keeps
+pointing at the current release.
 
 Citation metadata lives in [`CITATION.cff`](CITATION.cff), which drives GitHub's
 own **Cite this repository** button, and in [`.zenodo.json`](.zenodo.json), which
