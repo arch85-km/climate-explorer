@@ -8,7 +8,7 @@
  * Times are *local standard time* with no daylight-saving shift, matching the
  * EnergyPlus convention for EPW files.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 
 const DEG = Math.PI / 180;

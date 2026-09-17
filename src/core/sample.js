@@ -6,7 +6,7 @@
  * exactly the same parseEpw/buildDataset path as an imported file, so the sample is
  * never a special case downstream.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { SAMPLE_GZIP_B64, SAMPLE_NAME, SAMPLE_LABEL } from '../data/sample.js';
 import { parseEpw } from '../epw/parse.js';

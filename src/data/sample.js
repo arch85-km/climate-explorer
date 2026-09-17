@@ -11,7 +11,7 @@
  * the constant empty, `sampleAvailable()` is false and the app opens on its empty
  * state, which is the shipped behaviour.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 
 // Name of the file to look for in assets/. Nothing is shipped unless it is there.

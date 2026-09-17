@@ -6,7 +6,7 @@
  * solid smear. The polygons answer the question the chart exists to answer:
  * which hours are already comfortable, and which passive strategy reaches the rest.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import {
   beginFrame, scaleLinear, drawValueAxis, drawBottomAxis, drawPlotFrame, drawTitle,

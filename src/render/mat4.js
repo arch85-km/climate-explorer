@@ -5,7 +5,7 @@
  * Only the operations the 3D views actually need are implemented, so this stays
  * small enough to read in one sitting.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 
 function identity(out = new Float32Array(16)) {

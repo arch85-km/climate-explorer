@@ -6,7 +6,7 @@
  * the diagram that connects a number in a weather file to where the sun actually
  * is over a site, so it is worth being generous with it.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { MeshBuilder, LineBuilder, PointBuilder, skyPoint, rgb01, towards } from '../render/geometry.js';
 import { dayArc, analemma, sunPosition, dayOfYear, sunTimes } from '../core/solar.js';

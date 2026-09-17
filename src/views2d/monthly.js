@@ -4,7 +4,7 @@
  * The box and whiskers are the point of this view — a bare monthly mean tells a
  * student almost nothing about what a month is actually like to be in.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import {
   beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame,

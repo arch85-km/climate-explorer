@@ -4,7 +4,7 @@
  * Every function takes an optional `mask` (Uint8Array, 1 = include) so that all views
  * respond to the toolbar's analysis period without each one re-implementing filtering.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 
 /** Basic descriptive statistics, ignoring NaN and masked-out hours. */

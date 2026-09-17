@@ -5,7 +5,7 @@
  * question they answer — where, when, what, how — rather than by which module
  * implements them, because that is the order a student works in.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { el, clear, icon, ICONS } from './dom.js';
 import { group, select, slider, segmented, toggle, button, dayPicker } from './controls.js';

@@ -6,7 +6,7 @@
  * a student read "how often" and "how fast" independently, which is what matters
  * when deciding whether a facade opening is worth having.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { hexRgb } from '../render/canvas2d.js';

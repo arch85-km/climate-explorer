@@ -6,7 +6,7 @@
  * and the seasonal swell obvious, which is exactly the intuition the flat view
  * asks students to infer.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { hexRgb } from '../render/canvas2d.js';

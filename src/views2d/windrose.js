@@ -6,7 +6,7 @@
  * being binned by direction, because EPW records calm hours with direction 0 and
  * would otherwise stack a false spike on due north.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { beginFrame, drawTitle, drawEmpty, drawLegend } from '../render/canvas2d.js';
 import { windRose } from '../core/stats.js';

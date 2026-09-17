@@ -1,7 +1,7 @@
 {
   "name": "climate-explorer",
   "version": "1.0.0",
-  "releaseDate": "2026-09-15",
+  "releaseDate": "2026-09-17",
   "private": true,
   "type": "module",
   "description": "Climate Explorer: a browser-based weather data analysis and visualisation tool",

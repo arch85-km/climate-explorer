@@ -4,7 +4,7 @@
  * Owns one 2D canvas and one 3D scene and swaps between them, so switching views
  * never tears down the WebGL context (which is slow and, on some drivers, leaks).
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { el, clear, icon, ICONS } from './dom.js';
 import { fitCanvas, readTheme } from '../render/canvas2d.js';

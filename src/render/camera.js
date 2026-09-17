@@ -3,7 +3,7 @@
  * to pan. Elevation is clamped so the scene never turns upside down, which is
  * disorienting when the ground plane carries meaning.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { perspective, lookAt } from './mat4.js';
 

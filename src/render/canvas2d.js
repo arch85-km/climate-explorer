@@ -6,7 +6,7 @@
  * weight stay identical across views — which is what makes a set of charts read
  * as one instrument rather than eight unrelated pictures.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 
 const FONT_STACK = 'system-ui, -apple-system, "Segoe UI", Roboto, Helvetica, Arial, sans-serif';

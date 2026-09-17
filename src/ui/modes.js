@@ -6,7 +6,7 @@
  * reconfigures the whole instrument in one move, so a tutor can step a class
  * through a structured climate study without hunting through menus.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 
 const VIEWS = [

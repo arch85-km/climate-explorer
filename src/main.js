@@ -5,7 +5,7 @@
  * the things that are genuinely global: file loading, the animation loop,
  * presentation mode, and the responsive layout.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { el, clear, icon, ICONS, NS } from './ui/dom.js';
 import { createStore } from './core/state.js';

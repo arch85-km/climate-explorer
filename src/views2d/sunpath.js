@@ -9,7 +9,7 @@
  * The day arcs are the solstices and equinox plus the first of each month; the
  * analemmas are the sun's position at each clock hour across the year.
  *
- * @version 1.0.0 — 2026-09-15
+ * @version 1.0.0 — 2026-09-17
  */
 import { beginFrame, drawTitle, drawEmpty, drawLegend, drawColorbar } from '../render/canvas2d.js';
 import { sunPosition, dayArc, analemma, dayOfYear, sunTimes } from '../core/solar.js';
