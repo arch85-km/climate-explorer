@@ -143,9 +143,9 @@ Two licences, because the repository holds two kinds of thing:
 - **The code** — MIT. See [`LICENSE`](LICENSE). Use it, change it, redistribute
   it, including commercially; keep the copyright and permission notice.
 - **The accompanying material** — Creative Commons Attribution 4.0 International
-  (CC BY 4.0). See [`LICENSE-DOCS`](LICENSE-DOCS). This covers `README.md`,
-  `docs/`, screenshots and any teaching exercises distributed with the project:
-  share and adapt freely, with credit.
+  (CC BY 4.0). See [`NOTICE`](NOTICE). This covers `README.md`, `docs/`,
+  screenshots and any teaching exercises distributed with the project: share and
+  adapt freely, with credit.
 
 Copyright © 2026 Karam Al-Obaidi.
 

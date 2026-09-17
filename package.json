@@ -5,6 +5,7 @@
   "private": true,
   "type": "module",
   "description": "Climate Explorer: a browser-based weather data analysis and visualisation tool",
+  "license": "MIT",
   "scripts": {
     "build": "node build.js",
     "stamp": "node tools/stamp-version.mjs",

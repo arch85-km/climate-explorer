@@ -1,6 +1,18 @@
-Creative Commons Attribution 4.0 International (CC BY 4.0)
+NOTICE — licensing for this repository
+
+This project is distributed under two licences, because it holds two kinds of
+thing:
+
+    The software              MIT License — see LICENSE
+    The accompanying material Creative Commons Attribution 4.0 International
+                              (CC BY 4.0) — set out below
 
 Copyright (c) 2026 Karam Al-Obaidi
+
+
+------------------------------------------------------------------------------
+Creative Commons Attribution 4.0 International (CC BY 4.0)
+------------------------------------------------------------------------------
 
 This licence covers the accompanying material in this repository — the
 documentation pages, screenshots, teaching exercises and any other written or
@@ -37,3 +49,13 @@ The full licence text is available at:
 A human-readable summary is available at:
 
     https://creativecommons.org/licenses/by/4.0/
+
+
+------------------------------------------------------------------------------
+Weather data
+------------------------------------------------------------------------------
+
+No weather data is distributed with this software. EnergyPlus Weather (.epw)
+files loaded into the application remain subject to the terms of whoever
+published them; check those terms before redistributing anything derived from
+a file you did not create.
