@@ -1,0 +1,34 @@
+{
+  "title": "Climate Explorer: A browser-based weather data analysis and visualisation tool",
+  "upload_type": "software",
+  "access_right": "open",
+  "license": "MIT",
+  "version": "1.0.0",
+  "publication_date": "2026-09-17",
+  "language": "eng",
+  "creators": [
+    {
+      "name": "Al-Obaidi, Karam M.",
+      "affiliation": "Sheffield Hallam University",
+      "orcid": "0000-0002-4379-6964"
+    }
+  ],
+  "description": "<p>A single-file, browser-based tool for exploring EnergyPlus Weather (<code>.epw</code>) files in 2D and 3D, built for teaching climate-responsive design to architecture students.</p><p><strong>Twelve views</strong>, arranged by five analysis modes (Thermal, Solar, Wind, Daylight, Comfort): an annual heatmap, daily-range time series, diurnal profiles, monthly statistics, a distribution with cumulative curve, a psychrometric chart carrying the ASHRAE 55 still-air comfort zones and Givoni&ndash;Milne passive-strategy polygons, a wind rose, and a sun path diagram in stereographic or orthographic projection; plus four WebGL scenes &mdash; a sun path dome, the annual data surface, a 3D wind rose, and a massing block casting the real sun shadow for any date and time.</p><p><strong>Method.</strong> Psychrometrics follow the ASHRAE Handbook of Fundamentals (Ch. 1), including the saturation-pressure relations and a wet-bulb solution by bisection on the adiabatic-saturation relation. Solar position follows the NOAA General Solar Position Calculations, with atmospheric refraction and sunrise and sunset at the 90.833&deg; zenith. Comfort zones and passive-strategy polygons follow ASHRAE 55 and the Givoni&ndash;Milne bioclimatic construction as implemented by Ladybug and Climate Consultant.</p><p><strong>Properties worth noting.</strong> The application bundles no third-party library and makes no network request; weather files are read in the browser and nothing is uploaded. It ships with <em>no weather data</em>, so the reader supplies their own file and its terms remain theirs. It runs offline from <code>file://</code> and embeds in a web page.</p><p><strong>Documentation.</strong> A Method Notes page accompanies the software, setting out what each quantity computes, which published method it implements with the equation numbers the source itself cites, what the tool does not model, and how exact its numbers are.</p><p><strong>Licensing.</strong> The software is released under the MIT License. The accompanying documentation and teaching material are released under Creative Commons Attribution 4.0 International (CC BY 4.0); see the <code>NOTICE</code> file.</p>",
+  "keywords": [
+    "EPW",
+    "EnergyPlus",
+    "weather data",
+    "climate analysis",
+    "building performance",
+    "architecture",
+    "architectural education",
+    "psychrometric chart",
+    "ASHRAE 55",
+    "bioclimatic design",
+    "sun path",
+    "solar geometry",
+    "wind rose",
+    "data visualisation",
+    "WebGL"
+  ]
+}

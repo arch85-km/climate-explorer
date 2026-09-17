@@ -1,0 +1,42 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Climate Explorer: A browser-based weather data analysis and visualisation tool"
+abstract: >-
+  A single-file, browser-based tool for exploring EnergyPlus Weather (.epw) files
+  in 2D and 3D, built for teaching climate-responsive design to architecture
+  students. Twelve views — annual heatmaps, time series, diurnal profiles,
+  monthly statistics, distributions, a psychrometric chart with ASHRAE 55 comfort
+  zones and Givoni–Milne passive-strategy polygons, wind roses, sun path diagrams,
+  a sun path dome, an annual surface, a 3D wind rose, and a massing block casting
+  the real sun shadow — arranged by five analysis modes. Psychrometrics follow the
+  ASHRAE Handbook of Fundamentals; solar position follows the NOAA General Solar
+  Position Calculations. The application bundles no third-party library, makes no
+  network request, and ships with no weather data: the reader supplies their own
+  file. The software is MIT licensed; the accompanying documentation is CC BY 4.0.
+type: software
+authors:
+  - family-names: Al-Obaidi
+    given-names: Karam M.
+    orcid: "https://orcid.org/0000-0002-4379-6964"
+    affiliation: "Sheffield Hallam University"
+version: "1.0.0"
+date-released: "2026-09-17"
+license: MIT
+repository-code: "https://github.com/arch85-km/climate-explorer"
+url: "https://karam.me.uk/applications/climate-explorer/"
+keywords:
+  - epw
+  - energyplus
+  - weather data
+  - climate analysis
+  - building performance
+  - architecture
+  - architectural education
+  - psychrometric chart
+  - ASHRAE 55
+  - bioclimatic
+  - sun path
+  - solar geometry
+  - wind rose
+  - data visualisation
+  - WebGL

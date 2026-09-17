@@ -152,6 +152,26 @@ Copyright © 2026 Karam Al-Obaidi.
 No third-party code and no third-party weather data are redistributed by the
 built file — see the dependency note above.
 
+## How to cite
+
+Keeping the copyright notice in the file satisfies the licence; a citation is the
+scholarly act on top of that.
+
+> Al-Obaidi, K. M. (2026). *Climate Explorer: A browser-based weather data
+> analysis and visualisation tool* (Version 1.0.0) [Computer software].
+> https://karam.me.uk/applications/climate-explorer/
+
+Citation metadata lives in [`CITATION.cff`](CITATION.cff), which drives GitHub's
+own **Cite this repository** button, and in [`.zenodo.json`](.zenodo.json), which
+Zenodo reads when a release is archived. Both carry the ORCID and affiliation, so
+the record resolves to a person rather than a name string.
+
+Report the settings alongside any figure taken from the tool — at minimum the
+weather file by station name and source, and the analysis period. Nobody reading
+you can check a percentage without them. The
+[Method Notes](docs/climate-explorer-method-notes.html) set out what else each
+kind of figure needs — comfort figures and wind frequencies in particular.
+
 ## Version
 
 The version and release date live in one place, `package.json` (`version` and
