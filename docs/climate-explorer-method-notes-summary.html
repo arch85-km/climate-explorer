@@ -263,9 +263,10 @@
             a fa&ccedil;ade and no incident-angle calculation.</dd></div>
         <div><span class="ce-chip is-out">Out</span><dt>Trend, projection, and design conditions</dt>
           <dd>A typical meteorological year is synthesised from months of different real years:
-            <b>no date in it is a date that happened</b>, so there is no trend to extract. And the
-            DESIGN CONDITIONS header an engineer sizes plant against is in every EPW file and
-            <b>never read</b>.</dd></div>
+            <b>no date in it is a date that happened</b>, so there is no trend to extract. Separately: every EPW file carries a
+            <span class="ce-mono">DESIGN CONDITIONS</span> header, holding the percentile
+            temperatures an engineer sizes plant against. <b>This app never reads that header</b>,
+            so no design condition can be got out of the tool.</dd></div>
         <div><span class="ce-chip is-part">Partly</span><dt>Daylight, and local clock time</dt>
           <dd>The file's illuminance columns are plotted and reduced like any other variable but
             nothing is computed from them &mdash; this is daylight <i>availability</i>, not
