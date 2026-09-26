@@ -1,0 +1,620 @@
+<!-- ======================================================================
+     CLIMATE EXPLORER — "Method notes in brief"
+     A short companion to the full method notes.
+
+     Same design system as the full notes: the .ce-doc scope, the same custom
+     properties and class names, the same dark-mode block.
+
+     IF YOU PASTE THIS ON THE SAME PAGE AS THE FULL NOTES, delete the <style>
+     block below — the full notes already define every rule it contains.
+
+     THE CITATION STRIP JUMPS HERE: the "How to cite" heading carries
+     id="how-to-cite". Only ONE element per page may hold that id.
+     ====================================================================== -->
+
+<style>
+
+
+.ce-doc{
+  --ce-paper:#F1F2EE; --ce-surface:#FBFBF9; --ce-surface2:#E8EAE4;
+  --ce-ink:#16191B; --ce-ink2:#4C555A; --ce-ink3:#5F696E;
+  --ce-rule:#D6D9D1; --ce-rule2:#E5E7E1;
+  --ce-accent:#1D5A73; --ce-accent-soft:rgba(29,90,115,.10);
+  --ce-ok:#3F6B47;  --ce-ok-soft:rgba(63,107,71,.12);
+  --ce-warn:#8A6410;--ce-warn-soft:rgba(138,100,16,.13);
+  --ce-no:#8E3A32;  --ce-no-soft:rgba(142,58,50,.11);
+  --ce-fd:"Poppins",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --ce-fb:inherit;
+  --ce-fm:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  --ce-measure:90ch; --ce-rail:4.75rem;
+
+  background:var(--ce-paper); color:var(--ce-ink);
+  font-family:var(--ce-fb); font-size:17px; line-height:1.65; font-weight:400;
+  max-width:1040px; margin:0 auto; padding:0 20px 3rem;
+  -webkit-font-smoothing:antialiased; text-align:left;
+}
+@media (prefers-color-scheme:dark){
+  .ce-doc.ce-auto-dark{
+    --ce-paper:#121517; --ce-surface:#191D20; --ce-surface2:#21262A;
+    --ce-ink:#E9EBE6; --ce-ink2:#A6AFB4; --ce-ink3:#79838A;
+    --ce-rule:#2C3235; --ce-rule2:#232829;
+    --ce-accent:#74B6D0; --ce-accent-soft:rgba(116,182,208,.14);
+    --ce-ok:#7FB88C;  --ce-ok-soft:rgba(127,184,140,.14);
+    --ce-warn:#D6A748;--ce-warn-soft:rgba(214,167,72,.15);
+    --ce-no:#DD8479;  --ce-no-soft:rgba(221,132,121,.14);
+  }
+}
+.ce-doc *,.ce-doc *::before,.ce-doc *::after{box-sizing:border-box;}
+.ce-doc h1,.ce-doc h2,.ce-doc h3,.ce-doc h4,.ce-doc p,.ce-doc ul,.ce-doc ol,
+.ce-doc dl,.ce-doc dt,.ce-doc dd{margin:0;padding:0;}
+.ce-doc ul,.ce-doc ol{list-style-position:outside;}
+.ce-doc li{margin:0;}
+.ce-doc a{color:var(--ce-accent);text-decoration:underline;text-underline-offset:2px;}
+.ce-doc code,.ce-doc .ce-mono{font-family:var(--ce-fm);font-size:.855em;}
+.ce-doc b,.ce-doc strong{font-weight:600;}
+.ce-doc code{background:var(--ce-accent-soft);color:var(--ce-accent);
+  padding:.1em .34em;border-radius:2px;border:0;}
+
+/* masthead */
+.ce-doc .ce-masthead{padding:2.75rem 0 1.9rem;border-bottom:2px solid var(--ce-ink);}
+.ce-doc .ce-eyebrow{font-family:var(--ce-fm);font-size:.70rem;font-weight:500;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--ce-accent);margin:0 0 1.1rem;}
+.ce-doc h1{font-family:var(--ce-fd);font-weight:600;
+  font-size:clamp(1.9rem,5.2vw,2.75rem);line-height:1.04;letter-spacing:-.028em;
+  text-wrap:balance;margin:0 0 1.1rem;color:var(--ce-ink);}
+.ce-doc .ce-standfirst{max-width:var(--ce-measure);font-size:1.14rem;line-height:1.6;
+  color:var(--ce-ink2);margin:0;}
+.ce-doc .ce-standfirst strong{color:var(--ce-ink);font-weight:600;}
+.ce-doc .ce-byline{display:flex;flex-wrap:wrap;gap:.5rem 1.6rem;margin-top:1.9rem;
+  font-family:var(--ce-fm);font-size:.74rem;letter-spacing:.04em;color:var(--ce-ink3);}
+.ce-doc .ce-byline b{color:var(--ce-ink2);font-weight:500;}
+
+/* trap notice */
+.ce-doc .ce-traps{margin:2.5rem 0;border:1px solid var(--ce-rule);
+  border-left:4px solid var(--ce-no);background:var(--ce-surface);padding:1.5rem 1.6rem;}
+.ce-doc .ce-traps h2{font-family:var(--ce-fd);font-size:.82rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ce-no);margin:0 0 .9rem;}
+.ce-doc .ce-traps ol{margin:0;padding-left:1.15rem;display:grid;gap:.6rem;}
+.ce-doc .ce-traps li{max-width:var(--ce-measure);}
+
+/* sections */
+.ce-doc .ce-sec{padding:2.5rem 0 0;}
+.ce-doc .ce-sechead{display:grid;grid-template-columns:var(--ce-rail) 1fr;
+  align-items:baseline;gap:0 1rem;border-top:1px solid var(--ce-rule);
+  padding-top:1.4rem;margin-bottom:1.6rem;}
+.ce-doc .ce-secnum{font-family:var(--ce-fm);font-size:.95rem;font-weight:600;
+  color:var(--ce-accent);letter-spacing:.02em;font-variant-numeric:tabular-nums;}
+.ce-doc .ce-sechead h2{font-family:var(--ce-fd);font-weight:600;
+  font-size:clamp(1.3rem,2.9vw,1.7rem);line-height:1.12;letter-spacing:-.02em;
+  text-wrap:balance;margin:0;color:var(--ce-ink);}
+.ce-doc .ce-secbody{display:grid;grid-template-columns:var(--ce-rail) minmax(0,1fr);gap:0 1rem;}
+.ce-doc .ce-secbody>*{grid-column:2;}
+.ce-doc .ce-secbody>p,.ce-doc .ce-secbody>ul,.ce-doc .ce-secbody>ol{max-width:var(--ce-measure);}
+.ce-doc .ce-secbody>p{margin:0 0 1.05rem;}
+.ce-doc .ce-secbody>ul,.ce-doc .ce-secbody>ol{margin:0 0 1.15rem;padding-left:1.15rem;
+  display:grid;gap:.5rem;}
+.ce-doc h3{font-family:var(--ce-fd);font-weight:600;font-size:1.06rem;
+  letter-spacing:-.005em;margin:1.9rem 0 .7rem;color:var(--ce-ink);}
+.ce-doc h4{font-family:var(--ce-fm);font-weight:600;font-size:.74rem;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--ce-ink3);margin:1.7rem 0 .7rem;}
+.ce-doc .ce-footer h4:first-of-type{margin-top:1.1rem;}
+.ce-doc .ce-note{font-size:.9rem;color:var(--ce-ink2);border-left:2px solid var(--ce-rule);
+  padding-left:.95rem;margin:0 0 1.2rem;max-width:var(--ce-measure);}
+
+/* chips + ledger */
+.ce-doc .ce-chip{display:inline-block;font-family:var(--ce-fm);font-size:.64rem;
+  font-weight:600;letter-spacing:.07em;text-transform:uppercase;padding:.15em .5em;
+  border-radius:2px;white-space:nowrap;}
+.ce-doc .ce-chip.is-in{background:var(--ce-ok-soft);color:var(--ce-ok);}
+.ce-doc .ce-chip.is-part{background:var(--ce-warn-soft);color:var(--ce-warn);}
+.ce-doc .ce-chip.is-out{background:var(--ce-no-soft);color:var(--ce-no);}
+.ce-doc .ce-ledger{display:grid;gap:0;border:1px solid var(--ce-rule);
+  background:var(--ce-surface);margin-bottom:1.4rem;}
+.ce-doc .ce-ledger>div{display:grid;grid-template-columns:7.5rem minmax(0,1fr);
+  gap:.2rem .9rem;padding:.8rem 1rem;border-bottom:1px solid var(--ce-rule2);}
+.ce-doc .ce-ledger>div:last-child{border-bottom:0;}
+.ce-doc .ce-ledger dt{font-family:var(--ce-fd);font-weight:600;font-size:.95rem;
+  grid-column:2;margin:0;color:var(--ce-ink);}
+.ce-doc .ce-ledger .ce-chip{grid-row:1;grid-column:1;align-self:start;margin-top:.18rem;}
+.ce-doc .ce-ledger dd{grid-column:2;margin:0;font-size:.93rem;color:var(--ce-ink2);
+  line-height:1.55;}
+
+/* footer */
+.ce-doc .ce-footer{margin-top:3rem;padding-top:1.6rem;border-top:2px solid var(--ce-ink);
+  font-size:.86rem;color:var(--ce-ink2);}
+.ce-doc .ce-footer p{max-width:var(--ce-measure);margin:0 0 .8rem;}
+.ce-doc .ce-cite{font-family:var(--ce-fm);font-size:.78rem;color:var(--ce-ink3);line-height:1.7;}
+.ce-doc .ce-ref{border-left:2px solid var(--ce-rule);padding-left:.95rem;margin:0 0 1rem;
+  max-width:var(--ce-measure);font-size:.92rem;color:var(--ce-ink2);}
+.ce-doc pre{margin:0 0 1rem;padding:.9rem 1rem;background:var(--ce-surface);
+  border:1px solid var(--ce-rule);overflow-x:auto;font-family:var(--ce-fm);
+  font-size:.78rem;line-height:1.6;color:var(--ce-ink);white-space:pre;}
+
+/* exercises */
+.ce-doc .ce-ex{border:1px solid var(--ce-rule);background:var(--ce-surface);
+  padding:1.5rem 1.6rem;margin-bottom:1.5rem;}
+.ce-doc .ce-ex-n{font-family:var(--ce-fm);font-size:.7rem;font-weight:600;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--ce-accent);
+  display:block;margin-bottom:.35rem;}
+.ce-doc .ce-ex h3{margin:0 0 .9rem;font-size:1.18rem;}
+.ce-doc .ce-steps{margin:0;padding-left:1.2rem;display:grid;gap:.5rem;font-size:.95rem;}
+.ce-doc .ce-principle{font-size:.93rem;color:var(--ce-ink2);
+  border-top:1px solid var(--ce-rule2);padding-top:.85rem;margin:.95rem 0 0;}
+.ce-doc .ce-principle b{color:var(--ce-ink);font-weight:600;}
+
+/* diagrams. The SVGs paint from the same custom properties as everything
+   else, so they invert with the page instead of staying light in dark mode. */
+.ce-doc .ce-fig{margin:0 0 1.2rem;}
+.ce-doc .ce-fig svg{display:block;width:100%;height:auto;
+  background:var(--ce-paper);border:1px solid var(--ce-rule);}
+.ce-doc .ce-fig figcaption{font-family:var(--ce-fm);font-size:.68rem;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--ce-ink3);margin-top:.55rem;}
+
+/* Large screens. Most sizes here are in rem, which is relative to the ROOT
+   font size, not to .ce-doc — so raising .ce-doc alone would scale the body
+   copy and leave the byline, notes and references behind. They are stepped up
+   together. */
+@media (min-width:1280px){
+  .ce-doc{font-size:18.5px;max-width:1140px;}
+  .ce-doc .ce-standfirst{font-size:1.22rem;}
+  .ce-doc .ce-byline{font-size:.84rem;}
+  .ce-doc h3{font-size:1.14rem;}
+  .ce-doc .ce-note{font-size:.97rem;}
+  .ce-doc .ce-ref{font-size:1rem;}
+  .ce-doc .ce-cite{font-size:.86rem;}
+  .ce-doc pre{font-size:.86rem;}
+  .ce-doc .ce-ledger dt{font-size:1.02rem;}
+  .ce-doc .ce-ledger dd{font-size:1rem;}
+  .ce-doc .ce-chip{font-size:.70rem;}
+  .ce-doc .ce-traps h2{font-size:.88rem;}
+  .ce-doc .ce-steps{font-size:1rem;}
+  .ce-doc .ce-principle{font-size:.99rem;}
+  .ce-doc .ce-ex-n{font-size:.76rem;}
+}
+@media (max-width:720px){
+  .ce-doc{--ce-rail:0px;font-size:16px;}
+  .ce-doc .ce-sechead{grid-template-columns:1fr;gap:.35rem;}
+  .ce-doc .ce-secbody{grid-template-columns:minmax(0,1fr);}
+  .ce-doc .ce-secbody>*{grid-column:1;}
+  .ce-doc .ce-traps,.ce-doc .ce-ex{padding:1.15rem;}
+}
+@media (max-width:560px){
+  .ce-doc .ce-ledger>div{grid-template-columns:1fr;}
+  .ce-doc .ce-ledger .ce-chip{grid-row:auto;grid-column:1;justify-self:start;margin-bottom:.3rem;}
+  .ce-doc .ce-ledger dt,.ce-doc .ce-ledger dd{grid-column:1;}
+}
+</style>
+
+<div class="ce-doc ce-auto-dark">
+
+  <div class="ce-masthead">
+    <p class="ce-eyebrow">Climate Explorer &middot; In brief</p>
+    <h1>Method notes in brief</h1>
+    <p class="ce-standfirst">The short version: what the tool computes, which published method
+      each quantity implements, and &mdash; the part that matters most when you cite it &mdash;
+      <strong>what each number actually describes</strong>. It contains no building model at all,
+      deliberately. The
+      <a href="https://github.com/arch85-km/climate-explorer" target="_blank" rel="noopener">full
+      method notes</a> give the source values and the references behind every statement here.</p>
+    <div class="ce-byline">
+      <span><b>Audience</b> Architecture students and staff</span>
+      <span><b>Method</b> ASHRAE psychrometrics &middot; NOAA solar position &middot; Givoni&ndash;Milne</span>
+      <span><b>Runs</b> Entirely in the browser</span>
+      <span><b>Version</b> 1.0.0 &middot; 17 September 2026</span>
+    </div>
+  </div>
+
+  <div class="ce-traps">
+    <h2>Three things to know before you cite a number</h2>
+    <ol>
+      <li><b>The comfort figures describe outdoor air, and there are two of them.</b> The
+        <i>Comfortable hours</i> tile is the share of outdoor hours a person standing outside in
+        still air would find comfortable &mdash; no building, fabric, gain, system or control
+        enters it. A second tile, <i>Outside comfort band</i>, is a different quantity computed a
+        different way: dry bulb alone against two sliders you set, with humidity ignored.
+        <b>Say which one you are quoting.</b></li>
+      <li><b>There is no adaptive comfort in this tool, although the code contains it.</b> The
+        ASHRAE 55 adaptive band is implemented and tested, and <b>no view calls it</b> &mdash; no
+        control reaches it and no chart draws it. Every comfort figure reported is the static,
+        still-air zone. For a naturally ventilated building in a warm climate that understates
+        comfort, and the tool cannot be cited for adaptive comfort at all.</li>
+      <li><b>A wind frequency means nothing without its binning.</b> The rose offers 8, 12, 16 or
+        36 sectors and fixed speed bands, with hours below 0.5&nbsp;m/s held out as calm. Change
+        the sector count and every percentage changes, because the same hours divide among a
+        different number of bins. A quoted frequency must name the tool, the sector count and the
+        speed bands.</li>
+    </ol>
+  </div>
+
+  <section class="ce-sec">
+    <div class="ce-sechead"><span class="ce-secnum"></span><h2>What it calculates</h2></div>
+    <div class="ce-secbody">
+      <p>Seven families of quantity. Two &mdash; <b>solar position</b> and the <b>psychrometric
+        state</b> &mdash; are computed for every hour of the file the moment it loads. The rest are
+        reductions over whatever hours the analysis period selects: comfortable hours against the
+        ASHRAE 55 still-air zones, three Givoni&ndash;Milne passive strategies, degree days,
+        descriptive statistics, and the wind rose.</p>
+      <p class="ce-note"><b>The arithmetic here is not a rule of thumb.</b> It is an implementation
+        of somebody's published method &mdash; ASHRAE Handbook formulations for the psychrometrics,
+        NOAA for the solar geometry &mdash; which raises the standard for provenance and for the
+        scope of any claim made from it.</p>
+    </div>
+  </section>
+
+  <section class="ce-sec">
+    <div class="ce-sechead"><span class="ce-secnum"></span><h2>Not modelled at all</h2></div>
+    <div class="ce-secbody">
+      <div class="ce-ledger">
+        <div><span class="ce-chip is-out">The big one</span><dt>Any building</dt>
+          <dd>No fabric, no U-value, no thermal mass, no glazing, no zone, no occupancy, no
+            internal gain, no system and no control. The massing block casts a shadow and has no
+            other property: <b>it is a solid with dimensions, not a building.</b></dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>The other four comfort variables</dt>
+          <dd>Radiant temperature, air speed, clothing and metabolic rate enter nothing. The
+            comfort evaluation is a rectangle on the psychrometric plane, fixed at still air. No
+            PMV, no PPD, no SET.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Any energy calculation</dt>
+          <dd>No load, no demand, no consumption, no plant, no carbon. <b>Degree days are a climate
+            statistic here, not an energy estimate</b> &mdash; multiplying them by anything to get
+            a load is your assumption, not the tool's.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Radiation on anything but the horizontal</dt>
+          <dd>The file's global, direct and diffuse values are read and plotted as recorded.
+            Nothing is transposed onto a tilted or vertical surface, so there is no irradiation on
+            a fa&ccedil;ade and no incident-angle calculation.</dd></div>
+        <div><span class="ce-chip is-out">Out</span><dt>Trend, projection, and design conditions</dt>
+          <dd>A typical meteorological year is synthesised from months of different real years:
+            <b>no date in it is a date that happened</b>, so there is no trend to extract. And the
+            DESIGN CONDITIONS header an engineer sizes plant against is in every EPW file and
+            <b>never read</b>.</dd></div>
+        <div><span class="ce-chip is-part">Partly</span><dt>Daylight, and local clock time</dt>
+          <dd>The file's illuminance columns are plotted and reduced like any other variable but
+            nothing is computed from them &mdash; this is daylight <i>availability</i>, not
+            daylight modelling. Everything is local standard time; daylight saving is not read, so
+            a summer occupied-hours analysis is an hour out from the clock occupants keep.</dd></div>
+      </div>
+      <p class="ce-note"><b>What it is safe to cite this tool for.</b> Cite it as an instrument for
+        reading a weather file: the climate's structure through the year, its psychrometric shape,
+        its solar geometry, its wind regime, and which passive strategies its outdoor conditions
+        sit near. Do not cite it for a building's performance, for a comfort result about
+        occupants, for an energy or carbon figure, or for anything that must satisfy a regulation.
+        <b>It computes properties of a climate, and a climate is not a building.</b></p>
+    </div>
+  </section>
+
+  <section class="ce-sec">
+    <div class="ce-sechead"><span class="ce-secnum"></span><h2>How exact the numbers are</h2></div>
+    <div class="ce-secbody">
+      <p>Because these quantities are defined by published standards, &ldquo;accuracy&rdquo; splits
+        into three questions that are easy to run together and should not be. <b>The third
+        dominates.</b></p>
+      <div class="ce-ledger">
+        <div><span class="ce-chip is-in">Checked</span><dt>Fidelity to the standard</dt>
+          <dd>Where the source cites an equation number it implements that equation with its
+            published coefficients &mdash; saturation pressure agrees with ASHRAE Fundamentals to
+            within 0.05% across &minus;10 to 40&nbsp;&deg;C. A handful of simplifications are
+            deliberate and recorded: three Givoni polygons rather than the full set, strategy
+            percentages counted independently so <b>they overlap and sum to more than 100</b>, and
+            degree-day totals never unit-converted.</dd></div>
+        <div><span class="ce-chip is-in">Sufficient</span><dt>Numerical precision</dt>
+          <dd>Every hourly series is stored as a 32-bit float, so about seven significant digits
+            survive. For weather data this is the right trade and costs nothing that matters: the
+            measurements themselves carry two or three significant figures.</dd></div>
+        <div><span class="ce-chip is-out">Dominates</span><dt>The input</dt>
+          <dd>A typical meteorological year is <b>one synthesised year for one station</b>. Its
+            months come from different real years, so it has no interannual variability and
+            contains no real extreme event in its real sequence &mdash; and it describes the
+            station, not your site. A rooftop three kilometres away and forty metres higher, inside
+            an urban heat island, is a different climate. <b>That distance is larger than every
+            numerical consideration above, combined.</b></dd></div>
+      </div>
+      <p class="ce-note"><b>What is asserted, and what is not.</b> An automated suite of 53 tests
+        making 229 assertions runs against three real weather files, covering the psychrometrics,
+        the solar geometry, the statistics, period selection and parsing. That tells you the tool
+        computes what it says it computes. It says nothing about whether the weather file is a good
+        description of your site &mdash; and <b>no view module has a unit test</b>: not one of the
+        eight 2D charts, not one of the four 3D scenes. The physics is well asserted; the drawing
+        of it is asserted by eye.</p>
+    </div>
+  </section>
+
+  <section class="ce-sec">
+    <div class="ce-sechead"><span class="ce-secnum"></span><h2>Three exercises</h2></div>
+    <div class="ce-secbody">
+      <p>Each isolates one idea and holds everything else fixed. <b>The app ships with no weather
+        data</b>, so begin by downloading one &mdash;
+        <span class="ce-mono">climate.onebuilding.org</span> and
+        <span class="ce-mono">energyplus.net/weather</span> both publish free EPW files by station.
+        Record the station name and the source for every file you use.</p>
+
+      <div class="ce-ex">
+        <span class="ce-ex-n">Exercise 01</span>
+        <h3>A heating season is a shape, and a monthly mean hides it</h3>
+        <figure class="ce-fig">
+<svg viewBox="0 0 720 270" role="img" aria-label="An annual heatmap of hourly temperature beside the same month reduced to a single mean. The heatmap shows cold reaching into the middle of the day in midwinter; the monthly mean is one number standing for about 720 hours and cannot show when the cold occurs.">
+  <line x1="410" y1="16" x2="410" y2="250" stroke="var(--ce-rule)" stroke-width="1"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" fill="var(--ce-ink)">
+    <text x="20" y="26">ANNUAL HEATMAP &#183; 8,760 hours</text>
+    <text x="436" y="26">ONE MONTHLY MEAN</text>
+  </g>
+  <!-- heatmap: x = month, y = hour of day -->
+  <rect x="60" y="44" width="320" height="160" fill="var(--ce-surface2)" stroke="var(--ce-ink)" stroke-width="1.3"/>
+  <path d="M60 44 h58 v160 h-58 Z" fill="var(--ce-accent)" opacity=".34"/>
+  <path d="M322 44 h58 v160 h-58 Z" fill="var(--ce-accent)" opacity=".34"/>
+  <path d="M118 44 h34 v122 h-34 Z" fill="var(--ce-accent)" opacity=".20"/>
+  <path d="M288 44 h34 v122 h-34 Z" fill="var(--ce-accent)" opacity=".20"/>
+  <path d="M152 92 h136 v-48 h-136 Z" fill="var(--ce-no)" opacity=".16"/>
+  <path d="M152 160 h136 v44 h-136 Z" fill="var(--ce-no)" opacity=".10"/>
+  <g stroke="var(--ce-ink3)" stroke-width="1" stroke-dasharray="3 3">
+    <line x1="60" y1="104" x2="380" y2="104"/><line x1="60" y1="144" x2="380" y2="144"/>
+  </g>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5" fill="var(--ce-ink3)">
+    <text x="30" y="50">24h</text><text x="34" y="108">18</text><text x="36" y="148">06</text><text x="36" y="208">0</text>
+    <text x="62" y="222">Jan</text><text x="200" y="222">Jul</text><text x="352" y="222">Dec</text>
+  </g>
+  <text x="60" y="244" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-accent)">cold reaches into the middle of the day</text>
+  <text x="60" y="258" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">you can see how cold, for how long, and when</text>
+  <!-- single mean with whiskers -->
+  <line x1="470" y1="60" x2="470" y2="190" stroke="var(--ce-ink3)" stroke-width="1"/>
+  <line x1="560" y1="70" x2="560" y2="180" stroke="var(--ce-ink3)" stroke-width="1.6"/>
+  <line x1="548" y1="70" x2="572" y2="70" stroke="var(--ce-ink3)" stroke-width="1.6"/>
+  <line x1="548" y1="180" x2="572" y2="180" stroke="var(--ce-ink3)" stroke-width="1.6"/>
+  <circle cx="560" cy="128" r="6" fill="var(--ce-no)"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">
+    <text x="584" y="74">95th</text><text x="584" y="132" fill="var(--ce-no)">the mean</text><text x="584" y="184">5th</text>
+  </g>
+  <text x="436" y="244" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-no)">one number for about 720 hours</text>
+  <text x="436" y="258" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">the whiskers begin to restore the spread</text>
+</svg>
+<figcaption>Schematic. The mean averages away exactly what a designer needs.</figcaption>
+        </figure>
+        <ol class="ce-steps">
+          <li>Load a temperate-climate file. Thermal mode, <b>Annual heatmap</b>, variable
+            <b>Dry bulb temperature</b>, period 1 Jan&ndash;31 Dec.</li>
+          <li><b>Read the picture before any number.</b> Where does the cold block sit, and at which
+            hours of the day does it reach furthest into the year? Write down the two dates where
+            the cold reaches the middle of the day.</li>
+          <li>Switch to <b>Monthly statistics</b>. Write down the mean for the coldest month, then
+            the 5th and 95th percentile whiskers for that same month.</li>
+          <li>Back to the heatmap. Set the degree-day base to <b>18</b>, then <b>15.5</b>, then
+            <b>12</b>, watching the colour boundary move, and record the heating degree-day tile at
+            each base.</li>
+        </ol>
+        <p class="ce-principle"><b>Principle.</b> A monthly mean is one number standing for about
+          720 hours, and it averages away exactly what a designer needs: <b>how cold, for how long,
+          and at what time of day</b>. The whiskers begin to restore that; the heatmap restores it
+          completely, because the eye reads a two-dimensional field faster than any table. Degree
+          days ask a third way, re-weighting by how far below the base an hour sat. <b>The base is
+          your assumption about the building, not a property of the climate</b> &mdash; which is
+          why a degree-day figure quoted without its base is unusable.</p>
+      </div>
+
+      <div class="ce-ex">
+        <span class="ce-ex-n">Exercise 02</span>
+        <h3>A climate rewards one passive strategy and refuses another</h3>
+        <figure class="ce-fig">
+<svg viewBox="0 0 720 280" role="img" aria-label="Schematic psychrometric plane with the comfort zone marked. A cloud of hours sitting left of comfort is a heating climate. A cloud sitting to the right and low is dry and hot, where evaporative cooling works. A cloud sitting high and right is warm and humid, where evaporative cooling has nothing to work with.">
+  <text x="20" y="26" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" fill="var(--ce-ink)">WHERE THE CLOUD SITS DECIDES THE STRATEGY</text>
+  <!-- axes -->
+  <line x1="70" y1="210" x2="690" y2="210" stroke="var(--ce-ink)" stroke-width="1.4"/>
+  <line x1="70" y1="52" x2="70" y2="210" stroke="var(--ce-ink)" stroke-width="1.4"/>
+  <path d="M70 200 C 240 196, 400 160, 520 60" fill="none" stroke="var(--ce-ink3)" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="526" y="62" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5" fill="var(--ce-ink3)">saturation</text>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5" fill="var(--ce-ink3)">
+    <text x="60" y="226">dry bulb &#8594;</text><text x="16" y="120">humidity</text><text x="22" y="132">ratio &#8593;</text>
+  </g>
+  <!-- comfort zone -->
+  <rect x="330" y="150" width="96" height="40" fill="var(--ce-ok-soft)" stroke="var(--ce-ok)" stroke-width="1.6"/>
+  <text x="334" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ok)">comfort</text>
+  <!-- three clouds -->
+  <ellipse cx="180" cy="186" rx="62" ry="18" fill="var(--ce-accent)" opacity=".28"/>
+  <text x="120" y="164" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-accent)">heating climate</text>
+  <ellipse cx="520" cy="182" rx="56" ry="16" fill="var(--ce-warn)" opacity=".30"/>
+  <text x="470" y="206" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-warn)">hot and dry</text>
+  <ellipse cx="500" cy="96" rx="58" ry="18" fill="var(--ce-no)" opacity=".26"/>
+  <text x="446" y="74" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-no)">warm and humid</text>
+  <!-- annotations -->
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">
+    <text x="20" y="250">left of comfort: no amount of ventilation moves it rightwards</text>
+    <text x="20" y="264">right and low: evaporative cooling has room to work &#183; high and right: it does not</text>
+  </g>
+</svg>
+<figcaption>Schematic psychrometric plane. The position of the cloud decides the strategy before any arithmetic does.</figcaption>
+        </figure>
+        <ol class="ce-steps">
+          <li>Comfort mode, <b>Psychrometric chart</b>, passive strategies on, period
+            1 Jan&ndash;31 Dec.</li>
+          <li>Look at where the cloud of hours sits relative to the comfort rectangles &mdash; left,
+            inside, above, or to the right. <b>Do this before reading any percentage.</b></li>
+          <li>Write down the percentage against each of the three strategies. Note that they
+            overlap, and that they do not sum to 100.</li>
+          <li>Change the period to 1 Jun&ndash;31 Aug and re-read all three; then to the occupied
+            preset, 08&ndash;18, and re-read again.</li>
+          <li>Read the <i>Comfortable hours</i> tile, then the <i>Outside comfort band</i> tile.
+            Write down both, and one sentence on why they disagree.</li>
+        </ol>
+        <p class="ce-principle"><b>Principle.</b> The position of the cloud decides the strategy
+          before any arithmetic does. A cloud sitting left of comfort is a heating climate, and no
+          amount of ventilation moves it rightwards. A cloud high and to the right is warm and
+          humid, where evaporative cooling has nothing to work with. <b>The same climate recommends
+          a different strategy over summer than over the year</b>, and a different one again over
+          occupied hours &mdash; which is why a strategy claim that does not carry its period is
+          not a claim about anything.</p>
+      </div>
+
+      <div class="ce-ex">
+        <span class="ce-ex-n">Exercise 03</span>
+        <h3>Latitude fixes the sun and almost nothing else</h3>
+        <figure class="ce-fig">
+<svg viewBox="0 0 720 260" role="img" aria-label="Two sites at nearly the same latitude. Their sun paths are almost identical, which is the control in the experiment. Their annual temperature ranges are not: the maritime site is narrow, the continental one is far wider.">
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" fill="var(--ce-ink)">
+    <text x="20" y="26">SAME LATITUDE &#183; the sun is the control</text>
+    <text x="20" y="150">DIFFERENT SITUATION &#183; everything else is not</text>
+  </g>
+  <!-- sun paths, identical -->
+  <line x1="70" y1="112" x2="330" y2="112" stroke="var(--ce-ink)" stroke-width="1.3"/>
+  <path d="M84 112 C 130 50, 270 50, 316 112" fill="none" stroke="var(--ce-accent)" stroke-width="2"/>
+  <path d="M100 112 C 140 78, 260 78, 300 112" fill="none" stroke="var(--ce-accent)" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <line x1="390" y1="112" x2="650" y2="112" stroke="var(--ce-ink)" stroke-width="1.3"/>
+  <path d="M404 112 C 450 50, 590 50, 636 112" fill="none" stroke="var(--ce-accent)" stroke-width="2"/>
+  <path d="M420 112 C 460 78, 580 78, 620 112" fill="none" stroke="var(--ce-accent)" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">
+    <text x="70" y="130">site A &#183; maritime coast</text><text x="390" y="130">site B &#183; deep inland</text>
+  </g>
+  <!-- annual temperature ranges -->
+  <line x1="70" y1="212" x2="650" y2="212" stroke="var(--ce-ink)" stroke-width="1.3"/>
+  <rect x="250" y="172" width="120" height="20" fill="var(--ce-accent-soft)" stroke="var(--ce-accent)" stroke-width="1.5"/>
+  <rect x="130" y="200" width="400" height="20" fill="var(--ce-no-soft)" stroke="var(--ce-no)" stroke-width="1.5"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10">
+    <text x="376" y="187" fill="var(--ce-accent)">site A: narrow annual range</text>
+    <text x="536" y="215" fill="var(--ce-no)">site B: wide</text>
+  </g>
+  <text x="70" y="240" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">colder &#8592;</text>
+  <text x="600" y="240" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">&#8594; warmer</text>
+  <text x="20" y="256" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10.5" fill="var(--ce-ink)">Same sun on the same days. Up to twenty kelvin apart in annual range.</text>
+</svg>
+<figcaption>Ocean, altitude, prevailing wind and distance from a coast do far more of the work than latitude.</figcaption>
+        </figure>
+        <ol class="ce-steps">
+          <li>Download two files at nearly the same latitude but in different situations &mdash; one
+            maritime and western-coastal, one deep inland and continental. Aim for within two
+            degrees.</li>
+          <li>Load the first. Solar mode, <b>Sun path dome</b>. Note the solstice arcs and the day
+            length. Load the second into the same view and satisfy yourself that the sun path is
+            almost identical. <b>That is the control in this experiment.</b></li>
+          <li>Turn on <b>Compare</b>, source <b>Two files</b>, second file into panel B. Go to
+            <b>Annual heatmap</b>, then <b>Distribution</b>, then <b>Monthly statistics</b>.</li>
+          <li>Record for both: annual mean, annual minimum and maximum, and the difference between
+            the warmest and coldest monthly mean. Then read both psychrometric charts.</li>
+        </ol>
+        <p class="ce-principle"><b>Principle.</b> Two sites at the same latitude receive the same
+          sun on the same days, and can still differ by twenty kelvin in annual range. Ocean,
+          altitude, prevailing wind and distance from a coast do the rest, and they do far more of
+          it than latitude. <b>This is the exercise that stops &ldquo;what latitude is it?&rdquo;
+          being the first question asked about a site.</b> One caution specific to this tool: in
+          two-file compare <b>the colour scales are computed separately for each panel</b>, so the
+          same colour means a different temperature on the left and on the right. Read the numbers,
+          not the colours.</p>
+      </div>
+
+      <p class="ce-note"><b>A caution for all three: quote the settings with the figure.</b> Every
+        number these exercises produce depends on a file you chose, a period you set and, for the
+        comfort figures, on band limits and a humidity limit. A percentage without them cannot be
+        checked by anyone reading you.</p>
+    </div>
+  </section>
+
+  <section class="ce-sec">
+    <div class="ce-sechead"><span class="ce-secnum"></span><h2>Where it stops</h2></div>
+    <div class="ce-secbody">
+      <p>The tool is built to make a climate legible &mdash; its structure through the year, its
+        psychrometric shape, its solar geometry, its wind regime. For anything that must stand up,
+        use a simulation tool and a measured or morphed weather file appropriate to the site.
+        <b>It contains no building model at all, deliberately, so that what it does do stays
+        honest</b> &mdash; and the weather file's distance from your actual site is larger than
+        every numerical consideration in it.</p>
+    </div>
+  </section>
+
+  <div class="ce-footer">
+
+    <h3>Licence</h3>
+    <p>&copy; Karam Al-Obaidi. The app is licensed <b>MIT</b>; this documentation is
+      <b><a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener">CC BY 4.0</a></b>.
+      Both permit any use, including commercial, and ask only that you credit the author.</p>
+    <p><b>Two properties are unusual enough to be worth stating, and both were verified in the
+      source rather than assumed.</b> It bundles no third-party library &mdash; the project
+      declares no dependencies, vendors no code, and the built file loads no script, stylesheet or
+      webfont from anywhere. And it makes no network request: no fetch, no CDN, no analytics of any
+      kind. Weather files are read in the browser and nothing is uploaded.</p>
+    <p>A file you load is <b>yours, and so are its terms</b> &mdash; check them before you republish
+      anything derived from it. The analysis you make is yours too: neither licence claims anything
+      over your charts or the images you export.</p>
+
+    <h3 id="how-to-cite" style="scroll-margin-top:100px;">How to cite</h3>
+    <p>Cite it as software. Keeping the copyright notice in the file satisfies the licence; a
+      citation is the scholarly act on top of that.</p>
+    <p class="ce-ref">Al-Obaidi, K. M. (2026). <i>Climate Explorer: A browser-based weather data
+      analysis and visualisation tool</i> (Version 1.0.0) [Computer software]. Zenodo.
+      <a href="https://doi.org/10.5281/zenodo.22814693" target="_blank" rel="noopener">https://doi.org/10.5281/zenodo.22814693</a></p>
+    <p class="ce-note">That DOI resolves to <b>version 1.0.0 specifically</b>, which is the one to
+      use when you quote a figure &mdash; a reader must be able to open exactly the version you
+      worked from. A second DOI,
+      <a href="https://doi.org/10.5281/zenodo.22814692" target="_blank" rel="noopener">10.5281/zenodo.22814692</a>,
+      always resolves to the latest release; use that only when citing the software in general
+      rather than a result taken from it.</p>
+<pre>@software{alobaidi2026climateexplorer,
+  author    = {Al-Obaidi, Karam M.},
+  title     = {Climate Explorer: A browser-based weather data
+               analysis and visualisation tool},
+  year      = {2026},
+  version   = {1.0.0},
+  date      = {2026-09-17},
+  publisher = {Zenodo},
+  doi       = {10.5281/zenodo.22814693},
+  url       = {https://karam.me.uk/applications/climate-explorer/},
+  note      = {Code MIT licensed; accompanying material CC BY 4.0}
+}</pre>
+    <p><b>No figure from this tool can be checked without the settings that produced it.</b> Report
+      at minimum the <b>weather file by station name and source</b>, and the <b>analysis
+      period</b>. For a comfort figure add the band limits, the humidity limit, and which of the
+      two comfort numbers you are quoting. For a wind frequency add the sector count and the speed
+      bands. For a degree-day figure add the base temperature.</p>
+
+    <h3>References</h3>
+    <p>Two rules govern this list. It contains only what the shipped application <b>itself
+      names</b>, in its own words. Where the code names nothing, nothing is listed and the absence
+      is recorded instead. The code names a chapter and four equation numbers for the
+      psychrometrics and <b>nothing else</b> &mdash; no edition, no year, no clause anywhere &mdash;
+      so every edition and year below is this document's choice, not a transcription.</p>
+
+    <h4>Named in the application</h4>
+    <p class="ce-ref">ASHRAE. (2021). <i>ASHRAE handbook &mdash; fundamentals</i> (SI ed.).
+      <span style="color:var(--ce-ink3)">&mdash; the only source cited by equation number:
+      atmospheric pressure at altitude, saturation vapour pressure over ice and over water, and
+      the adiabatic-saturation relation the wet-bulb bisection solves. The coefficients have been
+      unchanged since 2009, so the edition does not affect the values.</span></p>
+    <p class="ce-ref">ASHRAE. (2023). <i>Thermal environmental conditions for human occupancy</i>
+      (ANSI/ASHRAE Standard 55-2023).
+      <span style="color:var(--ce-ink3)">&mdash; the still-air comfort zones, the adaptive band and
+      the prevailing mean outdoor temperature. Only the first is reachable in the application.
+      <b>One caution:</b> the code attributes &alpha;&nbsp;=&nbsp;0.8 to Standard 55, but the
+      Standard allows 0.6 to 0.9 and fixes no value &mdash; 0.8 is the EN 16798-1 default. Do not
+      cite Standard 55 as the authority for 0.8 itself.</span></p>
+    <p class="ce-ref">Roudsari, M. S. &amp; Pak, M. (2013). &lsquo;Ladybug: a parametric
+      environmental plugin for Grasshopper&rsquo;, <i>Proceedings of BS2013</i>, Chamb&eacute;ry,
+      pp. 3128&ndash;3135.
+      <a href="https://doi.org/10.26868/25222708.2013.2499" target="_blank" rel="noopener">doi:10.26868/25222708.2013.2499</a>
+      <span style="color:var(--ce-ink3)">&mdash; one of two implementations whose
+      Givoni&ndash;Milne construction the polygons follow. <b>The project's own recommended
+      citation gives the venue as Lyon, which is wrong on both city and dates.</b></span></p>
+    <p class="ce-ref">Milne, M., Liggett, R. &amp; Al-Shaali, R. (2007). &lsquo;Climate Consultant
+      3.0&rsquo;, <i>Proceedings of Solar 2007</i>, Cleveland OH, pp. 466&ndash;473.
+      <span style="color:var(--ce-ink3)">&mdash; the other implementation followed.</span></p>
+    <p class="ce-ref">NOAA Global Monitoring Laboratory. <i>General solar position calculations</i>;
+      and the <i>Solar calculator</i>.
+      <span style="color:var(--ce-ink3)">&mdash; the fractional year, equation of time,
+      declination, hour angle, zenith and azimuth, and the 90.833&deg; sunrise/sunset zenith. The
+      refraction correction is a separate entry because it is not in the first document.</span></p>
+
+    <h4>Where the weather files come from</h4>
+    <p class="ce-ref"><b>Climate.OneBuilding.org</b> and <b>U.S. Department of Energy, EnergyPlus
+      weather data</b>.
+      <span style="color:var(--ce-ink3)">&mdash; the only two URLs the code supplies, and between
+      them the provenance of every number anyone will quote from this tool. Each file carries its
+      own terms in its COMMENTS headers: <b>cite the station and the file</b>, not this
+      page.</span></p>
+
+    <h4>Implemented without attribution</h4>
+    <p class="ce-ref"><span style="color:var(--ce-ink3)">Eight things bear on a number a reader
+      might quote and the code names no source for any of them: the <b>degree-day convention</b>
+      (hourly then divided by 24 &mdash; not the daily-mean convention of most published series,
+      and the code does not say so), the <b>percentile interpolation</b> (the spreadsheet
+      convention; others give different answers), the humidity-ratio and enthalpy constants, the
+      <b>circular mean</b>, the <b>point-in-polygon rule</b> that decides which hours count as
+      comfortable, the shadow projection, the &ldquo;standard&rdquo; 90.833&deg; zenith that sets
+      every sunrise time, and the OKLab colour ramps. This is the honest counterpart to the list
+      above, and the reason the page does not claim more provenance than it has.</span></p>
+
+  </div>
+
+</div>
