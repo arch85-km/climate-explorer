@@ -392,30 +392,188 @@
         <span class="ce-ex-n">Exercise 02</span>
         <h3>A climate rewards one passive strategy and refuses another</h3>
         <figure class="ce-fig">
-<svg viewBox="0 0 720 280" role="img" aria-label="Schematic psychrometric plane with the comfort zone marked. A cloud of hours sitting left of comfort is a heating climate. A cloud sitting to the right and low is dry and hot, where evaporative cooling works. A cloud sitting high and right is warm and humid, where evaporative cooling has nothing to work with.">
+<svg viewBox="0 0 720 300" role="img" aria-label="Schematic psychrometric plane. Every hour of the weather file is one dot, and the scatter they form is the cloud. A cloud left of the comfort zone is a heating climate. One low and to the right is hot and dry, where evaporative cooling has room to work. One high and to the right is warm and humid, where it does not.">
   <text x="20" y="26" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" fill="var(--ce-ink)">WHERE THE CLOUD SITS DECIDES THE STRATEGY</text>
-  <!-- axes -->
-  <line x1="70" y1="210" x2="690" y2="210" stroke="var(--ce-ink)" stroke-width="1.4"/>
-  <line x1="70" y1="52" x2="70" y2="210" stroke="var(--ce-ink)" stroke-width="1.4"/>
-  <path d="M70 200 C 240 196, 400 160, 520 60" fill="none" stroke="var(--ce-ink3)" stroke-width="1.4" stroke-dasharray="5 3"/>
-  <text x="526" y="62" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5" fill="var(--ce-ink3)">saturation</text>
+  <text x="20" y="42" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">each dot is one hour of the year &#183; 8,760 in all</text>
+  <line x1="70" y1="232" x2="690" y2="232" stroke="var(--ce-ink)" stroke-width="1.4"/>
+  <line x1="70" y1="56" x2="70" y2="232" stroke="var(--ce-ink)" stroke-width="1.4"/>
+  <path d="M70 222 C 240 218, 400 180, 540 62" fill="none" stroke="var(--ce-ink3)" stroke-width="1.4" stroke-dasharray="5 3"/>
+  <text x="548" y="66" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5" fill="var(--ce-ink3)">saturation</text>
   <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5" fill="var(--ce-ink3)">
-    <text x="60" y="226">dry bulb &#8594;</text><text x="16" y="120">humidity</text><text x="22" y="132">ratio &#8593;</text>
+    <text x="62" y="250">dry bulb &#8594;</text><text x="14" y="140">humidity</text><text x="20" y="152">ratio &#8593;</text>
   </g>
-  <!-- comfort zone -->
-  <rect x="330" y="150" width="96" height="40" fill="var(--ce-ok-soft)" stroke="var(--ce-ok)" stroke-width="1.6"/>
-  <text x="334" y="144" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ok)">comfort</text>
-  <!-- three clouds -->
-  <ellipse cx="180" cy="186" rx="62" ry="18" fill="var(--ce-accent)" opacity=".28"/>
-  <text x="120" y="164" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-accent)">heating climate</text>
-  <ellipse cx="520" cy="182" rx="56" ry="16" fill="var(--ce-warn)" opacity=".30"/>
-  <text x="470" y="206" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-warn)">hot and dry</text>
-  <ellipse cx="500" cy="96" rx="58" ry="18" fill="var(--ce-no)" opacity=".26"/>
-  <text x="446" y="74" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-no)">warm and humid</text>
-  <!-- annotations -->
+  <rect x="330" y="160" width="100" height="44" fill="var(--ce-ok-soft)" stroke="var(--ce-ok)" stroke-width="1.6"/>
+  <text x="334" y="154" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ok)">comfort</text>
+  <circle cx="159.0" cy="199.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="194.3" cy="197.7" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="181.9" cy="204.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="130.3" cy="208.2" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="128.0" cy="206.4" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="169.8" cy="215.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="137.4" cy="201.4" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="191.8" cy="218.7" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="186.3" cy="205.5" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="216.7" cy="203.0" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="157.3" cy="215.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="143.5" cy="210.0" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="193.0" cy="204.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="183.2" cy="197.5" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="197.5" cy="206.3" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="157.9" cy="210.1" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="172.9" cy="203.2" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="209.8" cy="212.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="150.4" cy="209.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="180.7" cy="217.0" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="202.8" cy="202.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="169.2" cy="214.2" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="140.4" cy="207.7" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="128.2" cy="212.0" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="206.6" cy="209.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="218.6" cy="203.5" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="199.1" cy="210.3" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="186.6" cy="206.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="175.2" cy="211.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="130.6" cy="212.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="212.8" cy="202.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="165.7" cy="212.0" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="126.4" cy="207.1" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="138.0" cy="201.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="166.2" cy="216.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="132.7" cy="206.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="183.3" cy="217.2" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="212.5" cy="216.7" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="154.1" cy="206.0" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="162.7" cy="217.2" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="143.0" cy="201.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="149.2" cy="207.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="187.6" cy="202.3" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="163.9" cy="209.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="226.9" cy="212.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="179.7" cy="210.8" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="197.0" cy="197.3" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="221.1" cy="214.7" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="218.4" cy="215.1" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="166.4" cy="205.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="135.2" cy="211.2" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="146.5" cy="199.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="160.7" cy="197.3" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="135.0" cy="204.7" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="190.3" cy="199.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="151.2" cy="204.3" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="163.3" cy="198.9" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+    <circle cx="174.3" cy="207.6" r="1.7" fill="var(--ce-accent)" opacity=".55"/>
+  <circle cx="525.5" cy="200.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="570.3" cy="197.9" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="542.6" cy="197.5" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="544.0" cy="194.6" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="542.6" cy="217.5" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="573.4" cy="210.7" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="518.0" cy="202.8" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="509.4" cy="212.5" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="543.0" cy="212.7" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="524.3" cy="199.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="572.4" cy="213.3" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="569.3" cy="211.8" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="514.9" cy="206.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="526.7" cy="194.7" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="517.8" cy="210.6" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="582.0" cy="204.7" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="581.9" cy="202.8" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="514.3" cy="199.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="512.1" cy="198.9" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="551.4" cy="215.6" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="571.3" cy="205.5" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="554.1" cy="213.2" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="501.8" cy="209.9" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="577.7" cy="212.8" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="563.0" cy="205.5" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="510.4" cy="212.9" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="524.6" cy="213.2" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="583.4" cy="203.5" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="530.9" cy="216.7" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="560.7" cy="198.1" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="507.4" cy="213.8" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="526.2" cy="207.2" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="583.3" cy="209.6" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="542.4" cy="216.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="533.9" cy="214.9" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="570.0" cy="199.1" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="517.2" cy="201.0" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="516.1" cy="208.1" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="517.9" cy="204.1" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="526.5" cy="205.0" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="547.7" cy="215.7" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="532.7" cy="216.0" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="540.2" cy="206.8" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="542.2" cy="194.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="534.5" cy="198.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="509.9" cy="205.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="560.7" cy="207.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="524.0" cy="206.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="545.1" cy="212.8" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="503.8" cy="207.4" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="516.9" cy="200.6" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+    <circle cx="565.0" cy="206.2" r="1.7" fill="var(--ce-warn)" opacity=".55"/>
+  <circle cx="463.4" cy="139.3" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="494.3" cy="130.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="467.9" cy="132.2" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="459.1" cy="137.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="453.8" cy="132.9" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="456.1" cy="144.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="475.5" cy="142.5" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="463.2" cy="144.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="487.9" cy="121.8" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="424.7" cy="130.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="420.4" cy="124.7" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="420.4" cy="136.7" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="483.0" cy="143.1" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="427.6" cy="138.1" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="472.1" cy="122.0" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="449.0" cy="131.6" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="428.2" cy="130.1" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="459.4" cy="127.5" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="431.2" cy="126.9" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="462.8" cy="130.3" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="468.9" cy="132.3" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="423.2" cy="125.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="437.8" cy="121.6" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="451.2" cy="143.5" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="486.1" cy="125.2" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="464.2" cy="137.6" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="474.6" cy="129.9" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="469.8" cy="140.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="453.9" cy="127.5" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="462.7" cy="143.9" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="437.6" cy="121.6" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="460.4" cy="124.7" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="441.5" cy="126.5" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="480.8" cy="126.1" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="458.0" cy="123.0" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="478.5" cy="133.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="430.7" cy="131.3" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="486.1" cy="130.1" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="457.6" cy="141.4" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="448.6" cy="132.2" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="444.2" cy="141.3" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="476.2" cy="135.8" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="449.6" cy="127.7" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="420.2" cy="138.7" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="436.5" cy="122.6" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="490.6" cy="136.8" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="438.8" cy="124.8" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="439.8" cy="130.9" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="427.9" cy="130.5" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="499.6" cy="133.3" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="441.2" cy="128.0" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+    <circle cx="455.8" cy="132.1" r="1.7" fill="var(--ce-no)" opacity=".5"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10">
+    <text x="112" y="180" fill="var(--ce-accent)">heating climate</text>
+    <text x="470" y="182" fill="var(--ce-warn)">hot and dry</text>
+    <text x="398" y="100" fill="var(--ce-no)">warm and humid</text>
+  </g>
   <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">
-    <text x="20" y="250">left of comfort: no amount of ventilation moves it rightwards</text>
-    <text x="20" y="264">right and low: evaporative cooling has room to work &#183; high and right: it does not</text>
+    <text x="20" y="272">left of comfort: a heating climate &#183; no amount of ventilation moves it rightwards</text>
+    <text x="20" y="288">low and right: evaporative cooling has room to work &#183; high and right: it does not</text>
   </g>
 </svg>
 <figcaption>Schematic psychrometric plane. The position of the cloud decides the strategy before any arithmetic does.</figcaption>
@@ -423,7 +581,7 @@
         <ol class="ce-steps">
           <li>Comfort mode, <b>Psychrometric chart</b>, passive strategies on, period
             1 Jan&ndash;31 Dec.</li>
-          <li>Look at where the cloud of hours sits relative to the comfort rectangles &mdash; left,
+          <li>The chart plots <b>every hour of the file as one dot</b> &mdash; 8,760 of them &mdash; and the scatter they form is the <i>cloud</i>. Look at where it sits relative to the comfort rectangles &mdash; left,
             inside, above, or to the right. <b>Do this before reading any percentage.</b></li>
           <li>Write down the percentage against each of the three strategies. Note that they
             overlap, and that they do not sum to 100.</li>
@@ -445,32 +603,32 @@
         <span class="ce-ex-n">Exercise 03</span>
         <h3>Latitude fixes the sun and almost nothing else</h3>
         <figure class="ce-fig">
-<svg viewBox="0 0 720 260" role="img" aria-label="Two sites at nearly the same latitude. Their sun paths are almost identical, which is the control in the experiment. Their annual temperature ranges are not: the maritime site is narrow, the continental one is far wider.">
+<svg viewBox="0 0 720 290" role="img" aria-label="Two sites at nearly the same latitude. Their summer and winter sun paths are almost identical, which is the control. Their annual temperature ranges are not: the maritime site spans a narrow band, the continental one a far wider band.">
   <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" fill="var(--ce-ink)">
     <text x="20" y="26">SAME LATITUDE &#183; the sun is the control</text>
-    <text x="20" y="150">DIFFERENT SITUATION &#183; everything else is not</text>
   </g>
-  <!-- sun paths, identical -->
-  <line x1="70" y1="112" x2="330" y2="112" stroke="var(--ce-ink)" stroke-width="1.3"/>
-  <path d="M84 112 C 130 50, 270 50, 316 112" fill="none" stroke="var(--ce-accent)" stroke-width="2"/>
-  <path d="M100 112 C 140 78, 260 78, 300 112" fill="none" stroke="var(--ce-accent)" stroke-width="1.6" stroke-dasharray="5 3"/>
-  <line x1="390" y1="112" x2="650" y2="112" stroke="var(--ce-ink)" stroke-width="1.3"/>
-  <path d="M404 112 C 450 50, 590 50, 636 112" fill="none" stroke="var(--ce-accent)" stroke-width="2"/>
-  <path d="M420 112 C 460 78, 580 78, 620 112" fill="none" stroke="var(--ce-accent)" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <line x1="70" y1="120" x2="330" y2="120" stroke="var(--ce-ink)" stroke-width="1.3"/>
+  <path d="M84 120 C 130 56, 270 56, 316 120" fill="none" stroke="var(--ce-accent)" stroke-width="2"/>
+  <path d="M104 120 C 142 88, 258 88, 296 120" fill="none" stroke="var(--ce-accent)" stroke-width="1.6" stroke-dasharray="5 3"/>
+  <line x1="390" y1="120" x2="650" y2="120" stroke="var(--ce-ink)" stroke-width="1.3"/>
+  <path d="M404 120 C 450 56, 590 56, 636 120" fill="none" stroke="var(--ce-accent)" stroke-width="2"/>
+  <path d="M424 120 C 462 88, 578 88, 616 120" fill="none" stroke="var(--ce-accent)" stroke-width="1.6" stroke-dasharray="5 3"/>
   <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">
-    <text x="70" y="130">site A &#183; maritime coast</text><text x="390" y="130">site B &#183; deep inland</text>
+    <text x="70" y="138">site A &#183; maritime coast</text><text x="390" y="138">site B &#183; deep inland</text>
+    <text x="196" y="72">21 Jun</text><text x="516" y="72">21 Jun</text>
+    <text x="188" y="106">21 Dec</text><text x="508" y="106">21 Dec</text>
   </g>
-  <!-- annual temperature ranges -->
-  <line x1="70" y1="212" x2="650" y2="212" stroke="var(--ce-ink)" stroke-width="1.3"/>
-  <rect x="250" y="172" width="120" height="20" fill="var(--ce-accent-soft)" stroke="var(--ce-accent)" stroke-width="1.5"/>
-  <rect x="130" y="200" width="400" height="20" fill="var(--ce-no-soft)" stroke="var(--ce-no)" stroke-width="1.5"/>
-  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10">
-    <text x="376" y="187" fill="var(--ce-accent)">site A: narrow annual range</text>
-    <text x="536" y="215" fill="var(--ce-no)">site B: wide</text>
+  <text x="70" y="156" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-accent)">almost identical &#183; this is the control</text>
+
+  <text x="20" y="192" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="11" fill="var(--ce-ink)">DIFFERENT SITUATION &#183; everything else is not</text>
+  <text x="280" y="212" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-accent)">site A &#183; narrow annual range</text>
+  <rect x="280" y="218" width="120" height="18" fill="var(--ce-accent-soft)" stroke="var(--ce-accent)" stroke-width="1.5"/>
+  <text x="150" y="252" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-no)">site B &#183; wide annual range</text>
+  <rect x="150" y="258" width="410" height="18" fill="var(--ce-no-soft)" stroke="var(--ce-no)" stroke-width="1.5"/>
+  <line x1="70" y1="284" x2="650" y2="284" stroke="var(--ce-ink)" stroke-width="1.3"/>
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="9.5" fill="var(--ce-ink3)">
+    <text x="70" y="278">colder</text><text x="604" y="278">warmer</text>
   </g>
-  <text x="70" y="240" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">colder &#8592;</text>
-  <text x="600" y="240" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10" fill="var(--ce-ink3)">&#8594; warmer</text>
-  <text x="20" y="256" font-family="ui-monospace,SFMono-Regular,Menlo,Consolas,monospace" font-size="10.5" fill="var(--ce-ink)">Same sun on the same days. Up to twenty kelvin apart in annual range.</text>
 </svg>
 <figcaption>Ocean, altitude, prevailing wind and distance from a coast do far more of the work than latitude.</figcaption>
         </figure>
