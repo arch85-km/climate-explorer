@@ -979,8 +979,8 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
           <li>Back to the heatmap. Set the degree-day base to <code>18</code>, then
             <code>15.5</code>, then <code>12</code>, and watch the colour boundary move each
             time.</li>
-          <li>Read the heating degree-day tile at each of those three bases and write all three
-            down, with their bases.</li>
+          <li>Read the <span class="ce-mono">Heating degree days</span> tile at each of those three
+            bases and write all three down, with their bases.</li>
         </ol>
         <p class="ce-principle"><b>Principle.</b> A monthly mean is one number standing for about
           720 hours, and it averages away exactly what a designer needs: how cold, for how long,
@@ -998,12 +998,21 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
         <ol class="ce-steps">
           <li><b>Comfort</b> mode, <b>Psychrometric chart</b>, passive strategies <b>on</b>,
             period <code>1 Jan – 31 Dec</code>.</li>
-          <li>The chart plots <b>every hour of the file as one dot</b> &mdash; 8,760 of them &mdash; and the scatter they form is what is meant below by the <i>cloud</i>. Look at where that cloud sits relative to the two comfort rectangles —
-            left of them, inside, above, or to the right. Do this before reading any percentage.</li>
-          <li>Write down the percentage against each of the three strategies in the legend. Note
-            that they overlap, and that they do not sum to 100.</li>
-          <li>Change the period to <code>1 Jun – 31 Aug</code> and re-read all three. Then to the
-            <b>occupied</b> preset, <code>08–18</code>, and re-read again.</li>
+          <li>The chart is a <b>density field, not a scatter</b>: every hour of the file is counted
+            into a fine grid of cells, and each cell is shaded by how many hours landed in it. The
+            shaded region is what is meant below by the <i>cloud</i>, and its darkest part is where
+            the climate spends most of its year. Look at where that cloud sits relative to the two
+            comfort rectangles — left of them, inside, above, or to the right. Do this before
+            reading any percentage.</li>
+          <li>The legend carries five percentages: the two comfort zones first, then the three
+            strategies — <span class="ce-mono">Natural ventilation</span>,
+            <span class="ce-mono">Evaporative cooling</span> and
+            <span class="ce-mono">Internal heat gain</span>, drawn dashed. Write down the three
+            strategy percentages. Note that they overlap, and that they do not sum to 100.</li>
+          <li>Change the period to <code>1 Jun – 31 Aug</code> and re-read all three. Then apply the
+            <code>Occupied hours (08–18)</code> preset and re-read again — note that the preset
+            resets the dates to the whole year, so this third reading is annual occupied hours,
+            not summer ones.</li>
           <li>Read the <span class="ce-mono">Comfortable hours</span> tile, then the
             <span class="ce-mono">Outside comfort band</span> tile. Write down both, and write one
             sentence on why they disagree.</li>
@@ -1016,7 +1025,10 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
           than over the year, and a different one again over occupied hours — which is why a
           strategy claim that does not carry its period is not a claim about anything. The two
           comfort tiles disagree because they are two different quantities: one is a region of the
-          psychrometric plane, the other is a dry-bulb band with humidity ignored.</p>
+          psychrometric plane, the other is a dry-bulb band with humidity ignored. One caution
+          specific to this tool: the chart spans &minus;10 to 50&nbsp;&deg;C, and every percentage
+          on it is a share of the hours that land on it, so a file with hours below
+          &minus;10&nbsp;&deg;C has them excluded from all five.</p>
       </div>
 
       <div class="ce-ex">
@@ -1030,11 +1042,14 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
             the day length.</li>
           <li>Load the second into the same view and satisfy yourself that the sun path is
             <em>almost identical</em>. That is the control in this experiment.</li>
-          <li>Turn on <b>Compare</b>, set the source to <b>Two files</b>, and load the second file
-            into panel B. Go to <b>Annual heatmap</b>, then <b>Distribution</b>, then <b>Monthly
-            statistics</b>.</li>
+          <li>Turn on <b>Compare</b>, set the source to <b>Two files</b> and load the second file
+            with <b>Load second EPW</b>; it goes into panel B. Now switch to <b>Thermal</b> mode:
+            its shelf carries all three of <b>Annual heatmap</b>, <b>Distribution</b> and
+            <b>Monthly statistics</b>, where the Solar shelf has no Distribution. Visit each in
+            turn.</li>
           <li>Record for both: annual mean, annual minimum and maximum, and the difference between
-            the warmest and coldest monthly mean. Then read both psychrometric charts.</li>
+            the warmest and coldest monthly mean. Then switch to <b>Comfort</b> mode, which is
+            where the psychrometric chart lives, and read both charts.</li>
         </ol>
         <p class="ce-principle"><b>Principle.</b> Two sites at the same latitude receive the same
           sun on the same days, and can still differ by twenty kelvin in annual range. Ocean,

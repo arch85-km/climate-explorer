@@ -385,8 +385,8 @@
           <li>Switch to <b>Monthly statistics</b>. Write down the mean for the coldest month, then
             the 5th and 95th percentile whiskers for that same month.</li>
           <li>Back to the heatmap. Set the degree-day base to <b>18</b>, then <b>15.5</b>, then
-            <b>12</b>, watching the colour boundary move, and record the heating degree-day tile at
-            each base.</li>
+            <b>12</b>, watching the colour boundary move, and record the
+            <span class="ce-mono">Heating degree days</span> tile at each base.</li>
         </ol>
         <p class="ce-principle"><b>Principle.</b> A monthly mean is one number standing for about
           720 hours, and it averages away exactly what a designer needs: <b>how cold, for how long,
@@ -590,12 +590,20 @@
         <ol class="ce-steps">
           <li>Comfort mode, <b>Psychrometric chart</b>, passive strategies on, period
             1 Jan&ndash;31 Dec.</li>
-          <li>The chart plots <b>every hour of the file as one dot</b> &mdash; 8,760 of them &mdash; and the scatter they form is the <i>cloud</i>. Look at where it sits relative to the comfort rectangles &mdash; left,
-            inside, above, or to the right. <b>Do this before reading any percentage.</b></li>
-          <li>Write down the percentage against each of the three strategies. Note that they
-            overlap, and that they do not sum to 100.</li>
-          <li>Change the period to 1 Jun&ndash;31 Aug and re-read all three; then to the occupied
-            preset, 08&ndash;18, and re-read again.</li>
+          <li>The chart is a <b>density field, not a scatter</b>: every hour is counted into a fine
+            grid of cells, each shaded by how many hours landed in it. That shaded region is the
+            <i>cloud</i>, and its darkest part is where the climate spends most of its year. Look
+            at where it sits relative to the comfort rectangles &mdash; left, inside, above, or to
+            the right. <b>Do this before reading any percentage.</b></li>
+          <li>The legend carries five percentages: the two comfort zones, then the three strategies
+            &mdash; <span class="ce-mono">Natural ventilation</span>,
+            <span class="ce-mono">Evaporative cooling</span> and
+            <span class="ce-mono">Internal heat gain</span>, drawn dashed. Write down the three
+            strategy percentages. Note that they overlap, and that they do not sum to 100.</li>
+          <li>Change the period to 1 Jun&ndash;31 Aug and re-read all three; then apply the
+            <span class="ce-mono">Occupied hours (08&ndash;18)</span> preset and re-read again.
+            The preset resets the dates to the whole year, so this third reading is annual
+            occupied hours, not summer ones.</li>
           <li>Read the <i>Comfortable hours</i> tile, then the <i>Outside comfort band</i> tile.
             Write down both, and one sentence on why they disagree.</li>
         </ol>
@@ -605,7 +613,10 @@
           humid, where evaporative cooling has nothing to work with. <b>The same climate recommends
           a different strategy over summer than over the year</b>, and a different one again over
           occupied hours &mdash; which is why a strategy claim that does not carry its period is
-          not a claim about anything.</p>
+          not a claim about anything. One caution specific to this tool: the chart spans
+          &minus;10 to 50&nbsp;&deg;C, and every percentage on it is a share of the hours that land
+          on it, so a file with hours below &minus;10&nbsp;&deg;C has them excluded from all
+          five.</p>
       </div>
 
       <div class="ce-ex">
@@ -648,10 +659,13 @@
           <li>Load the first. Solar mode, <b>Sun path dome</b>. Note the solstice arcs and the day
             length. Load the second into the same view and satisfy yourself that the sun path is
             almost identical. <b>That is the control in this experiment.</b></li>
-          <li>Turn on <b>Compare</b>, source <b>Two files</b>, second file into panel B. Go to
-            <b>Annual heatmap</b>, then <b>Distribution</b>, then <b>Monthly statistics</b>.</li>
+          <li>Turn on <b>Compare</b>, source <b>Two files</b>, and load the second with
+            <b>Load second EPW</b>; it goes into panel B. Switch to <b>Thermal</b> mode &mdash; its
+            shelf carries <b>Annual heatmap</b>, <b>Distribution</b> and <b>Monthly
+            statistics</b>, where the Solar shelf has no Distribution &mdash; and visit each.</li>
           <li>Record for both: annual mean, annual minimum and maximum, and the difference between
-            the warmest and coldest monthly mean. Then read both psychrometric charts.</li>
+            the warmest and coldest monthly mean. Then switch to <b>Comfort</b> mode, where the
+            psychrometric chart lives, and read both charts.</li>
         </ol>
         <p class="ce-principle"><b>Principle.</b> Two sites at the same latitude receive the same
           sun on the same days, and can still differ by twenty kelvin in annual range. Ocean,
