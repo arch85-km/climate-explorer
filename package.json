@@ -9,9 +9,10 @@
   "scripts": {
     "build": "node build.js",
     "stamp": "node tools/stamp-version.mjs",
-    "test": "node --test test/*.test.mjs",
+    "test": "node tools/check-release-metadata.mjs && node --test test/*.test.mjs",
     "samples": "./tools/fetch-samples.sh",
     "test:visual": "node test/visual.mjs",
-    "test:embed": "node test/embed.mjs"
+    "test:embed": "node test/embed.mjs",
+    "check-release": "node tools/check-release-metadata.mjs"
   }
 }
