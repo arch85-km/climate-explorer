@@ -756,10 +756,13 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
       </table></div>
 
       <h3>Numerical precision</h3>
-      <p>Every hourly series — read or derived — is stored in a <b>32-bit float</b>. There is no
-        64-bit array anywhere in the application. The arithmetic itself runs at full double
-        precision and the narrowing happens only at the store, so roughly <b>seven significant
-        decimal digits</b> survive per value.</p>
+      <p>Every hourly series — read or derived — is stored in a <b>32-bit float</b>. The arithmetic
+        itself runs at full double precision and the narrowing happens only at the store, so
+        roughly <b>seven significant decimal digits</b> survive per value. Where accumulation could
+        drift the double is kept: <span class="ce-mono">core/stats.js</span> sorts into a
+        <span class="ce-mono">Float64Array</span> for percentiles, and holds its monthly and
+        diurnal sums, minima and maxima in one, so a year of additions does not shed digits before
+        the mean is taken.</p>
       <p>For weather data this is the right trade and costs nothing that matters: a dry bulb of
         17.3&nbsp;°C, an illuminance of 42,500&nbsp;lux and a pressure of 101,325&nbsp;Pa are all
         exactly or near-exactly representable, and the measurements themselves carry two or three
@@ -779,7 +782,7 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
 
       <h3>What is actually asserted</h3>
       <p>The parts of the arithmetic that <em>can</em> be checked, are, in an automated suite of
-        <b>53 tests making 229 assertions</b> across four files, run against three real weather
+        <b>54 tests making 237 assertions</b> across four files, run against three real weather
         files — Chicago O'Hare TMY3, London Gatwick IWEC and London St James's Park TMYx.</p>
       <div class="ce-tbl"><table>
         <thead><tr><th>Covered</th><th>How</th></tr></thead>
