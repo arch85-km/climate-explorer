@@ -153,7 +153,7 @@ function boot() {
         el('b', { text: 'MIT' }), ' and the documentation ', el('b', { text: 'CC BY 4.0' }),
         ' — use it, adapt it, build on it, for any purpose including commercially. '
         + 'Credit is the only condition.'),
-      el('p', {}, 'The ', el('b', { text: 'cube device' }), ' is the author\u2019s own mark and '
+      el('p', {}, 'The ', el('b', { text: 'cube device' }), ' \u2014 the icon and logo \u2014 is the author\u2019s own mark and '
         + 'is not covered by either licence; all rights in it are reserved. Keep it on a copy you '
         + 'redistribute, but do not adopt it as your own badge.'),
       el('p', {}, 'The weather file you open is ', el('b', { text: 'yours' }),
