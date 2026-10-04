@@ -110,13 +110,72 @@ function boot() {
 
   const dropHint = el('div.drop-hint', {}, el('div', { text: 'Release to load this EPW file' }));
   const errorBar = el('div.error-bar', { role: 'alert' });
-  const footer = el('footer.footer', {},
-    el('span.copyright', { text: '© Karam Al-Obaidi' }),
-    el('span.footer-file'));
+  // The copyright line is the handle for the About panel: licence, credits and
+  // the release this file is. Nothing else in the chrome has room for it, and a
+  // reader looking for the terms looks at the copyright first.
+  const aboutBtn = el('button.copyright', {
+    type: 'button',
+    title: 'Licence, credits and release',
+    'aria-haspopup': 'dialog',
+    onclick: () => setAbout(true),
+  }, '© Karam Al-Obaidi');
+  const footer = el('footer.footer', {}, aboutBtn, el('span.footer-file'));
+
+  // ── about panel ───────────────────────────────────────────────────────
+  //
+  // An overlay inside the app rather than a <dialog>, for the same reason the
+  // empty state and the loading card are: the app is embedded in a WordPress
+  // page as often as it is opened standalone, and everything it draws has to
+  // stay inside its own root.
+  const aboutCite = el('pre.about-cite', {
+    text: 'Al-Obaidi, K. M. (2026). Climate Explorer: A browser-based weather\n'
+      + 'data analysis and visualisation tool'
+      + (VERSION ? ` (Version ${VERSION})` : '') + ' [Computer software].\n'
+      + 'Zenodo. https://doi.org/10.5281/zenodo.22814692',
+  });
+  const aboutClose = el('button.icon-btn.about-close', {
+    type: 'button', 'aria-label': 'Close', onclick: () => setAbout(false),
+  }, icon(ICONS.close, 16));
+  const about = el('div.about', {
+    role: 'dialog', 'aria-modal': 'true', 'aria-label': `About ${APP_NAME}`,
+    onclick: (e) => { if (e.target === about) setAbout(false); },
+  }, el('div.about-card', {}, aboutClose,
+    el('h2.about-title', { text: APP_NAME }),
+    ...(VERSION ? [el('section.about-sec', {},
+      el('h3', { text: 'This release' }),
+      el('p', {}, el('b', { text: `${VERSION} · ${releaseDateLong()}` }),
+        ' — the version of this file and the date it was released. Quote it alongside '
+        + 'any figure you publish: the tool has changed before, and two runs of the same '
+        + 'weather file on different releases can differ.'))] : []),
+    el('section.about-sec', {},
+      el('h3', { text: 'Licence and credits' }),
+      el('p', {}, '© 2026 Karam Al-Obaidi. The application is licensed ',
+        el('b', { text: 'MIT' }), ' and the documentation ', el('b', { text: 'CC BY 4.0' }),
+        ' — use it, adapt it, build on it, for any purpose including commercially. '
+        + 'Credit is the only condition.'),
+      el('p', {}, 'The weather file you open is ', el('b', { text: 'yours' }),
+        '. It is read in your browser and never uploaded; neither licence claims '
+        + 'anything over your data, your charts or the images you export.'),
+      el('p', {}, 'No third-party library is bundled and no network request is made: '
+        + 'every chart, projection and solar calculation here is this project’s own code. '
+        + 'Psychrometrics follow the ASHRAE Handbook of Fundamentals; solar position follows '
+        + 'the NOAA General Solar Position Calculations; the comfort polygons follow ASHRAE 55 '
+        + 'and Givoni–Milne. Those are published methods, not code: they are credited here '
+        + 'because the numbers come from them, and the Method Notes give the equations.')),
+    el('section.about-sec', {},
+      el('h3', { text: 'How to cite' }),
+      aboutCite,
+      el('p.about-note', { text: 'The DOI above always resolves to the latest release.' }))));
+
+  function setAbout(open) {
+    about.classList.toggle('is-open', !!open);
+    if (open) aboutClose.focus();
+    else aboutBtn.focus();
+  }
 
   body.appendChild(empty);
   body.appendChild(loading);
-  root.append(el('div.app', {}, header, errorBar, body, footer, dropHint, scrim));
+  root.append(el('div.app', {}, header, errorBar, body, footer, about, dropHint, scrim));
 
   // ── stages ────────────────────────────────────────────────────────────────
   function rebuildStages() {
@@ -388,6 +447,12 @@ function boot() {
 
   // Keyboard shortcuts, aimed at someone presenting rather than editing.
   window.addEventListener('keydown', (e) => {
+    // Escape closes the About panel first, whatever has focus — including the
+    // fields the guard below would otherwise skip the handler for.
+    if (e.key === 'Escape' && about.classList.contains('is-open')) {
+      setAbout(false);
+      return;
+    }
     if (e.target instanceof HTMLInputElement || e.target instanceof HTMLSelectElement) return;
     if (e.key === 'p' || e.key === 'P') { setPresentation(!store.state.presentation); }
     else if (e.key === ' ') { e.preventDefault(); togglePlay(); }

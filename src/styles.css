@@ -621,7 +621,80 @@
   font-size: var(--fs-label);
   color: var(--ink-3);
 }
-.cx-copyright { font-weight: 550; letter-spacing: 0.01em; white-space: nowrap; }
+.cx-copyright {
+  font-weight: 550;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+  color: inherit;
+  font: inherit;
+  padding: 0;
+  text-decoration: underline;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 3px;
+}
+.cx-copyright:hover { color: var(--ink-1); text-decoration-color: currentColor; }
+
+/* ---- about panel ------------------------------------------------------- */
+/* An overlay inside the app, not a <dialog>: embedded in a host page, nothing
+   this app draws may escape its own root. */
+.cx-about {
+  position: absolute; inset: 0; z-index: 30;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: color-mix(in srgb, #0b0d10 58%, transparent);
+}
+.cx-about.is-open { display: flex; }
+.cx-about-card {
+  position: relative;
+  width: min(560px, 100%);
+  max-height: 100%;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: 22px 24px 24px;
+  background: var(--surface-1);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  color: var(--ink-2);
+  /* A reading panel, not chrome: the app's small sizes are tuned for labels. */
+  font-size: 12.5px;
+}
+.cx-about-close { position: absolute; top: 10px; right: 10px; }
+.cx-about-title {
+  margin: 0 0 4px;
+  font-size: 17px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  color: var(--ink-1);
+}
+.cx-about-sec { margin-top: 16px; }
+.cx-about-sec h3 {
+  margin: 0 0 5px;
+  font-size: var(--fs-label);
+  font-weight: 650;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--ink-3);
+}
+.cx-about-sec p { margin: 0 0 7px; line-height: 1.55; }
+.cx-about-sec p:last-child { margin-bottom: 0; }
+.cx-about-sec b { color: var(--ink-1); font-weight: 650; }
+.cx-about-cite {
+  margin: 0;
+  padding: 10px 12px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: var(--fs-label);
+  line-height: 1.5;
+  color: var(--ink-1);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.cx-about-note { margin: 6px 0 0; color: var(--ink-3); font-size: var(--fs-label); }
 .cx-footer-file {
   margin-left: auto;
   overflow: hidden;
