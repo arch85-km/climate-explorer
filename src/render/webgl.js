@@ -9,7 +9,7 @@
  * Shaders are GLSL ES 1.00 so the same source runs on a WebGL 1 context, which
  * matters for the older machines found in teaching labs.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import { identity, multiply, normalMatrix } from './mat4.js';
 

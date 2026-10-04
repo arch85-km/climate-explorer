@@ -5,7 +5,7 @@
  * (`version` and `releaseDate`) — the single source of truth. Running from source
  * rather than from a build simply leaves them blank, and the app omits the line.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 
 const VERSION = '';

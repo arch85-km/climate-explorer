@@ -5,7 +5,7 @@
  * categories, so they are coloured with a cyclic ramp — hue carries the month,
  * and January sits next to December in colour as it does in the calendar.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import {
   beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame,

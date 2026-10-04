@@ -3,7 +3,7 @@
  * daily mean drawn over it. The band is what shows a climate's diurnal swing,
  * which a mean-only line hides completely.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import {
   beginFrame, scaleLinear, niceDomain, drawValueAxis, drawBottomAxis, drawPlotFrame,

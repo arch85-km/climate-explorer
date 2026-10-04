@@ -13,7 +13,7 @@
  *   - angular quantities (wind direction, solar azimuth) use a CYCLIC ramp of
  *     near-constant lightness, because the data genuinely wraps at 360°.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 
 // ── OKLab conversion ─────────────────────────────────────────────────────────

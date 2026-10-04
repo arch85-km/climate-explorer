@@ -6,7 +6,7 @@
  * midnight (e.g. 22:00 to 06:00), because both are things students genuinely want
  * to look at.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import { dayOfYear, daysInMonth } from './solar.js';
 import { MONTH_ABBR } from '../epw/parse.js';

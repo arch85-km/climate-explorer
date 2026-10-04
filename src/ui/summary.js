@@ -4,7 +4,7 @@
  *
  * These are hero numbers, not a chart — they get large type and no decoration.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import { el, clear } from './dom.js';
 import { summarise, degreeDays, windRose, countHours, percentiles } from '../core/stats.js';

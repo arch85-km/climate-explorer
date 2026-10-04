@@ -160,15 +160,15 @@ Keeping the copyright notice in the file satisfies the licence; a citation is th
 scholarly act on top of that.
 
 > Al-Obaidi, K. M. (2026). *Climate Explorer: A browser-based weather data
-> analysis and visualisation tool* (Version 1.0.0) [Computer software]. Zenodo.
-> https://doi.org/10.5281/zenodo.22814693
+> analysis and visualisation tool* (Version 1.1.0) [Computer software]. Zenodo.
+> https://doi.org/10.5281/zenodo.22814692
 
 **Two DOIs, and they are not interchangeable.** Cite the one that matches what you
 are claiming:
 
 | DOI | Resolves to | Use it when |
 |---|---|---|
-| [`10.5281/zenodo.22814693`](https://doi.org/10.5281/zenodo.22814693) | **version 1.0.0**, permanently | you quote a figure. A reader must be able to open exactly the version you used |
+| [`10.5281/zenodo.22814693`](https://doi.org/10.5281/zenodo.22814693) | **version 1.0.0**, permanently | you quote a figure taken from 1.0.0. 1.1.0's version DOI is minted when this release is archived, and this page will name it then |
 | [`10.5281/zenodo.22814692`](https://doi.org/10.5281/zenodo.22814692) | **the latest version**, always | you cite the software in general, or link to it from a reading list |
 
 The version DOI is the one in the citation above, because that citation names a

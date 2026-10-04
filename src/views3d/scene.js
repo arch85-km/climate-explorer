@@ -6,7 +6,7 @@
  * state to a scene description; this module turns that description into GL
  * buffers and keeps them in step with the camera.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import { createRenderer } from '../render/webgl.js';
 import { createCamera } from '../render/camera.js';

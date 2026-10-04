@@ -10,7 +10,7 @@
  * DATA PERIODS header is parsed and reported, but nothing is sized from it — a
  * file whose header disagrees with its own contents is read as written.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import { FIELDS } from './fields.js';
 

@@ -5,7 +5,7 @@
  * panel showing the same numbers: they all derive their scale, mask and colour
  * ramp here rather than each computing its own.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import { ALL_BY_KEY } from '../epw/fields.js';
 import { buildMask, describePeriod, normalisePeriod } from '../core/filter.js';

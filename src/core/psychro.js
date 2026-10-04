@@ -4,7 +4,7 @@
  * Temperatures are °C, pressures Pa, humidity ratio kg water / kg dry air,
  * enthalpy kJ/kg dry air.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 
 const STANDARD_PRESSURE = 101325;

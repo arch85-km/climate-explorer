@@ -9,7 +9,7 @@
  * `cx-` class prefix, so a WordPress theme's stylesheet cannot reach in and
  * a plugin's script cannot collide with anything here.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 
 // The class-name namespace `el()` prepends. Deliberately short: it appears on

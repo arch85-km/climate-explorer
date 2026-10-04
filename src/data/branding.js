@@ -6,7 +6,7 @@
  * docs. Everything that displays the name now reads it from here, including the
  * static shell, which `build.js` fills through injection markers.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 
 /** The short name: the header lockup, and anywhere the name stands alone. */

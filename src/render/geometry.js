@@ -5,7 +5,7 @@
  * (dome, grid, arcs, labels' anchor points) can be assembled into two or three
  * buffers rather than hundreds of draw calls.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 
 /** Accumulates triangles with per-vertex normals and colours. */

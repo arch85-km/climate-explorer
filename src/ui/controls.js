@@ -4,7 +4,7 @@
  * Each returns { node, set(value) } so the toolbar can rebuild cheaply and still
  * push state changes back into controls the user is not currently touching.
  *
- * @version 1.0.0 — 2026-09-17
+ * @version 1.1.0 — 2026-10-04
  */
 import { el, icon } from './dom.js';
 
