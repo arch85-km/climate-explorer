@@ -2919,6 +2919,11 @@ function boot() {
     onclick: (e) => { if (e.target === about) setAbout(false); },
   }, el('div.about-card', {}, aboutClose,
     el('h2.about-title', { text: APP_NAME }),
+    el('section.about-sec', {},
+      el('h3', { text: 'What it is for' }),
+      el('p', {}, 'Teaching and exploring early design. Its results are ',
+        el('b', { text: 'indicative' }), ', not for compliance or certification: check '
+        + 'anything that matters against validated software or a qualified professional.')),
     ...(VERSION ? [el('section.about-sec', {},
       el('h3', { text: 'This release' }),
       el('p', {}, el('b', { text: `${VERSION} · ${releaseDateLong()}` }),
