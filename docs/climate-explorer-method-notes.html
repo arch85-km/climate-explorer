@@ -285,6 +285,15 @@
 .ce-doc .ce-secnum:empty{display:none;}
 /* long addresses in the references break rather than push the page sideways on a phone */
 .ce-doc a{overflow-wrap:anywhere;}
+/* a column of figures has its heading over the figures, not at the far edge */
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(1), tbody td.ce-d:nth-child(1)) thead th:nth-child(1),
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(2), tbody td.ce-d:nth-child(2)) thead th:nth-child(2),
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(3), tbody td.ce-d:nth-child(3)) thead th:nth-child(3),
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(4), tbody td.ce-d:nth-child(4)) thead th:nth-child(4),
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(5), tbody td.ce-d:nth-child(5)) thead th:nth-child(5),
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(6), tbody td.ce-d:nth-child(6)) thead th:nth-child(6),
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(7), tbody td.ce-d:nth-child(7)) thead th:nth-child(7),
+.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(8), tbody td.ce-d:nth-child(8)) thead th:nth-child(8){text-align:right;}
 /* no side padding of its own: the Elementor section sets the margins, so the notes line up with the blocks above them on every screen */
 .ce-doc{padding-left:0;padding-right:0;}
 /* and no width cap of its own: on a wide screen a capped, centred block starts further in than the blocks above it */
@@ -406,7 +415,7 @@
         number in the source; the fourth group does not.</p>
       <div class="ce-formula"><em>standard pressure at altitude z          ASHRAE eq. 3</em>
   p = 101325 &times; (1 &minus; 2.25577e&minus;5 &middot; z) ^ 5.2559
-
+&nbsp;
 <em>saturation vapour pressure, T in kelvin  ASHRAE eq. 5 and 6</em>
   over ice   (t &lt; 0 °C)
     ln p_ws = &minus;5674.5359/T + 6.3925247 &minus; 0.009677843&middot;T
@@ -416,7 +425,7 @@
     ln p_ws = &minus;5800.2206/T + 1.3914993 &minus; 0.048640239&middot;T
               + 4.1764768e&minus;5&middot;T&sup2; &minus; 1.4452093e&minus;8&middot;T&sup3;
               + 6.5459673&middot;ln T
-
+&nbsp;
 <em>the code cites no equation number for these three</em>
   W = 0.621945 &middot; p_w / (p &minus; p_w)
   h = 1.006&middot;t + W&middot;(2501 + 1.86&middot;t)
@@ -428,7 +437,7 @@
                    / (2501 + 1.86&middot;t &minus; 4.186&middot;t_wb)
   t_wb &lt; 0   W* = ((2830 &minus; 0.24&middot;t_wb)&middot;W_s &minus; 1.006&middot;(t &minus; t_wb))
                    / (2830 + 1.86&middot;t &minus; 2.1&middot;t_wb)
-
+&nbsp;
   bracket    lo = min(dew point, dry bulb),  hi = dry bulb
   stopping   60 halvings, fixed</div>
       <p class="ce-note">Both bisections in the module — wet bulb, and the dew-point inversion
@@ -460,7 +469,7 @@
   90% acceptability   neutral &plusmn; 2.5 K
   prevailing is clamped to 10 &ndash; 33.5 °C before use, and a validity
   flag is returned alongside — which nothing reads
-
+&nbsp;
 <em>prevailing mean outdoor temperature</em>
   exponentially weighted running mean of daily means, &alpha; = 0.8
   &mdash; but the Standard permits 0.6 to 0.9 and fixes no value</div>
@@ -502,17 +511,17 @@
         boundary and radians inside; azimuth is measured clockwise from true north; times are
         local standard time with no daylight-saving shift, matching the EnergyPlus convention.</p>
       <div class="ce-formula">&gamma;       = 2&pi;/365 &middot; (doy &minus; 1 + (hour &minus; 12)/24)      <em>fractional year</em>
-
+&nbsp;
 E_t     = 229.18 &middot; (0.000075 + 0.001868 cos &gamma; &minus; 0.032077 sin &gamma;
                    &minus; 0.014615 cos 2&gamma; &minus; 0.040849 sin 2&gamma;)     <em>minutes</em>
-
+&nbsp;
 &delta;       = 0.006918 &minus; 0.399912 cos &gamma; + 0.070257 sin &gamma;
           &minus; 0.006758 cos 2&gamma; + 0.000907 sin 2&gamma;
           &minus; 0.002697 cos 3&gamma; + 0.00148 sin 3&gamma;          <em>declination</em>
-
+&nbsp;
 offset  = E_t + 4&middot;longitude &minus; 60&middot;timezone            <em>minutes</em>
 H       = true solar time / 4 &minus; 180                <em>hour angle, 0 at solar noon</em>
-
+&nbsp;
 cos Z   = sin &phi; sin &delta; + cos &phi; cos &delta; cos H
 azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div>
       <p>The <span class="ce-mono">atan2</span> form is used because it is unambiguous in all four
@@ -909,10 +918,10 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
         out empty:</p>
       <div class="ce-formula"><em>date wraps when from &gt; to</em>
   1 Dec &rarr; 28 Feb   selects December, January and February
-
+&nbsp;
 <em>hour wraps when fromHour &gt; toHour</em>
   22 &rarr; 6           selects 22, 23, 0, 1 … 6  =  nine hours per day
-
+&nbsp;
 <em>and the two compose independently</em>
   1 Dec &rarr; 28 Feb, 22 &rarr; 6   selects winter nights only</div>
 
