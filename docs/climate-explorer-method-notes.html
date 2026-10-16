@@ -218,6 +218,84 @@
 @media (prefers-reduced-motion:reduce){
   .ce-doc *{animation-duration:.01ms !important;transition-duration:.01ms !important;}
 }
+
+/* ---- Site style ---------------------------------------------------------
+   The rules above are the page's own design system. This block sets it in
+   karam.me.uk's style instead: its palette and red, Poppins headings and
+   labels over Source Serif 4 body text, hairlines rather than boxes, and
+   section titles set as small labels over a hairline, as the applications
+   page sets its tiers ("01 SET UP"). The site has no dark mode, so neither
+   has this page. Monospace is kept for formulas and code only. */
+.ce-doc,
+.ce-doc.ce-auto-dark{
+  --ce-paper:transparent; --ce-surface:#f4f6f9; --ce-surface2:#eceef1;
+  --ce-ink:#12161d; --ce-ink2:#4e5765; --ce-ink3:#5f6875;
+  --ce-rule:rgba(10,12,16,.16); --ce-rule2:rgba(10,12,16,.07);
+  --ce-accent:#b41f1f; --ce-accent-soft:rgba(180,31,31,.07);
+  --ce-ok:#2f6b3f; --ce-ok-soft:transparent;
+  --ce-warn:#8a6410; --ce-warn-soft:transparent;
+  --ce-no:#b41f1f; --ce-no-soft:transparent;
+  --ce-fd:"Poppins",system-ui,-apple-system,"Segoe UI",Helvetica,Arial,sans-serif;
+  --ce-fb:"Source Serif 4",Georgia,serif;
+  --ce-fl:"Poppins",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){
+  .ce-doc.ce-auto-dark{
+    --ce-paper:transparent; --ce-surface:#f4f6f9; --ce-surface2:#eceef1;
+    --ce-ink:#333; --ce-ink2:#333; --ce-ink3:#5f6875;
+    --ce-rule:rgba(10,12,16,.16); --ce-rule2:rgba(10,12,16,.07);
+    --ce-accent:#b41f1f; --ce-accent-soft:rgba(180,31,31,.07);
+    --ce-ok:#2f6b3f; --ce-ok-soft:transparent;
+    --ce-warn:#8a6410; --ce-warn-soft:transparent;
+    --ce-no:#b41f1f; --ce-no-soft:transparent;
+  }
+}
+.ce-doc{line-height:1.6;}
+/* labels: small uppercase Poppins, not monospace */
+.ce-doc .ce-eyebrow,.ce-doc .ce-byline,.ce-doc .ce-secnum,.ce-doc h4,.ce-doc .ce-chip,
+.ce-doc .ce-ex-n,.ce-doc .ce-fig figcaption,.ce-doc .ce-tbl thead th,.ce-doc .ce-cite{
+  font-family:var(--ce-fl) !important;}
+.ce-doc .ce-eyebrow{font-size:.72rem;font-weight:500;letter-spacing:.07em;}
+.ce-doc .ce-byline{font-size:.78rem;letter-spacing:0;}
+.ce-doc h4,.ce-doc .ce-tbl thead th{font-weight:500;letter-spacing:.07em;}
+.ce-doc .ce-chip{background:none !important;padding:0;font-weight:500;letter-spacing:.07em;}
+.ce-doc .ce-fig figcaption{text-transform:none;letter-spacing:0;font-size:.8rem;}
+.ce-doc .ce-tbl .ce-n,.ce-doc .ce-tbl .ce-d,.ce-doc .ce-tbl .ce-p{
+  font-family:var(--ce-fb);font-variant-numeric:tabular-nums;}
+.ce-doc h1,.ce-doc h3,.ce-doc .ce-ledger dt{font-weight:500;letter-spacing:-.01em;}
+/* hairlines, not boxes or heavy rules */
+.ce-doc .ce-masthead{border-bottom:1px solid var(--ce-rule);}
+.ce-doc .ce-footer{border-top:1px solid var(--ce-rule);}
+.ce-doc .ce-traps{border:0;background:none;padding:0;}
+.ce-doc .ce-traps h2{font-weight:500;letter-spacing:.07em;color:var(--ce-ink);}
+.ce-doc .ce-ex{border:0;border-top:1px solid var(--ce-rule);background:none;padding:1.3rem 0 0;}
+.ce-doc .ce-ledger{border:0;background:none;}
+.ce-doc .ce-ledger>div{padding:.8rem 0;}
+.ce-doc .ce-tbl{border:0;}
+.ce-doc code{background:var(--ce-surface);color:var(--ce-ink);}
+.ce-doc .ce-fig svg{border:0;background:var(--ce-surface);}
+/* section titles as tier labels: number, title, hairline */
+.ce-doc .ce-sec{padding-top:2.2rem;}
+.ce-doc .ce-sechead{display:flex;gap:10px;align-items:baseline;border-top:0;
+  border-bottom:1px solid var(--ce-rule);padding:0 0 7px;margin-bottom:1.3rem;}
+.ce-doc .ce-secnum{font-size:.72rem;font-weight:600;color:var(--ce-ink);letter-spacing:.04em;}
+.ce-doc .ce-sechead h2{font-family:var(--ce-fl);font-size:.72rem;font-weight:500;
+  letter-spacing:.07em;text-transform:uppercase;line-height:1.4;color:var(--ce-ink3);}
+.ce-doc .ce-secbody{display:block;}
+.ce-doc .ce-secnum:empty{display:none;}
+/* text runs the full width of the column, as the exercises do */
+.ce-doc,.ce-doc.ce-auto-dark{--ce-measure:none;}
+/* the title and text as the site's own page headings and body set them */
+.ce-doc,.ce-doc.ce-auto-dark{--ce-ink:#333;--ce-ink2:#333;}
+.ce-doc h1{font-size:2em;font-weight:600;line-height:1.15;letter-spacing:0;color:#333;}
+.ce-doc .ce-standfirst{color:#333;}
+/* each ledger item reads as one block: its tag above its title, not in a side column */
+.ce-doc .ce-ledger>div{grid-template-columns:minmax(0,1fr);}
+.ce-doc .ce-ledger .ce-chip{grid-row:auto;grid-column:1;justify-self:start;margin:0 0 .25rem;}
+.ce-doc .ce-ledger dt,.ce-doc .ce-ledger dd{grid-column:1;}
+/* inline interface terms and figure labels in Poppins too; <code> and formulas stay monospace */
+.ce-doc .ce-mono{font-family:var(--ce-fl);font-size:.9em;}
+.ce-doc .ce-fig svg text{font-family:var(--ce-fl);}
 </style>
 
 <div class="ce-doc">
