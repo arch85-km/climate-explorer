@@ -256,6 +256,8 @@
   letter-spacing:.07em;text-transform:uppercase;line-height:1.4;color:var(--ce-ink3);}
 .ce-doc .ce-secbody{display:block;}
 .ce-doc .ce-secnum:empty{display:none;}
+/* long addresses in the references break rather than push the page sideways on a phone */
+.ce-doc a{overflow-wrap:anywhere;}
 /* text runs the full width of the column, as the exercises do */
 .ce-doc,.ce-doc.ce-auto-dark{--ce-measure:none;}
 /* the title and text as the site's own page headings and body set them */
