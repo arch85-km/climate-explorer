@@ -286,7 +286,6 @@
 /* long addresses in the references break rather than push the page sideways on a phone */
 .ce-doc a{overflow-wrap:anywhere;}
 /* a column of figures has its heading over the figures, not at the far edge */
-.ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(1), tbody td.ce-d:nth-child(1)) thead th:nth-child(1),
 .ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(2), tbody td.ce-d:nth-child(2)) thead th:nth-child(2),
 .ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(3), tbody td.ce-d:nth-child(3)) thead th:nth-child(3),
 .ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(4), tbody td.ce-d:nth-child(4)) thead th:nth-child(4),
@@ -294,6 +293,11 @@
 .ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(6), tbody td.ce-d:nth-child(6)) thead th:nth-child(6),
 .ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(7), tbody td.ce-d:nth-child(7)) thead th:nth-child(7),
 .ce-doc .ce-tbl table:has(tbody td.ce-n:nth-child(8), tbody td.ce-d:nth-child(8)) thead th:nth-child(8){text-align:right;}
+/* the first column names the row, so it reads from the left like the text, even when it holds a number (unless its heading is marked as a figure) */
+.ce-doc .ce-tbl table:not(:has(thead th.ce-n:first-child)) tr > :first-child{text-align:left;}
+/* the site theme stripes table rows and tints them on hover; the notes keep one even tint */
+.ce-doc .ce-tbl th,.ce-doc .ce-tbl td{background-color:transparent;}
+/* formulas are <pre>, not <div>: the site's HTML minifier leaves <pre> alone but collapses the line breaks in a <div> */
 /* no side padding of its own: the Elementor section sets the margins, so the notes line up with the blocks above them on every screen */
 .ce-doc{padding-left:0;padding-right:0;}
 /* and no width cap of its own: on a wide screen a capped, centred block starts further in than the blocks above it */
@@ -392,9 +396,9 @@
       <p>Twenty-five meteorological quantities are read straight from the file, along with the
         year, month, day and hour of each record. Five more are computed on load and behave in
         every other respect like file data:</p>
-      <div class="ce-formula"><em>derived on load</em>
+      <pre class="ce-formula"><em>derived on load</em>
   solarAltitude   solarAzimuth
-  humidityRatio   enthalpy      wetBulb</div>
+  humidityRatio   enthalpy      wetBulb</pre>
       <p class="ce-note">Note which quantity is <em>not</em> in that list. <b>Dew point is read
         from the file</b>, column 7, not recomputed from humidity — so the dew point you see is
         the file author's value, and it need not be perfectly consistent with the humidity ratio
@@ -413,7 +417,7 @@
       <p>Temperatures in °C, pressures in <b>Pa</b>, humidity ratio in kg water per kg dry air,
         enthalpy in kJ per kg dry air. Three of the four relations carry an ASHRAE equation
         number in the source; the fourth group does not.</p>
-      <div class="ce-formula"><em>standard pressure at altitude z          ASHRAE eq. 3</em>
+      <pre class="ce-formula"><em>standard pressure at altitude z          ASHRAE eq. 3</em>
   p = 101325 &times; (1 &minus; 2.25577e&minus;5 &middot; z) ^ 5.2559
 &nbsp;
 <em>saturation vapour pressure, T in kelvin  ASHRAE eq. 5 and 6</em>
@@ -429,17 +433,17 @@
 <em>the code cites no equation number for these three</em>
   W = 0.621945 &middot; p_w / (p &minus; p_w)
   h = 1.006&middot;t + W&middot;(2501 + 1.86&middot;t)
-  RH from W by inverting the first of those</div>
+  RH from W by inverting the first of those</pre>
       <p>Wet bulb has no closed form, and the code does not pretend otherwise. It solves the
         adiabatic-saturation relation numerically:</p>
-      <div class="ce-formula"><em>wet bulb, by bisection                   ASHRAE eq. 33 / 35</em>
+      <pre class="ce-formula"><em>wet bulb, by bisection                   ASHRAE eq. 33 / 35</em>
   t_wb &ge; 0   W* = ((2501 &minus; 2.326&middot;t_wb)&middot;W_s &minus; 1.006&middot;(t &minus; t_wb))
                    / (2501 + 1.86&middot;t &minus; 4.186&middot;t_wb)
   t_wb &lt; 0   W* = ((2830 &minus; 0.24&middot;t_wb)&middot;W_s &minus; 1.006&middot;(t &minus; t_wb))
                    / (2830 + 1.86&middot;t &minus; 2.1&middot;t_wb)
 &nbsp;
   bracket    lo = min(dew point, dry bulb),  hi = dry bulb
-  stopping   60 halvings, fixed</div>
+  stopping   60 halvings, fixed</pre>
       <p class="ce-note">Both bisections in the module — wet bulb, and the dew-point inversion
         bracketed at &minus;100 to +100&nbsp;°C — run a <b>fixed 60 halvings with no tolerance
         test and no convergence check</b>. There is no early exit and no failure return. Sixty
@@ -463,7 +467,7 @@
         <span class="ce-mono">Outside comfort band</span> tile, and nothing else.</p>
       <p>The adaptive band is implemented and unreachable, as the opening notice says. For the
         record, since the code contains it and a reader may find it:</p>
-      <div class="ce-formula"><em>ASHRAE 55 adaptive band  —  implemented, never called</em>
+      <pre class="ce-formula"><em>ASHRAE 55 adaptive band  —  implemented, never called</em>
   neutral = 0.31 &middot; prevailing + 17.8
   80% acceptability   neutral &plusmn; 3.5 K
   90% acceptability   neutral &plusmn; 2.5 K
@@ -472,7 +476,7 @@
 &nbsp;
 <em>prevailing mean outdoor temperature</em>
   exponentially weighted running mean of daily means, &alpha; = 0.8
-  &mdash; but the Standard permits 0.6 to 0.9 and fixes no value</div>
+  &mdash; but the Standard permits 0.6 to 0.9 and fixes no value</pre>
       <p class="ce-note">The clamp is the behaviour to understand if this is ever wired up: a
         climate outside the standard's 10&ndash;33.5&nbsp;°C validity range does not get a refusal,
         it gets a band computed from the clamped value. The function does return a flag saying so.
@@ -510,7 +514,7 @@
       <p>Following the NOAA General Solar Position Calculations. Angles are degrees at the module
         boundary and radians inside; azimuth is measured clockwise from true north; times are
         local standard time with no daylight-saving shift, matching the EnergyPlus convention.</p>
-      <div class="ce-formula">&gamma;       = 2&pi;/365 &middot; (doy &minus; 1 + (hour &minus; 12)/24)      <em>fractional year</em>
+      <pre class="ce-formula">&gamma;       = 2&pi;/365 &middot; (doy &minus; 1 + (hour &minus; 12)/24)      <em>fractional year</em>
 &nbsp;
 E_t     = 229.18 &middot; (0.000075 + 0.001868 cos &gamma; &minus; 0.032077 sin &gamma;
                    &minus; 0.014615 cos 2&gamma; &minus; 0.040849 sin 2&gamma;)     <em>minutes</em>
@@ -523,16 +527,16 @@ offset  = E_t + 4&middot;longitude &minus; 60&middot;timezone            <em>min
 H       = true solar time / 4 &minus; 180                <em>hour angle, 0 at solar noon</em>
 &nbsp;
 cos Z   = sin &phi; sin &delta; + cos &phi; cos &delta; cos H
-azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div>
+azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</pre>
       <p>The <span class="ce-mono">atan2</span> form is used because it is unambiguous in all four
         quadrants; the result comes out measured from south and is shifted by 180° to read
         clockwise from north. The fractional year uses a fixed 365-day denominator even in a leap
         year.</p>
       <p>Refraction is then added to the geometric altitude, in arc-seconds, divided by 3600:</p>
-      <div class="ce-formula"><em>elevation &gt; 85°</em>              0
+      <pre class="ce-formula"><em>elevation &gt; 85°</em>              0
 <em>5° &lt; elevation &le; 85°</em>        58.1/tan e &minus; 0.07/tan&sup3; e + 0.000086/tan&#8309; e
 <em>&minus;0.575° &lt; elevation &le; 5°</em>    1735 + e(&minus;518.2 + e(103.4 + e(&minus;12.79 + 0.711 e)))
-<em>elevation &le; &minus;0.575°</em>          &minus;20.772 / tan e</div>
+<em>elevation &le; &minus;0.575°</em>          &minus;20.772 / tan e</pre>
       <p>Sunrise and sunset use the standard <b>90.833°</b> zenith, which allows for refraction
         and for the finite diameter of the solar disc — which is why a computed equinox day is
         about 12.1 hours long, not 12.0. That calculation deliberately takes its declination from
@@ -916,14 +920,14 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</div
       <p><b>Both ranges wrap, and the wrap is implicit in the order of the two ends.</b> Set the
         end earlier than the start and the selection runs through the boundary rather than coming
         out empty:</p>
-      <div class="ce-formula"><em>date wraps when from &gt; to</em>
+      <pre class="ce-formula"><em>date wraps when from &gt; to</em>
   1 Dec &rarr; 28 Feb   selects December, January and February
 &nbsp;
 <em>hour wraps when fromHour &gt; toHour</em>
   22 &rarr; 6           selects 22, 23, 0, 1 … 6  =  nine hours per day
 &nbsp;
 <em>and the two compose independently</em>
-  1 Dec &rarr; 28 Feb, 22 &rarr; 6   selects winter nights only</div>
+  1 Dec &rarr; 28 Feb, 22 &rarr; 6   selects winter nights only</pre>
 
       <h4>The cursor instant</h4>
       <div class="ce-tbl"><table>
