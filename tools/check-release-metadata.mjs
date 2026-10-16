@@ -82,10 +82,93 @@ ok(`a version DOI for ${VERSION} ${releaseDoi ? 'is declared' : 'is not minted y
   true,
   releaseDoi || `documents cite the concept DOI ${conceptDoi} until Zenodo mints one`);
 
+/* --- the date that goes with it ----------------------------------------
+   Ported from Solar Analysis Lab, where 1.2.0 shipped with the old date in
+   its About panel: the version bumped and the date stayed behind, because no
+   check read the date at all. Here the version and date are declared in
+   package.json; npm run stamp copies them into every source header, the build
+   into dist/, and the notes spell the date long in their bylines.
+   Every one of those is a copy that can drift, so every one is checked. */
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July',
+                'August', 'September', 'October', 'November', 'December'];
+const cffDate = cff
+  ? ((cff.match(/^date-released:[ \t]*"?(\d{4}-\d{2}-\d{2})"?/m) || [])[1] || null)
+  : null;
+const longDate = (iso) => {
+  const d = new Date(iso + 'T00:00:00Z');
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+};
+const meta = (html, name) =>
+  (html.match(new RegExp(`<meta name="${name}" content="([^"]+)"`)) || [])[1] || null;
+const pkgDate = has('package.json') ? JSON.parse(read('package.json')).releaseDate : null;
+
+if (cffDate) ok("package.json's releaseDate agrees with CITATION.cff",
+  pkgDate === cffDate, `package.json ${pkgDate}, CITATION.cff ${cffDate}`);
+
+// Zenodo reads .zenodo.json in preference to CITATION.cff, publication date included.
+if (cffDate && has('.zenodo.json')) {
+  const pub = JSON.parse(read('.zenodo.json')).publication_date;
+  ok(".zenodo.json's publication_date agrees with CITATION.cff",
+    pub === cffDate, `.zenodo.json ${pub}, CITATION.cff ${cffDate}`);
+}
+
+/* npm run stamp writes the release into every source file's header. A bump
+   without it leaves the source claiming the previous release. */
+if (existsSync(join(ROOT, 'src'))) {
+  const stale = [];
+  const walk = (dir) => {
+    for (const f of readdirSync(join(ROOT, dir), { withFileTypes: true })) {
+      const rel = `${dir}/${f.name}`;
+      if (f.isDirectory()) walk(rel);
+      else if (f.name.endsWith('.js')) {
+        const stamp = (read(rel).match(/^ \* @version (\S+) — (\S+)$/m) || []);
+        if (stamp[1] !== VERSION || stamp[2] !== pkgDate) stale.push(`${rel} (${stamp[1]} ${stamp[2]})`);
+      }
+    }
+  };
+  walk('src');
+  ok('every source header carries this release', stale.length === 0,
+    stale.length ? `stale: ${stale.slice(0, 3).join(', ')}${stale.length > 3 ? ` and ${stale.length - 3} more` : ''} - run npm run stamp` : `${VERSION} — ${pkgDate}`);
+}
+
+// The deliverable is the built file. A build left behind after a bump would
+// announce the old release on the live site while every source file agrees.
+if (has('dist/climate-explorer.html')) {
+  const dist = read('dist/climate-explorer.html');
+  ok('the built dist/climate-explorer.html carries this release',
+    meta(dist, 'version') === VERSION && meta(dist, 'build-date') === pkgDate,
+    `dist ${meta(dist, 'version')} ${meta(dist, 'build-date')}, package.json ${VERSION} ${pkgDate} - rebuild with npm run build`);
+}
+
+/* The README carries its own citation, and is the copy GitHub shows first.
+   Nothing read it, as nothing read the README in the other apps, one of which
+   went a whole release citing the version before. */
+if (has('README.md')) {
+  const readme = read('README.md');
+  const want = releaseDoi || conceptDoi;
+  const cited = [...readme.matchAll(/\(Version ([0-9][0-9.]*)\)/g)].map((m) => m[1]);
+  ok(`README's citation names ${VERSION}`,
+    cited.length > 0 && cited.every((v) => v === VERSION), `APA ${cited.join(', ') || 'none'}`);
+  const linked = [...readme.matchAll(/\(Version [0-9.]+\)[^\n]*\n?[^\n]*?doi\.org\/(10\.5281\/zenodo\.\d+)/g)].map((m) => m[1]);
+  ok(`README cites ${releaseDoi ? 'this release\'s version DOI' : 'the concept DOI, as it must until one is minted'}`,
+    !!want && linked.length > 0 && linked.every((d) => d === want),
+    `APA ${linked.join(', ') || 'none'}, wanted ${want}`);
+}
+
 for (const doc of docs) {
   const html = read(doc);
   const byline = (html.match(/Version<\/b>[^0-9]*([0-9][0-9.]*)/) || [])[1];
   ok(`${doc} byline names ${VERSION}`, byline === VERSION, `byline ${byline}`);
+
+  if (cffDate) {
+    const bylineDate = (html.match(/Version<\/b>[^0-9]*[0-9][0-9.]*\s*(?:&middot;|·)\s*([^<]+)/) || [])[1];
+    ok(`${doc} byline is dated ${longDate(cffDate)}`,
+      (bylineDate || '').trim() === longDate(cffDate),
+      `byline dated ${(bylineDate || '(none)').trim()}`);
+  }
+
+  const bibVer = (html.match(/version\s*=\s*\{([^}]+)\}/) || [])[1];
+  if (bibVer) ok(`${doc} BibTeX names ${VERSION}`, bibVer === VERSION, `BibTeX version ${bibVer}`);
 
   const bibDoi = (html.match(/doi\s*=\s*\{([^}]+)\}/) || [])[1];
   if (bibDoi) {
