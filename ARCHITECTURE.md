@@ -167,12 +167,13 @@ redistributed, and skip cleanly when it is absent.
 and exercises every view at several widths. `npm run test:embed` renders it
 inside a page whose stylesheet is deliberately hostile.
 
-`tools/check-release-metadata.mjs` is the release guard. It runs 19 checks
+`tools/check-release-metadata.mjs` is the release guard. It runs 21 checks
 that the version, the date and the DOI agree everywhere they are written:
-`package.json`, `CITATION.cff` and `.zenodo.json` (with its publication
-date); every source file's `@version` header; the built file's meta tags; the README's citation; and
-each method-notes page's byline, BibTeX and DOI. Until Zenodo mints a release's version DOI, the notes must
-cite the concept DOI; the guard derives that rule from `CITATION.cff`.
+`package.json`, `CITATION.cff` and `.zenodo.json` (with its publication date);
+every source file's `@version` header; the built file's meta tags; the
+README's citation; and each method-notes page's byline, BibTeX version, date
+and DOI. Until Zenodo mints a release's version DOI, the notes must cite the
+concept DOI; the guard derives that rule from `CITATION.cff`.
 
 Release order: change `package.json`, run `npm run stamp` and
 `npm run build`, run `npm test`, push, cut the GitHub release (tag

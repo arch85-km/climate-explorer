@@ -169,6 +169,8 @@ for (const doc of docs) {
 
   const bibVer = (html.match(/version\s*=\s*\{([^}]+)\}/) || [])[1];
   if (bibVer) ok(`${doc} BibTeX names ${VERSION}`, bibVer === VERSION, `BibTeX version ${bibVer}`);
+  const bibDate = (html.match(/\bdate\s*=\s*\{([^}]+)\}/) || [])[1];
+  if (bibDate && cffDate) ok(`${doc} BibTeX is dated ${cffDate}`, bibDate === cffDate, `BibTeX date ${bibDate}`);
 
   const bibDoi = (html.match(/doi\s*=\s*\{([^}]+)\}/) || [])[1];
   if (bibDoi) {

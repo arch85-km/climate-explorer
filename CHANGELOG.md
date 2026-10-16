@@ -15,9 +15,11 @@ resolves to the newest version. The full notes for each release are on the
   in the app's licence panel and in `.zenodo.json`.
 - **Fixed** — the release guard read only unquoted DOI values in
   `CITATION.cff`, so it could not see 1.1.0's declared version DOI.
+- **Fixed** — both method notes' BibTeX entries for 1.1.0 carried 1.0.0's
+  date (17 September 2026). They now give 4 October 2026.
 - **Changed** — the release guard also checks the dates, the source
-  headers, the built file, the README's citation and `.zenodo.json`'s
-  publication date: 19 checks.
+  headers, the built file, the README's citation, `.zenodo.json`'s
+  publication date and the BibTeX date: 21 checks.
 - **Docs** — `ARCHITECTURE.md`, `CHANGELOG.md` and `DESIGN.md` added, and a
   statement of how the app is developed added to the README, the method
   notes and `.zenodo.json`.
