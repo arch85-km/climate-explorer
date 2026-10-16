@@ -30,5 +30,6 @@
     "wind rose",
     "data visualisation",
     "WebGL"
-  ]
+  ],
+  "notes": "How this was developed. I designed the application: I defined the problem and the scope, and chose the methods and the sources. I tested it in use, found its bugs, and decided what was released and when. The code was written with an AI coding assistant working to my specification and direction: it wrote most of the code, drafted the documentation for my review, diagnosed bugs and proposed fixes that I then tested, and wrote and ran the automated tests and release checks. I retain full intellectual responsibility for the design, the methods and the results, including any errors."
 }

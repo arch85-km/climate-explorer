@@ -154,6 +154,20 @@ Copyright © 2026 Karam Al-Obaidi.
 No third-party code and no third-party weather data are redistributed by the
 built file — see the dependency note above.
 
+## How this was developed
+
+I design the application: I define the problem and the scope, and choose the
+methods and the sources. I test it in use, find its bugs, and decide what is
+released and when. The code is written with an AI coding assistant working to my
+specification and direction: it writes most of the code, drafts the documentation
+for my review, diagnoses bugs and proposes fixes that I test, and writes and runs
+the automated tests and release checks. I retain full intellectual responsibility
+for the design, the methods and the results, including any errors.
+
+The reasons behind the design are in [`DESIGN.md`](DESIGN.md), the map of the code
+is in [`ARCHITECTURE.md`](ARCHITECTURE.md), and what changed in each release is in
+[`CHANGELOG.md`](CHANGELOG.md).
+
 ## How to cite
 
 Keeping the copyright notice in the file satisfies the licence; a citation is the
