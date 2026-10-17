@@ -323,23 +323,25 @@
 .ce-doc .ce-traps h2,.ce-doc .ce-footer h3{border-bottom:1px solid var(--ce-rule);padding-bottom:7px;}
 .ce-doc .ce-secnum{font-family:var(--ce-fd);font-size:1.32rem;font-weight:500;letter-spacing:0;color:var(--ce-ink3);line-height:1.3;}
 @media (min-width:1280px){.ce-doc .ce-secnum{font-size:1.42rem;}}
-/* light grey panels: the three warnings, then every other section, so a long page reads in
-   steps. Each panel reaches a little into the margin, so its text stays in line with the rest;
-   on a phone, where there is no margin to spare, it stays inside the column. */
-.ce-doc .ce-traps,.ce-doc .ce-sec:nth-child(even of .ce-sec){background:var(--ce-surface);border:0;border-radius:4px;
+/* light grey panels: the three warnings, then every other section. The exercises always stay
+   white, so their figures keep their own grey and are not a box inside a box. The panels are
+   there so a long page reads in steps. Each panel reaches a little into the margin, so its
+   text stays in line with the rest; on a phone, where there is no margin to spare, it stays
+   inside the column. */
+.ce-doc .ce-traps,.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec){background:var(--ce-surface);border:0;border-radius:4px;
   margin-left:-1.25rem;margin-right:-1.25rem;padding:1.4rem 1.25rem 1.1rem;}
 /* the same space before every section heading, white or grey: 2rem between sections and
    1.4rem above the heading inside each */
-.ce-doc .ce-traps,.ce-doc .ce-sec:nth-child(even of .ce-sec){margin-top:2rem;margin-bottom:2rem;}
+.ce-doc .ce-traps,.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec){margin-top:2rem;margin-bottom:2rem;}
 .ce-doc .ce-traps,.ce-doc .ce-sec{padding-top:1.4rem;}
 /* and no extra space at the foot of a panel */
-.ce-doc .ce-traps > :last-child,.ce-doc .ce-sec:nth-child(even of .ce-sec) .ce-secbody > :last-child{margin-bottom:0;}
-.ce-doc .ce-traps h2,.ce-doc .ce-sec:nth-child(even of .ce-sec) .ce-sechead{border-bottom-color:rgba(10,12,16,.12);}
+.ce-doc .ce-traps > :last-child,.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec) .ce-secbody > :last-child{margin-bottom:0;}
+.ce-doc .ce-traps h2,.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec) .ce-sechead{border-bottom-color:rgba(10,12,16,.12);}
 /* what already sits on grey turns white inside a grey panel, so it still stands out */
-.ce-doc .ce-sec:nth-child(even of .ce-sec) .ce-tbl,.ce-doc .ce-sec:nth-child(even of .ce-sec) .ce-formula,
-.ce-doc .ce-sec:nth-child(even of .ce-sec) .ce-fig svg,.ce-doc .ce-sec:nth-child(even of .ce-sec) code{background:#fff;}
+.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec) .ce-tbl,.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec) .ce-formula,
+.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec) .ce-fig svg,.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec) code{background:#fff;}
 @media (max-width:700px){
-  .ce-doc .ce-traps,.ce-doc .ce-sec:nth-child(even of .ce-sec){margin-left:0;margin-right:0;padding-left:.9rem;padding-right:.9rem;}
+  .ce-doc .ce-traps,.ce-doc .ce-sec:not(:has(.ce-ex)):nth-child(even of .ce-sec){margin-left:0;margin-right:0;padding-left:.9rem;padding-right:.9rem;}
 }
 </style>
 
