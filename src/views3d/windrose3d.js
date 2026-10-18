@@ -42,7 +42,10 @@ function build(view, theme) {
 
   // Height scale: the tallest single (sector, band) cell fills H_MAX.
   let maxCell = 0;
-  for (let i = 0; i < rose.counts.length; i += 1) maxCell = Math.max(maxCell, rose.counts[i]);
+  let maxIndex = 0;
+  for (let i = 0; i < rose.counts.length; i += 1) {
+    if (rose.counts[i] > maxCell) { maxCell = rose.counts[i]; maxIndex = i; }
+  }
   const pctOf = (n) => (n / rose.total) * 100;
   const maxPct = pctOf(maxCell) || 1;
   const hOf = (n) => (pctOf(n) / maxPct) * H_MAX;
@@ -62,15 +65,18 @@ function build(view, theme) {
 
   // ── ground rings, one per speed band, labelled with the band ──────────────
   const speedField = FIELD_BY_KEY.windSpeed;
+  const bandText = (b) => {
+    const lo = rose.speedBands[b];
+    const hi = rose.speedBands[b + 1];
+    return hi == null
+      ? `≥${convert(speedField, lo, state.units).toFixed(0)}`
+      : `${convert(speedField, lo, state.units).toFixed(0)}–${convert(speedField, hi, state.units).toFixed(0)}`;
+  };
   for (let b = 0; b <= bands; b += 1) {
     const r = R_INNER + b * bandWidth;
     lines.circle(r, 0.001, gridC, 96);
     if (b < bands) {
-      const lo = rose.speedBands[b];
-      const hi = rose.speedBands[b + 1];
-      const text = hi == null
-        ? `≥${convert(speedField, lo, state.units).toFixed(0)}`
-        : `${convert(speedField, lo, state.units).toFixed(0)}–${convert(speedField, hi, state.units).toFixed(0)}`;
+      const text = bandText(b);
       const a = sectorAngle * 0.5;
       labels.push({
         world: [Math.sin(a) * (r + bandWidth / 2), 0, -Math.cos(a) * (r + bandWidth / 2)],
@@ -124,8 +130,17 @@ function build(view, theme) {
       { kind: 'lines', data: lines.build(), opts: { opacity: 0.85 } },
     ],
     labels,
-    camera: { azimuth: Math.PI * 0.92, elevation: 0.66, distance: 4.3, target: [0, 0.2, 0], minDistance: 1.5, maxDistance: 11 },
-    caption: `Prevailing ${rose.prevailingLabel} · ${rose.total.toLocaleString()} hours · height is frequency`,
+    // Seen from the south, so north is at the back and east on the right, as on a map
+    // and as in the 2D rose beside it.
+    camera: { azimuth: Math.PI * 0.08, elevation: 0.9, distance: 4.3, target: [0, 0.2, 0], minDistance: 1.5, maxDistance: 11 },
+    // The tallest bar is one direction at one speed, so it need not point the prevailing
+    // way: a direction whose hours are spread over several speeds can have the most hours
+    // overall and no tall bar. The caption names both, so the two are not read as a conflict.
+    caption: `Prevailing ${rose.prevailingLabel} · ${rose.total.toLocaleString()} hours · height is frequency`
+      + (maxCell
+        ? ` · tallest bar ${rose.labels[Math.floor(maxIndex / bands)]} at ${bandText(maxIndex % bands)} ${unitFor(speedField, state.units)}: `
+          + 'the most common direction and speed together, not the prevailing direction'
+        : ''),
   };
 }
 

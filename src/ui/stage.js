@@ -19,11 +19,16 @@ const TOOLTIP_KEYS = ['dryBulb', 'relHumidity', 'globalHorizontal', 'directNorma
 /**
  * Standard viewing angles for a shadow study. Distance and target are left alone so
  * a preset re-aims the camera without also throwing away the student's zoom.
+ *
+ * The camera sits at target + distance × (sin azimuth, …, cos azimuth) and north is −z,
+ * so azimuth 0 looks from the south towards the north, and π/4 from the south-east.
+ * These were π and 3π/4, which looked from the north and the north-east and turned the
+ * plan upside down; the labels were right, the angles were not.
  */
 const CAMERA_PRESETS = [
-  { key: 'plan', label: 'Plan', azimuth: Math.PI, elevation: 1.5 },
-  { key: 'south', label: 'South', azimuth: Math.PI, elevation: 0.18 },
-  { key: 'southeast', label: 'SE', azimuth: Math.PI * 0.75, elevation: 0.42 },
+  { key: 'plan', label: 'Plan', azimuth: 0, elevation: 1.5 },
+  { key: 'south', label: 'South', azimuth: 0, elevation: 0.18 },
+  { key: 'southeast', label: 'SE', azimuth: Math.PI * 0.25, elevation: 0.42 },
   { key: 'perspective', label: 'Perspective', home: true },
 ];
 
