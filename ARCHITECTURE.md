@@ -53,7 +53,7 @@ A weather file is read locally and never uploaded.
 | `epw/` | `fields.js`, `parse.js` | The EPW field registry (order, units and missing-value sentinels from the EnergyPlus data dictionary) and the parser. The record count is counted, not assumed, so leap-year and partial-year files parse. |
 | `core/` | `dataset.js` | Derives what the file does not carry, once on load: solar position for every hour and the psychrometric quantities. |
 | | `psychro.js` | Psychrometrics after the ASHRAE Handbook of Fundamentals, Ch. 1: saturation pressure over water and ice, humidity ratio, enthalpy, dew point, wet bulb by bisection, and the comfort and passive-strategy polygons. |
-| | `solar.js` | Solar position after the NOAA General Solar Position Calculations, with refraction and sunrise and sunset at the 90.833° zenith. |
+| | `solar.js` | Solar position after the NOAA Solar Calculator (Meeus), the same formulas as Daylight Lab and Solar Lab, for the calendar of 2025, with refraction and sunrise and sunset at the 90.833° zenith. |
 | | `stats.js` | Summaries, percentiles, circular means, monthly and diurnal aggregates, histograms, degree days and the wind rose. Every function takes a mask, so all views follow the analysis period. |
 | | `filter.js` | The analysis period: the date and hour selection every view reads. |
 | | `state.js` | The store, the single source of truth. Views hold no state of their own. |
@@ -149,13 +149,13 @@ ARCHITECTURE.md · CHANGELOG.md · DESIGN.md
 
 ## Testing and release
 
-`npm test` runs the release guard and then 54 unit tests (`node --test`):
+`npm test` runs the release guard and then 56 unit tests (`node --test`):
 
 | Suite | Tests | What it checks |
 |---|---|---|
 | `parse.test.mjs` | 18 | The EPW parser, on real files |
-| `solar.test.mjs` | 12 | Solar position against published references |
-| `stats.test.mjs` | 19 | The statistics and psychrometrics, including the running mean |
+| `solar.test.mjs` | 13 | Solar position against NREL's Solar Position Algorithm and the physical identities |
+| `stats.test.mjs` | 20 | The statistics and psychrometrics, including the running mean and an all-calm wind rose |
 | `render.test.mjs` | 5 | Scales, ticks and the colour bar |
 
 The real weather files the tests read are not committed:

@@ -55,7 +55,7 @@ study gets checked from.
 ```bash
 ./tools/fetch-samples.sh   # real EPW files for the tests (not shipped with the app)
 npm run build              # src/ -> dist/climate-explorer.html
-npm test                   # 54 unit tests
+npm test                   # 56 unit tests
 node test/visual.mjs       # renders every view and screenshots it
 ```
 
@@ -114,7 +114,9 @@ app runs on a WebGL 1 context, which matters on teaching-lab machines.
 The numbers are meant to be quotable in a crit, so they are tested against
 references rather than eyeballed:
 
-- **Solar position** — NOAA algorithm, verified against physical identities: the
+- **Solar position** — the NOAA Solar Calculator (Meeus), the same formulas as
+  Daylight Lab and Solar Lab. Twelve positions match NREL's Solar Position
+  Algorithm to within 0.02°, and it is verified against physical identities: the
   solar-noon altitude identity holds to 0.01°, equinox sunrise is due east to
   within 0.5°, declination spans ±23.44°, and the equation of time hits −14.2 min
   and +16.4 min on the right days.

@@ -23,6 +23,12 @@ resolves to the newest version. The full notes for each release are on the
 - **Fixed** — the 3D camera buttons looked from the wrong side: Plan showed
   south at the top, and South and SE looked from the north and the
   north-east. Each now looks from the side it names, in every 3D view.
+- **Fixed** — solar position was up to 0.5° out around the equinoxes. The
+  short NOAA formulas used (Spencer, 1971) place the equinox about a day later
+  than it now falls. It now uses the NOAA Solar Calculator (Meeus), as Daylight
+  Lab and Solar Lab do: within 0.01° of NREL's Solar Position Algorithm, and the
+  three tools agree. Sun paths, the sun dome, shadows and solar hours move by up
+  to half a degree in March and September.
 - **Fixed** — a period with only calm hours was reported as "prevailing N":
   every direction tied at zero and the first, north, was taken. The wind
   roses now say "no prevailing direction: all calm" and the summary tile

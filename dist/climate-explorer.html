@@ -1453,7 +1453,7 @@ Object.assign(__exports, {loadSample, sampleAvailable, SAMPLE_LABEL, SAMPLE_NAME
 
 __def("core/solar", function (__exports, __req) {
 /**
- * Solar position, following the NOAA General Solar Position Calculations.
+ * Solar position, following the NOAA Solar Calculator (Meeus, Astronomical Algorithms).
  *
  * Angles are degrees at the API boundary and radians internally.
  * Azimuth is measured clockwise from true north (0 = N, 90 = E, 180 = S, 270 = W).
@@ -1469,6 +1469,8 @@ const DEG = Math.PI / 180;
 const RAD = 180 / Math.PI;
 const DAYS_IN_MONTH = [31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
 const DAYS_IN_MONTH_LEAP = [31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31];
+// Julian day of 0 January 2025, 00:00 UT (31 December 2024): doy 1 is 1 January 2025.
+const REFERENCE_JD0 = 2460675.5;
 
 function daysInMonth(month, leap = false) {
   return (leap ? DAYS_IN_MONTH_LEAP : DAYS_IN_MONTH)[month - 1];
@@ -1525,24 +1527,34 @@ function refractionCorrection(elevationDeg) {
 function sunPosition(loc, doy, hour, applyRefraction = true) {
   const lat = loc.latitude * DEG;
 
-  // Fractional year, radians.
-  const gamma = (2 * Math.PI / 365) * (doy - 1 + (hour - 12) / 24);
+  // NOAA Solar Calculator / Meeus: the same formulas as Daylight Lab and Solar Lab, so the
+  // three tools agree to within 0.01°. This replaced NOAA's shorter fractional-year series
+  // (Spencer, 1971), whose declination was 0.51° off at both equinoxes for a 2020s year,
+  // because it places the equinox about a day later than it now falls.
+  // An EPW year has no single calendar year, so a fixed non-leap reference year is used,
+  // 2025, as in Solar Lab; doy 366 of a leap file simply runs into 1 January 2026.
+  const jd = REFERENCE_JD0 + doy + (hour - loc.timezone) / 24;
+  const T = (jd - 2451545) / 36525;
+  const L0 = ((280.46646 + T * (36000.76983 + T * 0.0003032)) % 360 + 360) % 360;
+  const M = 357.52911 + T * (35999.05029 - 0.0001537 * T);
+  const e = 0.016708634 - T * (0.000042037 + 0.0000001267 * T);
+  const C = Math.sin(M * DEG) * (1.914602 - T * (0.004817 + 0.000014 * T))
+    + Math.sin(2 * M * DEG) * (0.019993 - 0.000101 * T)
+    + Math.sin(3 * M * DEG) * 0.000289;
+  const omega = 125.04 - 1934.136 * T;
+  const appLong = L0 + C - 0.00569 - 0.00478 * Math.sin(omega * DEG);
+  const meanObliq = 23 + (26 + (21.448 - T * (46.815 + T * (0.00059 - T * 0.001813))) / 60) / 60;
+  const obliq = meanObliq + 0.00256 * Math.cos(omega * DEG);
+  const decl = Math.asin(Math.sin(obliq * DEG) * Math.sin(appLong * DEG)); // radians
 
-  const eqTime = 229.18 * (
-    0.000075
-    + 0.001868 * Math.cos(gamma)
-    - 0.032077 * Math.sin(gamma)
-    - 0.014615 * Math.cos(2 * gamma)
-    - 0.040849 * Math.sin(2 * gamma)
-  );
-
-  const decl = 0.006918
-    - 0.399912 * Math.cos(gamma)
-    + 0.070257 * Math.sin(gamma)
-    - 0.006758 * Math.cos(2 * gamma)
-    + 0.000907 * Math.sin(2 * gamma)
-    - 0.002697 * Math.cos(3 * gamma)
-    + 0.00148 * Math.sin(3 * gamma);
+  const y = Math.tan(obliq * DEG / 2) ** 2;
+  const eqTime = 4 * RAD * (
+    y * Math.sin(2 * L0 * DEG)
+    - 2 * e * Math.sin(M * DEG)
+    + 4 * e * y * Math.sin(M * DEG) * Math.cos(2 * L0 * DEG)
+    - 0.5 * y * y * Math.sin(4 * L0 * DEG)
+    - 1.25 * e * e * Math.sin(2 * M * DEG)
+  ); // minutes
 
   // Minutes to add to local clock time to get true solar time.
   const timeOffset = eqTime + 4 * loc.longitude - 60 * loc.timezone;

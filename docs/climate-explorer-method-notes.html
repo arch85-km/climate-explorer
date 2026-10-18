@@ -410,7 +410,7 @@
       <div class="ce-tbl"><table>
         <thead><tr><th>Quantity</th><th>From</th><th>Basis</th></tr></thead>
         <tbody>
-          <tr><td><b>Sun position, hourly</b></td><td class="ce-p">date, hour + 0.5, lat, long, time zone</td><td>NOAA General Solar Position Calculations</td></tr>
+          <tr><td><b>Sun position, hourly</b></td><td class="ce-p">date, hour + 0.5, lat, long, time zone</td><td>NOAA Solar Calculator (Meeus)</td></tr>
           <tr><td><b>Humidity ratio, enthalpy, wet bulb</b></td><td class="ce-p">dry bulb, RH, station pressure</td><td>ASHRAE Handbook of Fundamentals, Ch. 1</td></tr>
           <tr><td><b>Comfortable hours</b></td><td class="ce-p">dry bulb &amp; humidity ratio in a polygon</td><td>ASHRAE 55 still-air zones</td></tr>
           <tr><td><b>Passive-strategy hours</b></td><td class="ce-p">the same state, three more polygons</td><td>Givoni&ndash;Milne, as Ladybug and Climate Consultant draw it</td></tr>
@@ -539,17 +539,22 @@
         not show and that no real air state could occupy.</p>
 
       <h3>Solar position</h3>
-      <p>Following the NOAA General Solar Position Calculations. Angles are degrees at the module
+      <p>Following the NOAA Solar Calculator, whose equations are Meeus&rsquo;s (<i>Astronomical
+        algorithms</i>): the same formulas Daylight Lab and Solar Lab use, so the three tools agree to
+        within 0.01°. Every file is computed for the calendar of 2025, because an EPW year is
+        assembled from several real years. Angles are degrees at the module
         boundary and radians inside; azimuth is measured clockwise from true north; times are
         local standard time with no daylight-saving shift, matching the EnergyPlus convention.</p>
-      <pre class="ce-formula">&gamma;       = 2&pi;/365 &middot; (doy &minus; 1 + (hour &minus; 12)/24)      <em>fractional year</em>
+      <pre class="ce-formula">JD      = JD(0 January 2025) + doy + (hour &minus; timezone)/24
+T       = (JD &minus; 2451545) / 36525                    <em>Julian centuries from J2000</em>
 &nbsp;
-E_t     = 229.18 &middot; (0.000075 + 0.001868 cos &gamma; &minus; 0.032077 sin &gamma;
-                   &minus; 0.014615 cos 2&gamma; &minus; 0.040849 sin 2&gamma;)     <em>minutes</em>
+L&#8320;      = 280.46646 + 36000.76983 T + 0.0003032 T&sup2;   <em>mean longitude</em>
+M       = 357.52911 + 35999.05029 T &minus; 0.0001537 T&sup2;   <em>mean anomaly</em>
+&lambda;       = L&#8320; + C &minus; 0.00569 &minus; 0.00478 sin &Omega;          <em>apparent longitude; C the equation of centre</em>
+&delta;       = asin(sin &epsilon; &middot; sin &lambda;)                    <em>declination; &epsilon; the obliquity</em>
 &nbsp;
-&delta;       = 0.006918 &minus; 0.399912 cos &gamma; + 0.070257 sin &gamma;
-          &minus; 0.006758 cos 2&gamma; + 0.000907 sin 2&gamma;
-          &minus; 0.002697 cos 3&gamma; + 0.00148 sin 3&gamma;          <em>declination</em>
+E_t     = 4 &middot; (y sin 2L&#8320; &minus; 2e sin M + 4ey sin M cos 2L&#8320;
+             &minus; &frac12;y&sup2; sin 4L&#8320; &minus; 1.25e&sup2; sin 2M),  y = tan&sup2;(&epsilon;/2)   <em>minutes</em>
 &nbsp;
 offset  = E_t + 4&middot;longitude &minus; 60&middot;timezone            <em>minutes</em>
 H       = true solar time / 4 &minus; 180                <em>hour angle, 0 at solar noon</em>
@@ -558,8 +563,7 @@ cos Z   = sin &phi; sin &delta; + cos &phi; cos &delta; cos H
 azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</pre>
       <p>The <span class="ce-mono">atan2</span> form is used because it is unambiguous in all four
         quadrants; the result comes out measured from south and is shifted by 180° to read
-        clockwise from north. The fractional year uses a fixed 365-day denominator even in a leap
-        year.</p>
+        clockwise from north. In a leap file, day 366 runs into 1 January 2026.</p>
       <p>Refraction is then added to the geometric altitude, in arc-seconds, divided by 3600:</p>
       <pre class="ce-formula"><em>elevation &gt; 85°</em>              0
 <em>5° &lt; elevation &le; 85°</em>        58.1/tan e &minus; 0.07/tan&sup3; e + 0.000086/tan&#8309; e
@@ -870,7 +874,7 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</pre
       <div class="ce-tbl"><table>
         <thead><tr><th>Where it simplifies</th><th>Consequence</th></tr></thead>
         <tbody>
-          <tr><td>The fractional year uses a fixed 365-day denominator, including in leap years.</td><td>A fraction of a degree of declination late in a leap year. Invisible at the scale of any sun path drawn here.</td></tr>
+          <tr><td>Every file is computed for the calendar of 2025, whatever years its months came from.</td><td>Under 0.1° of declination at an equinox against any other recent year. Against NREL&rsquo;s Solar Position Algorithm the tool is within 0.01°.</td></tr>
           <tr><td>Both bisections run 60 fixed halvings with no tolerance test.</td><td>None in practice — 60 halvings resolve far below the data's own precision — but it is not "converged to a tolerance" and should not be described that way.</td></tr>
           <tr><td>Three Givoni polygons, not the full set.</td><td>Four regions of the published chart are absent. A climate whose hours fall in them is simply uncoloured, not reported as unserved.</td></tr>
           <tr><td>Strategy hours are counted on the <em>unclipped</em> polygon.</td><td>A polygon corner above the saturation curve contributes area to the percentage that the chart does not draw and that no real air state occupies.</td></tr>
@@ -1045,8 +1049,9 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</pre
           construction "used by Ladybug and Climate Consultant" as the thing it follows, so
           agreement on the three strategies it draws is the expectation rather than a
           coincidence.</li>
-        <li><b>Solar position.</b> The NOAA algorithm is the one most of this family of tools
-          uses. Altitude and azimuth should agree to a fraction of a degree.</li>
+        <li><b>Solar position.</b> The same NOAA Solar Calculator formulas as Daylight Lab and Solar
+          Lab: for the same place and moment the three agree to within 0.01°, and so does NREL&rsquo;s
+          Solar Position Algorithm.</li>
         <li><b>Descriptive statistics.</b> A mean or a percentile over the same hours of the same
           file is the same arithmetic everywhere, subject to the percentile convention, which is
           the common linear-interpolation one here.</li>
@@ -1331,21 +1336,12 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</pre
         one.</li>
 
       <li>National Oceanic and Atmospheric Administration, Global Monitoring Laboratory.
-        (n.d.). <i>General solar position calculations</i>. NOAA GML.
-        <a href="https://gml.noaa.gov/grad/solcalc/solareqns.PDF" target="_blank" rel="noopener">gml.noaa.gov/grad/solcalc/solareqns.PDF</a>
-        &mdash; named as <span class="ce-mono">"the NOAA General Solar Position
-        Calculations"</span>. This undated document is the source of the fractional year,
-        equation of time, declination, hour angle, zenith and azimuth, and of the 90.833°
-        sunrise/sunset zenith.</li>
-
-      <li>National Oceanic and Atmospheric Administration, Global Monitoring Laboratory.
         (n.d.). <i>Solar calculator</i> [Calculator and spreadsheets]. NOAA GML.
         <a href="https://gml.noaa.gov/grad/solcalc/" target="_blank" rel="noopener">gml.noaa.gov/grad/solcalc/</a>
-        &mdash; a <b>separate</b> entry, because the code's
-        <span class="ce-mono">"NOAA atmospheric refraction correction"</span> is not in the
-        document above. The elevation-dependent refraction polynomial the tool implements comes
-        from NOAA's calculator and its spreadsheets, not from the equations PDF. Both rest on
-        Meeus (1998), which the code does not name &mdash; see Further reading.</li>
+        &mdash; named as <span class="ce-mono">"the NOAA Solar Calculator"</span>. The source of the
+        declination, equation of time, hour angle, zenith and azimuth, of the 90.833°
+        sunrise/sunset zenith, and of the <span class="ce-mono">"NOAA atmospheric refraction
+        correction"</span>. Its equations are Meeus (1998); see Further reading.</li>
 
       <li>U.S. Department of Energy. <i>Auxiliary programs: EnergyPlus weather file (EPW) data
         dictionary</i>. EnergyPlus documentation.
@@ -1408,8 +1404,9 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</pre
       <li>Milne, M., &amp; Givoni, B. (1979). Architectural design based on climate. In D.
         Watson (Ed.), <i>Energy conservation through building design</i> (pp. 96&ndash;113).
         McGraw-Hill. &mdash; the Milne half of that construction.</li>
-      <li>Meeus, J. (1998). <i>Astronomical algorithms</i> (2nd ed.). Willmann-Bell. &mdash; the basis NOAA states for both its solar position equations and
-        its refraction correction. The code names NOAA but never Meeus.</li>
+      <li>Meeus, J. (1998). <i>Astronomical algorithms</i> (2nd ed.). Willmann-Bell. &mdash; the
+        equations the NOAA Solar Calculator implements, which the code names in its comment, and the
+        basis NOAA states for its refraction correction.</li>
       <li>Ottosson, B. (2020, 23 December). <i>A perceptual color space for image processing</i>
         [Blog post].
         <a href="https://bottosson.github.io/posts/oklab/" target="_blank" rel="noopener">bottosson.github.io/posts/oklab/</a>

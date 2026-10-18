@@ -25,6 +25,36 @@ test('day-of-year conversion round-trips, leap and common years', () => {
   assert.equal(dayOfYear(12, 31), 365);
 });
 
+// Reference positions from NREL's Solar Position Algorithm (pvlib 0.11.2, spa_python,
+// 1013.25 hPa, 12 °C) for 2025, the year the module computes for. The tests below this
+// one check that the geometry is self-consistent; this one checks it against the sky.
+// The fractional-year formulas the module used until October 2026 missed it by up to
+// 0.5° around the equinoxes, and every consistency test still passed.
+const SPA_REFERENCE = [
+  // name, latitude, longitude, timezone, day of year, local standard hour, altitude, azimuth
+  ['Sheffield', 53.475, -1.004, 0, 79, 10.0, 30.0416, 141.2110], // 20/3 10:00
+  ['Sheffield', 53.475, -1.004, 0, 172, 15.5, 41.5543, 252.3439], // 21/6 15:30
+  ['Sheffield', 53.475, -1.004, 0, 265, 12.0, 36.6436, 181.0426], // 22/9 12:00
+  ['Sheffield', 53.475, -1.004, 0, 355, 13.0, 12.1463, 193.5351], // 21/12 13:00
+  ['Kuala Lumpur', 3.139, 101.687, 8, 79, 9.0, 24.7992, 91.5957], // 20/3 09:00
+  ['Kuala Lumpur', 3.139, 101.687, 8, 265, 17.0, 31.4655, 268.2562], // 22/9 17:00
+  ['Sydney', -33.869, 151.209, 10, 172, 12.0, 32.7121, 359.1634], // 21/6 12:00
+  ['Sydney', -33.869, 151.209, 10, 355, 8.5, 44.7224, 90.5517], // 21/12 08:30
+  ['Tromso', 69.649, 18.956, 1, 79, 12.0, 20.4112, 182.2539], // 20/3 12:00
+  ['Tromso', 69.649, 18.956, 1, 172, 23.5, 3.3492, 356.2953], // 21/6 23:30
+  ['Riyadh', 24.713, 46.675, 3, 265, 7.0, 16.8940, 97.7387], // 22/9 07:00
+  ['Riyadh', 24.713, 46.675, 3, 355, 16.0, 12.9772, 236.3102], // 21/12 16:00
+];
+
+test('altitude and azimuth match NREL SPA to within 0.02°', () => {
+  for (const [name, latitude, longitude, timezone, doy, hour, alt, az] of SPA_REFERENCE) {
+    const p = sunPosition({ latitude, longitude, timezone }, doy, hour);
+    const dAz = Math.abs(((p.azimuth - az) % 360 + 540) % 360 - 180);
+    assert.ok(Math.abs(p.altitude - alt) < 0.02, `${name} day ${doy} ${hour} h: altitude ${p.altitude.toFixed(4)}, SPA ${alt}`);
+    assert.ok(dAz < 0.02, `${name} day ${doy} ${hour} h: azimuth ${p.azimuth.toFixed(4)}, SPA ${az}`);
+  }
+});
+
 test('solar-noon altitude equals 90 - |latitude - declination|', () => {
   // The defining identity of solar geometry; any error in declination,
   // equation of time or hour angle breaks it.
