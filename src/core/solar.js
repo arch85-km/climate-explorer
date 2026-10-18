@@ -232,6 +232,16 @@ function keyDays(leap = false) {
   ];
 }
 
-export { sunPosition, sunVector, sunTimes, annualSunPositions, dayArc, analemma, keyDays };
+/**
+ * How an hour index reads on screen. Hour h is the EPW record for h:00 to h+1:00,
+ * and the views place the sun at its midpoint, so a label names both: the hour
+ * the data covers and the time the sun is drawn for.
+ */
+function hourSpan(hour) {
+  const hh = (h) => String(h).padStart(2, '0');
+  return { range: `${hh(hour)}:00–${hh(hour + 1)}:00`, sunAt: `${hh(hour)}:30` };
+}
+
+export { sunPosition, sunVector, sunTimes, annualSunPositions, dayArc, analemma, keyDays, hourSpan };
 export { dayOfYear, monthDayFromDoy, daysInMonth, refractionCorrection };
 export { DEG, RAD, DAYS_IN_MONTH };

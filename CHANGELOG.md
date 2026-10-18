@@ -29,6 +29,13 @@ resolves to the newest version. The full notes for each release are on the
   Lab and Solar Lab do: within 0.01° of NREL's Solar Position Algorithm, and the
   three tools agree. Sun paths, the sun dome, shadows and solar hours move by up
   to half a degree in March and September.
+- **Changed** — the sun's label in the sun path, the sun dome and the
+  massing view gave only the hour, "12:00", while the sun is drawn at the
+  middle of that hour of data. It now names both, "12:00–13:00, sun at
+  12:30", so the altitude and azimuth beside it are not read as noon's.
+  In the 3D views the sun's label now stays on screen when the sun is near
+  the edge of a phone-width view, and in the sun dome it sits clear of the
+  "21 Jun" arc label.
 - **Fixed** — a period with only calm hours was reported as "prevailing N":
   every direction tied at zero and the first, north, was taken. The wind
   roses now say "no prevailing direction: all calm" and the summary tile

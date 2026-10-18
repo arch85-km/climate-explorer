@@ -15,7 +15,7 @@
 import { MeshBuilder, LineBuilder, rgb01, towards } from '../render/geometry.js';
 import { shadowOntoGround } from '../render/mat4.js';
 import { hexRgb } from '../render/canvas2d.js';
-import { sunPosition, sunVector, dayArc, dayOfYear, sunTimes } from '../core/solar.js';
+import { sunPosition, sunVector, dayArc, dayOfYear, sunTimes, hourSpan } from '../core/solar.js';
 import { MONTH_ABBR } from '../epw/parse.js';
 
 const SCALE = 0.1;      // world units per metre
@@ -173,7 +173,7 @@ function build(view, theme) {
     labels.push({
       world: [sp[0], sp[1] + 0.3, sp[2]],
       text: `${pos.altitude.toFixed(0)}° altitude · ${pos.azimuth.toFixed(0)}° azimuth`,
-      color: theme.accent2, size: 11, weight: 600, always: true,
+      color: theme.accent2, size: 11, weight: 600, always: true, keepInView: true,
     });
   }
 
@@ -257,11 +257,12 @@ function build(view, theme) {
 
   const dayLen = times.polar === 'day' ? '24 h'
     : times.polar === 'night' ? '0 h' : `${times.dayLength.toFixed(1)} h`;
+  const span = hourSpan(cur.hour);
   const caption = sunUp
     ? `${m.width}×${m.depth}×${m.height} m${m.courtyard ? ' perimeter block' : ''} · `
-      + `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 · `
-      + `sun ${pos.altitude.toFixed(0)}° · day length ${dayLen} · grid squares are 10 m`
-    : `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 — sun below the horizon, no shadow cast`;
+      + `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range} · `
+      + `sun ${pos.altitude.toFixed(0)}° at ${span.sunAt} · day length ${dayLen} · grid squares are 10 m`
+    : `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range} — sun below the horizon, no shadow cast`;
 
   return {
     objects,

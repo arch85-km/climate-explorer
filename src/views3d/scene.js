@@ -126,8 +126,14 @@ function createScene(container, root) {
       ctx.textAlign = label.align || 'center';
       ctx.textBaseline = label.baseline || 'middle';
       const w = ctx.measureText(label.text).width;
-      const x = label.sx + (label.dx || 0);
+      let x = label.sx + (label.dx || 0);
       const y = label.sy + (label.dy || 0);
+      // The sun's label is slid back inside the view rather than cut off at its
+      // edge, as it would be on a phone when the sun is low in the east or west.
+      if (label.keepInView && ctx.textAlign === 'center') {
+        const half = w / 2 + 4;
+        x = half * 2 > size.width ? size.width / 2 : Math.min(Math.max(x, half), size.width - half);
+      }
       // Skip labels that would collide with one already drawn.
       if (!label.always) {
         const box = { x0: x - w / 2 - 3, x1: x + w / 2 + 3, y0: y - size2 * 0.7, y1: y + size2 * 0.7 };

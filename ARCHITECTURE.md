@@ -149,12 +149,12 @@ ARCHITECTURE.md · CHANGELOG.md · DESIGN.md
 
 ## Testing and release
 
-`npm test` runs the release guard and then 56 unit tests (`node --test`):
+`npm test` runs the release guard and then 57 unit tests (`node --test`):
 
 | Suite | Tests | What it checks |
 |---|---|---|
 | `parse.test.mjs` | 18 | The EPW parser, on real files |
-| `solar.test.mjs` | 13 | Solar position against NREL's Solar Position Algorithm and the physical identities |
+| `solar.test.mjs` | 14 | Solar position against NREL's Solar Position Algorithm and the physical identities, and the hour labels |
 | `stats.test.mjs` | 20 | The statistics and psychrometrics, including the running mean and an all-calm wind rose |
 | `render.test.mjs` | 5 | Scales, ticks and the colour bar |
 

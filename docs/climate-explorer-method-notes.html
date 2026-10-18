@@ -578,7 +578,8 @@ azimuth = atan2(sin H, cos H sin &phi; &minus; tan &delta; cos &phi;) + 180</pre
         record describes the interval <b>ending</b> at the stated hour, so hour index <i>h</i>
         spans <i>h</i>:00 to <i>h</i>+1:00 and the app evaluates the sun at its midpoint,
         <i>h</i>&nbsp;+&nbsp;0.5. The hourly sun positions, the cursor marker, the shadow and the
-        shadow trace all carry that half-hour offset. The <b>drawn day arcs and analemmas do
+        shadow trace all carry that half-hour offset, and the marker's label says so: an hour of
+        12 reads &ldquo;12:00&ndash;13:00, sun at 12:30&rdquo;. The <b>drawn day arcs and analemmas do
         not</b> — they are computed on the whole hour. So the plotted data points sit half an hour
         after the hour lines they are read against. At mid-latitudes that is a few degrees of
         azimuth, and it is a real offset, not a rendering artefact.</p>

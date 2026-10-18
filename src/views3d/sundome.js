@@ -9,7 +9,7 @@
  * @version 1.1.0 — 2026-10-04
  */
 import { MeshBuilder, LineBuilder, PointBuilder, skyPoint, rgb01, towards } from '../render/geometry.js';
-import { dayArc, analemma, sunPosition, dayOfYear, sunTimes } from '../core/solar.js';
+import { dayArc, analemma, sunPosition, dayOfYear, sunTimes, hourSpan } from '../core/solar.js';
 import { MONTH_ABBR } from '../epw/parse.js';
 import { RAMPS } from '../render/colormaps.js';
 import { hexRgb } from '../render/canvas2d.js';
@@ -135,6 +135,7 @@ function build(view, theme) {
   const curDoy = dayOfYear(cur.month, cur.day, data.isLeap);
   const pos = sunPosition(loc, curDoy, cur.hour + 0.5);
   const times = sunTimes(loc, curDoy);
+  const span = hourSpan(cur.hour);
 
   const todayArc = dayArc(loc, curDoy, 145);
   if (todayArc.length > 1) {
@@ -150,14 +151,14 @@ function build(view, theme) {
     const gp = skyPoint(0, pos.azimuth, R);
     lines.segment([0, 0.002, 0], [gp[0], 0.002, gp[2]], accent);
     labels.push({
-      world: [sp[0], sp[1] + 0.06, sp[2]],
-      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 · ${pos.altitude.toFixed(0)}° alt · ${pos.azimuth.toFixed(0)}° az`,
-      color: theme.accent2, size: 11, weight: 600, always: true,
+      world: [sp[0], sp[1] + 0.15, sp[2]],
+      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range}, sun at ${span.sunAt} · ${pos.altitude.toFixed(0)}° alt · ${pos.azimuth.toFixed(0)}° az`,
+      color: theme.accent2, size: 11, weight: 600, always: true, keepInView: true,
     });
   } else {
     labels.push({
       world: [0, 0.12, 0],
-      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 — sun is below the horizon`,
+      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range} — sun is below the horizon`,
       color: theme.ink3, size: 11, weight: 600, always: true,
     });
   }

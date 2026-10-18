@@ -12,7 +12,7 @@
  * @version 1.1.0 — 2026-10-04
  */
 import { beginFrame, drawTitle, drawEmpty, drawLegend, drawColorbar } from '../render/canvas2d.js';
-import { sunPosition, dayArc, analemma, dayOfYear, sunTimes } from '../core/solar.js';
+import { sunPosition, dayArc, analemma, dayOfYear, sunTimes, hourSpan } from '../core/solar.js';
 import { MONTH_ABBR } from '../epw/parse.js';
 import { RAMPS } from '../render/colormaps.js';
 import { ALL_BY_KEY, formatValue, unitFor } from '../epw/fields.js';
@@ -213,6 +213,7 @@ function draw(canvas, view) {
   const curDoy = dayOfYear(cur.month, cur.day, data.isLeap);
   const pos = sunPosition(loc, curDoy, cur.hour + 0.5);
   const times = sunTimes(loc, curDoy);
+  const span = hourSpan(cur.hour);
 
   // The whole of the selected day, highlighted.
   const todayArc = dayArc(loc, curDoy, 193);
@@ -244,7 +245,7 @@ function draw(canvas, view) {
   }
 
   drawLegend(s, [
-    { label: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 — alt ${pos.altitude.toFixed(1)}°, az ${pos.azimuth.toFixed(1)}°`, color: theme.accent2 },
+    { label: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range}, sun at ${span.sunAt} — alt ${pos.altitude.toFixed(1)}°, az ${pos.azimuth.toFixed(1)}°`, color: theme.accent2 },
     { label: 'Solstices', color: theme.ink1 },
     { label: 'Analemma (clock hour)', color: theme.ink3, dash: true },
   ], { y: plot.bottom + 24, maxWidth: plot.w });

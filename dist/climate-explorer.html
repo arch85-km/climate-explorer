@@ -1686,11 +1686,21 @@ function keyDays(leap = false) {
   ];
 }
 
+/**
+ * How an hour index reads on screen. Hour h is the EPW record for h:00 to h+1:00,
+ * and the views place the sun at its midpoint, so a label names both: the hour
+ * the data covers and the time the sun is drawn for.
+ */
+function hourSpan(hour) {
+  const hh = (h) => String(h).padStart(2, '0');
+  return { range: `${hh(hour)}:00–${hh(hour + 1)}:00`, sunAt: `${hh(hour)}:30` };
+}
 
 
 
 
-Object.assign(__exports, {sunPosition, sunVector, sunTimes, annualSunPositions, dayArc, analemma, keyDays, dayOfYear, monthDayFromDoy, daysInMonth, refractionCorrection, DEG, RAD, DAYS_IN_MONTH});
+
+Object.assign(__exports, {sunPosition, sunVector, sunTimes, annualSunPositions, dayArc, analemma, keyDays, hourSpan, dayOfYear, monthDayFromDoy, daysInMonth, refractionCorrection, DEG, RAD, DAYS_IN_MONTH});
 });
 
 __def("core/state", function (__exports, __req) {
@@ -7316,7 +7326,7 @@ __def("views2d/sunpath", function (__exports, __req) {
  * @version 1.1.0 — 2026-10-04
  */
 const { beginFrame, drawTitle, drawEmpty, drawLegend, drawColorbar } = __req("render/canvas2d");
-const { sunPosition, dayArc, analemma, dayOfYear, sunTimes } = __req("core/solar");
+const { sunPosition, dayArc, analemma, dayOfYear, sunTimes, hourSpan } = __req("core/solar");
 const { MONTH_ABBR } = __req("epw/parse");
 const { RAMPS } = __req("render/colormaps");
 const { ALL_BY_KEY, formatValue, unitFor } = __req("epw/fields");
@@ -7517,6 +7527,7 @@ function draw(canvas, view) {
   const curDoy = dayOfYear(cur.month, cur.day, data.isLeap);
   const pos = sunPosition(loc, curDoy, cur.hour + 0.5);
   const times = sunTimes(loc, curDoy);
+  const span = hourSpan(cur.hour);
 
   // The whole of the selected day, highlighted.
   const todayArc = dayArc(loc, curDoy, 193);
@@ -7548,7 +7559,7 @@ function draw(canvas, view) {
   }
 
   drawLegend(s, [
-    { label: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 — alt ${pos.altitude.toFixed(1)}°, az ${pos.azimuth.toFixed(1)}°`, color: theme.accent2 },
+    { label: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range}, sun at ${span.sunAt} — alt ${pos.altitude.toFixed(1)}°, az ${pos.azimuth.toFixed(1)}°`, color: theme.accent2 },
     { label: 'Solstices', color: theme.ink1 },
     { label: 'Analemma (clock hour)', color: theme.ink3, dash: true },
   ], { y: plot.bottom + 24, maxWidth: plot.w });
@@ -7963,7 +7974,7 @@ __def("views3d/massing", function (__exports, __req) {
 const { MeshBuilder, LineBuilder, rgb01, towards } = __req("render/geometry");
 const { shadowOntoGround } = __req("render/mat4");
 const { hexRgb } = __req("render/canvas2d");
-const { sunPosition, sunVector, dayArc, dayOfYear, sunTimes } = __req("core/solar");
+const { sunPosition, sunVector, dayArc, dayOfYear, sunTimes, hourSpan } = __req("core/solar");
 const { MONTH_ABBR } = __req("epw/parse");
 
 const SCALE = 0.1;      // world units per metre
@@ -8121,7 +8132,7 @@ function build(view, theme) {
     labels.push({
       world: [sp[0], sp[1] + 0.3, sp[2]],
       text: `${pos.altitude.toFixed(0)}° altitude · ${pos.azimuth.toFixed(0)}° azimuth`,
-      color: theme.accent2, size: 11, weight: 600, always: true,
+      color: theme.accent2, size: 11, weight: 600, always: true, keepInView: true,
     });
   }
 
@@ -8205,11 +8216,12 @@ function build(view, theme) {
 
   const dayLen = times.polar === 'day' ? '24 h'
     : times.polar === 'night' ? '0 h' : `${times.dayLength.toFixed(1)} h`;
+  const span = hourSpan(cur.hour);
   const caption = sunUp
     ? `${m.width}×${m.depth}×${m.height} m${m.courtyard ? ' perimeter block' : ''} · `
-      + `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 · `
-      + `sun ${pos.altitude.toFixed(0)}° · day length ${dayLen} · grid squares are 10 m`
-    : `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 — sun below the horizon, no shadow cast`;
+      + `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range} · `
+      + `sun ${pos.altitude.toFixed(0)}° at ${span.sunAt} · day length ${dayLen} · grid squares are 10 m`
+    : `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range} — sun below the horizon, no shadow cast`;
 
   return {
     objects,
@@ -8356,8 +8368,14 @@ function createScene(container, root) {
       ctx.textAlign = label.align || 'center';
       ctx.textBaseline = label.baseline || 'middle';
       const w = ctx.measureText(label.text).width;
-      const x = label.sx + (label.dx || 0);
+      let x = label.sx + (label.dx || 0);
       const y = label.sy + (label.dy || 0);
+      // The sun's label is slid back inside the view rather than cut off at its
+      // edge, as it would be on a phone when the sun is low in the east or west.
+      if (label.keepInView && ctx.textAlign === 'center') {
+        const half = w / 2 + 4;
+        x = half * 2 > size.width ? size.width / 2 : Math.min(Math.max(x, half), size.width - half);
+      }
       // Skip labels that would collide with one already drawn.
       if (!label.always) {
         const box = { x0: x - w / 2 - 3, x1: x + w / 2 + 3, y0: y - size2 * 0.7, y1: y + size2 * 0.7 };
@@ -8463,7 +8481,7 @@ __def("views3d/sundome", function (__exports, __req) {
  * @version 1.1.0 — 2026-10-04
  */
 const { MeshBuilder, LineBuilder, PointBuilder, skyPoint, rgb01, towards } = __req("render/geometry");
-const { dayArc, analemma, sunPosition, dayOfYear, sunTimes } = __req("core/solar");
+const { dayArc, analemma, sunPosition, dayOfYear, sunTimes, hourSpan } = __req("core/solar");
 const { MONTH_ABBR } = __req("epw/parse");
 const { RAMPS } = __req("render/colormaps");
 const { hexRgb } = __req("render/canvas2d");
@@ -8589,6 +8607,7 @@ function build(view, theme) {
   const curDoy = dayOfYear(cur.month, cur.day, data.isLeap);
   const pos = sunPosition(loc, curDoy, cur.hour + 0.5);
   const times = sunTimes(loc, curDoy);
+  const span = hourSpan(cur.hour);
 
   const todayArc = dayArc(loc, curDoy, 145);
   if (todayArc.length > 1) {
@@ -8604,14 +8623,14 @@ function build(view, theme) {
     const gp = skyPoint(0, pos.azimuth, R);
     lines.segment([0, 0.002, 0], [gp[0], 0.002, gp[2]], accent);
     labels.push({
-      world: [sp[0], sp[1] + 0.06, sp[2]],
-      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 · ${pos.altitude.toFixed(0)}° alt · ${pos.azimuth.toFixed(0)}° az`,
-      color: theme.accent2, size: 11, weight: 600, always: true,
+      world: [sp[0], sp[1] + 0.15, sp[2]],
+      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range}, sun at ${span.sunAt} · ${pos.altitude.toFixed(0)}° alt · ${pos.azimuth.toFixed(0)}° az`,
+      color: theme.accent2, size: 11, weight: 600, always: true, keepInView: true,
     });
   } else {
     labels.push({
       world: [0, 0.12, 0],
-      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${String(cur.hour).padStart(2, '0')}:00 — sun is below the horizon`,
+      text: `${cur.day} ${MONTH_ABBR[cur.month - 1]} ${span.range} — sun is below the horizon`,
       color: theme.ink3, size: 11, weight: 600, always: true,
     });
   }

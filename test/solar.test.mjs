@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import {
-  sunPosition, sunTimes, sunVector, dayOfYear, monthDayFromDoy, daysInMonth, dayArc, analemma,
+  sunPosition, sunTimes, sunVector, dayOfYear, monthDayFromDoy, daysInMonth, dayArc, analemma, hourSpan,
 } from '../src/core/solar.js';
 
 const LOCS = {
@@ -198,4 +198,10 @@ test('day arcs and analemmas produce usable geometry', () => {
   assert.ok(an.length > 60);
   const spread = Math.max(...an.map((p) => p.azimuth)) - Math.min(...an.map((p) => p.azimuth));
   assert.ok(spread > 0.5 && spread < 15, `noon analemma azimuth spread ${spread}°`);
+});
+
+test('an hour label names the hour the data covers and the half hour the sun is drawn for', () => {
+  assert.deepEqual(hourSpan(12), { range: '12:00–13:00', sunAt: '12:30' });
+  assert.deepEqual(hourSpan(0), { range: '00:00–01:00', sunAt: '00:30' });
+  assert.deepEqual(hourSpan(23), { range: '23:00–24:00', sunAt: '23:30' });
 });
