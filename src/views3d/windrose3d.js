@@ -136,7 +136,7 @@ function build(view, theme) {
     // The tallest bar is one direction at one speed, so it need not point the prevailing
     // way: a direction whose hours are spread over several speeds can have the most hours
     // overall and no tall bar. The caption names both, so the two are not read as a conflict.
-    caption: `Prevailing ${rose.prevailingLabel} · ${rose.total.toLocaleString()} hours · height is frequency`
+    caption: `${rose.prevailingText[0].toUpperCase()}${rose.prevailingText.slice(1)} · ${rose.total.toLocaleString()} hours · height is frequency`
       + (maxCell
         ? ` · tallest bar ${rose.labels[Math.floor(maxIndex / bands)]} at ${bandText(maxIndex % bands)} ${unitFor(speedField, state.units)}: `
           + 'the most common direction and speed together, not the prevailing direction'

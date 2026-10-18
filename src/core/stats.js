@@ -332,13 +332,20 @@ function windRose(data, mask, opts = {}) {
   let maxSector = 0;
   for (let s = 0; s < sectors; s += 1) if (sectorTotals[s] > maxSector) maxSector = sectorTotals[s];
 
-  const prevailing = sectorTotals.indexOf(maxSector);
+  // With no wind at all, every sector ties at zero and indexOf would return 0, naming
+  // north for a period that had no direction. -1 and a null label say there is none;
+  // prevailingText is what the views print.
+  const prevailing = maxSector > 0 ? sectorTotals.indexOf(maxSector) : -1;
+  const prevailingLabel = prevailing < 0 ? null
+    : sectors === 16 ? CARDINALS[prevailing] : `${(prevailing * sectorSize).toFixed(0)}°`;
   return {
     sectors, bandCount, speedBands, counts, sectorTotals, total, calm, maxSector, maxSpeed,
     calmFraction: total ? calm / total : 0,
     sectorMeans: Float64Array.from(sectorValueSum, (v, i) => (sectorTotals[i] ? v / sectorTotals[i] : NaN)),
     prevailing,
-    prevailingLabel: sectors === 16 ? CARDINALS[prevailing] : `${(prevailing * sectorSize).toFixed(0)}°`,
+    prevailingLabel,
+    prevailingText: prevailingLabel ? `prevailing ${prevailingLabel}`
+      : calm ? 'no prevailing direction: all calm' : 'no prevailing direction',
     labels: sectors === 16 ? CARDINALS
       : Array.from({ length: sectors }, (_, i) => `${Math.round(i * sectorSize)}°`),
   };

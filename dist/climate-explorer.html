@@ -2147,13 +2147,20 @@ function windRose(data, mask, opts = {}) {
   let maxSector = 0;
   for (let s = 0; s < sectors; s += 1) if (sectorTotals[s] > maxSector) maxSector = sectorTotals[s];
 
-  const prevailing = sectorTotals.indexOf(maxSector);
+  // With no wind at all, every sector ties at zero and indexOf would return 0, naming
+  // north for a period that had no direction. -1 and a null label say there is none;
+  // prevailingText is what the views print.
+  const prevailing = maxSector > 0 ? sectorTotals.indexOf(maxSector) : -1;
+  const prevailingLabel = prevailing < 0 ? null
+    : sectors === 16 ? CARDINALS[prevailing] : `${(prevailing * sectorSize).toFixed(0)}°`;
   return {
     sectors, bandCount, speedBands, counts, sectorTotals, total, calm, maxSector, maxSpeed,
     calmFraction: total ? calm / total : 0,
     sectorMeans: Float64Array.from(sectorValueSum, (v, i) => (sectorTotals[i] ? v / sectorTotals[i] : NaN)),
     prevailing,
-    prevailingLabel: sectors === 16 ? CARDINALS[prevailing] : `${(prevailing * sectorSize).toFixed(0)}°`,
+    prevailingLabel,
+    prevailingText: prevailingLabel ? `prevailing ${prevailingLabel}`
+      : calm ? 'no prevailing direction: all calm' : 'no prevailing direction',
     labels: sectors === 16 ? CARDINALS
       : Array.from({ length: sectors }, (_, i) => `${Math.round(i * sectorSize)}°`),
   };
@@ -5770,7 +5777,7 @@ function render(node, context) {
     const rose = windRose(data, mask);
     const wf = FIELD_BY_KEY.windSpeed;
     const ws = summarise(data.series.windSpeed, mask);
-    tiles.push(tile('Prevailing wind', rose.prevailingLabel,
+    tiles.push(tile('Prevailing wind', rose.prevailingLabel || (rose.calm ? 'Calm' : '—'),
       `mean ${formatValue(wf, ws.mean, u)} · calm ${(rose.calmFraction * 100).toFixed(0)}%`));
   }
 
@@ -7882,7 +7889,7 @@ function draw(canvas, view) {
   ctx.restore();
 
   drawTitle(s, 'Wind rose',
-    `prevailing ${rose.prevailingLabel} · ${rose.total.toLocaleString()} hours · ${view.subtitle}`);
+    `${rose.prevailingText} · ${rose.total.toLocaleString()} hours · ${view.subtitle}`);
   return s;
 }
 
@@ -8909,7 +8916,7 @@ function build(view, theme) {
     // The tallest bar is one direction at one speed, so it need not point the prevailing
     // way: a direction whose hours are spread over several speeds can have the most hours
     // overall and no tall bar. The caption names both, so the two are not read as a conflict.
-    caption: `Prevailing ${rose.prevailingLabel} · ${rose.total.toLocaleString()} hours · height is frequency`
+    caption: `${rose.prevailingText[0].toUpperCase()}${rose.prevailingText.slice(1)} · ${rose.total.toLocaleString()} hours · height is frequency`
       + (maxCell
         ? ` · tallest bar ${rose.labels[Math.floor(maxIndex / bands)]} at ${bandText(maxIndex % bands)} ${unitFor(speedField, state.units)}: `
           + 'the most common direction and speed together, not the prevailing direction'

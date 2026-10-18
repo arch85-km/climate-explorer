@@ -184,6 +184,18 @@ test('wind rose bins every non-calm hour and finds the prevailing direction', ()
   assert.equal(Array.from(coarse.counts).reduce((a, b) => a + b, 0) + coarse.calm, coarse.total);
 });
 
+test('a period with no wind names no prevailing direction', () => {
+  // Every selected hour calm: all sectors tie at zero, which must not read as north.
+  const calmOnly = Uint8Array.from(full, (_, i) => (data.series.windSpeed[i] < 0.5 ? 1 : 0));
+  const rose = windRose(data, calmOnly);
+  assert.ok(rose.total > 0 && rose.calm === rose.total, 'the mask selects calm hours only');
+  assert.equal(rose.prevailing, -1);
+  assert.equal(rose.prevailingLabel, null);
+  assert.equal(rose.prevailingText, 'no prevailing direction: all calm');
+  const windy = windRose(data, full);
+  assert.equal(windy.prevailingText, `prevailing ${windy.prevailingLabel}`);
+});
+
 test('saturation pressure matches ASHRAE Fundamentals Table 1', () => {
   const refs = [[-10, 259.9], [0, 611.2], [10, 1228.1], [20, 2339.3], [25, 3169.7], [30, 4246.0], [40, 7384.9]];
   for (const [t, ref] of refs) {

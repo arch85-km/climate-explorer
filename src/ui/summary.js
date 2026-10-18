@@ -79,7 +79,7 @@ function render(node, context) {
     const rose = windRose(data, mask);
     const wf = FIELD_BY_KEY.windSpeed;
     const ws = summarise(data.series.windSpeed, mask);
-    tiles.push(tile('Prevailing wind', rose.prevailingLabel,
+    tiles.push(tile('Prevailing wind', rose.prevailingLabel || (rose.calm ? 'Calm' : '—'),
       `mean ${formatValue(wf, ws.mean, u)} · calm ${(rose.calmFraction * 100).toFixed(0)}%`));
   }
 

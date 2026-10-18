@@ -23,6 +23,10 @@ resolves to the newest version. The full notes for each release are on the
 - **Fixed** — the 3D camera buttons looked from the wrong side: Plan showed
   south at the top, and South and SE looked from the north and the
   north-east. Each now looks from the side it names, in every 3D view.
+- **Fixed** — a period with only calm hours was reported as "prevailing N":
+  every direction tied at zero and the first, north, was taken. The wind
+  roses now say "no prevailing direction: all calm" and the summary tile
+  "Calm".
 - **Changed** — the 3D wind rose opens from the south, with north at the
   back as on a map and as in the 2D rose, and from a little higher so the
   nearest bars do not hide the middle. Its caption names the tallest bar and

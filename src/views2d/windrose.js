@@ -156,7 +156,7 @@ function draw(canvas, view) {
   ctx.restore();
 
   drawTitle(s, 'Wind rose',
-    `prevailing ${rose.prevailingLabel} · ${rose.total.toLocaleString()} hours · ${view.subtitle}`);
+    `${rose.prevailingText} · ${rose.total.toLocaleString()} hours · ${view.subtitle}`);
   return s;
 }
 
